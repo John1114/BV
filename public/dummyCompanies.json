@@ -1,0 +1,14 @@
+[
+	{
+		"id": "0",
+		"imageData": "../assets/airbnb.png"
+	},
+	{
+		"id": "1",
+		"imageData": "../assets/opensea.png"
+	},
+	{
+		"id": "2",
+		"imageData": "../assets/casper.png"
+	}
+]
