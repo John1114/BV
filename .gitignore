@@ -1,2 +1,4 @@
 node_modules/
 .next
+*.icloud
+.DS_Store
