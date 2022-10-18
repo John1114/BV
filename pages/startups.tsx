@@ -1,11 +1,18 @@
-import styles from '../styles/Home.module.css'
+import '../styles/Home.module.css';
 import Casper from "../assets/casper.png";
 import Opensea from "../assets/opensea.png";
 import Airbnb from "../assets/airbnb.png";
 import Warby from "../assets/warby.png";
 import SearchBar from "../components/SearchBar";
 import Dropdown from "../components/Dropdown";
+import CompanyCard from '../components/CompanyCard';
+import Startup from './[startupSlug]';
 import { useEffect, useState } from "react";
+import Modal from "react-modal";
+
+
+
+// Modal.setAppElement("#root");
 // import {
 //   collection,
 //   getDocs,
@@ -19,18 +26,20 @@ import { StaticImageData } from "next/image";
 interface companies {
   id: number;
   imageData: string;
+  accentColor: string;
 }
 
 /* DUMMY DATA: remove this! it's just for show */
 let arr: companies[] = [];
-arr.push({"id": 0, "imageData": Casper.src},
-{"id": 1, "imageData": Opensea.src},
-{"id": 2, "imageData": Airbnb.src},
-{"id": 3, "imageData": Warby.src});
+arr.push({"id": 0, "imageData": Casper.src, "accentColor": "0053A6"},
+{"id": 1, "imageData": Opensea.src, "accentColor": "2081E2"},
+{"id": 2, "imageData": Airbnb.src, "accentColor": "FF5A5F"},
+{"id": 3, "imageData": Warby.src, "accentColor": "DFDFDF"});
 
 export default function Startups() {
   const router = useRouter();
   const [startups, setStartups] = useState<any[]>([]);
+  const [openedModal, setOpenedModal] = useState(-1);
 
   useEffect(() => {
 
@@ -58,15 +67,23 @@ export default function Startups() {
       <div className="grid">
         {startups.map((startup: any) => (
           <div key={startup.id}>
-          <button
+          {/* <button
             className="card block"
             onClick={() => router.push("/" + startup.id)}
+          > */}
+          <button
+            className="card block"
+            onClick={() => setOpenedModal(startup.id)}
           >
             <img
               src={startup.imageData}
               className="left-0 right-0 object-contain"
             />
           </button>
+          <Modal isOpen={openedModal == startup.id} onRequestClose={() => setOpenedModal(-1)}>
+            <Startup />
+            {/* <CompanyCard accentColor={startup.accentColor} imageUrl={startup.imageData} identifier={startup.id}/> */}
+          </Modal>
           </div>
         ))}
       </div>
