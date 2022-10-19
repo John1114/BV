@@ -12,12 +12,14 @@ export default function StartupInfo() {
 
     return (
         <div className="">
-            <div className="bg-blue-500">
-                <div className="max-w-3xl px-4 mx-auto h-72 relative overflow-x-hidden">
+
+            {/* If we are storing an "accentColor" attribute for each company,
+            this class needs to change with each company */}
+            <div className="bg-blue-600">
+
+
+                <div className="max-w-3xl px-4 mx-auto h-64 relative overflow-x-hidden">
                     <div className="absolute bottom-0">
-                        <div>
-                            <img src={opensea.src} className="h-32 w-32 mx-auto rounded-full border-4 border-white" />
-                        </div>
                         <h1 className="text-3xl md:text-5xl font-bold text-white">
                             At a glance: <span className="font-light">OpenSea</span>
                         </h1>
@@ -26,7 +28,7 @@ export default function StartupInfo() {
 
 
             </div>
-            <div className="max-w-3xl px-4 mx-auto mt-6">
+            <div className="max-w-3xl px-4 mx-auto mt-6 pb-8">
                 <div className="flex justify-start items-center space-x-8 mb-8">
 
                     <div>
@@ -69,6 +71,9 @@ export default function StartupInfo() {
                 </div>
 
             </div>
+            <div className="top-48 left-20 absolute">
+                            <img src={opensea.src} className="h-32 w-32 mx-auto rounded-full border-4 border-white" />
+                        </div>
         </div>
     )
 }

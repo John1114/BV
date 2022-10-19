@@ -12,13 +12,17 @@ module.exports = {
             '3/4': '75%',
             'full': '100%',
         },
-        colors: {
-            orange: colors.orange,
-            gray: colors.gray,
-            blue: colors.slate,
-            white: colors.white,
-            red: colors.red
-        },
+        /*
+        From nuowen: I don't understand why this config exists.
+        it restricts the full usage of colors from tailwind, and maps the slate color to blue??? Why?
+        */
+        // colors: {
+        //     orange: colors.orange,
+        //     gray: colors.gray,
+        //     blue: colors.slate,
+        //     white: colors.white,
+        //     red: colors.red
+        // },
         screens: {
             'sm': '300px',
             'lg': '700px'
