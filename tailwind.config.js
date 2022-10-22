@@ -32,7 +32,8 @@ module.exports = {
                 sans: ['Poppins', ...defaultTheme.fontFamily.sans],
             },
             backgroundImage: theme => ({
-                'hero': "url('~/assets/brown.jpeg')"
+                'hero': "url('~/assets/brown.jpeg')",
+                "form_background": "url('../public/form_background.png')"
             }),
         },
     },
