@@ -1,16 +1,18 @@
 export interface FormQuestion {
-	pageId: string;
+	pageId: number;
 	question: string;
 	questionFormat: any;
+	nextPageFunction: any;
   }
   
   export default function StartupFormStruct({
 	pageId,
 	question,
-	questionFormat
+	questionFormat,
+	nextPageFunction
   }: FormQuestion) {
 	return (
-		<div id={pageId} className="rounded-lg overflow-hidden shadow-lg mx-auto h-5/6 w-5/6 bg-white">
+		<div id={pageId.toString()} className="relative rounded-lg overflow-hidden shadow-lg mx-auto h-5/6 w-5/6 bg-white">
 
 		<div className="bg-slate-100">
 
@@ -30,6 +32,18 @@ export interface FormQuestion {
 				{questionFormat}
 			</div>
 		</div>
+
+		<div className="absolute right-0 bottom-0">
+		{/* <button type="button" className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-4 px-8 rounded-l">
+			Prev
+		</button> */}
+		<button type="button" onClick={nextPageFunction(pageId + 1)} className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded">
+			Next Page
+		</button>
+  </div>
+		{/* <div className="max-w-3xl relative overflow-x-hidden inline-flex">
+		
+		</div> */}
 	</div>
 	);
   }
