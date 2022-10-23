@@ -27,12 +27,12 @@ export interface FormQuestion {
 		</div>
 		{questionFormat}
 
-		<div className="absolute right-0 bottom-0">
+		<div className="absolute right-6 bottom-6">
 			<button type="button" onClick={() => (pageFunction(pageId + 1))} className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded">
 				Next Page
 			</button>
 		</div>
-		<div className="absolute left-0 bottom-0">
+		<div className="absolute left-6 bottom-6">
 		{ (pageId > 0) ?
 			(<button type="button" onClick={() => (pageFunction(pageId - 1))} className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-6 px-16 rounded">
 				Previous Page
