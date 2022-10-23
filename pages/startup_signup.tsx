@@ -63,7 +63,8 @@ questionPages.push(
        <input required className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl" id="website" name="website" type="text" placeholder="Website" />
        </div>
 		</div>
-)},
+)}, 
+{"pageId": 3, "question": "How do you want to look?", "pageFunction": null, "questionFormat": (<div></div>)}
 );
 
 interface FormInterface {
