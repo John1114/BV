@@ -1,4 +1,5 @@
 import styles from "../styles/Home.module.css";
+import { signInWithGoogle } from "../src/firebaseFunctions";
 
 import SplashScreen from "../util/splashscreen";
 import { useState, useEffect } from "react";
@@ -31,6 +32,12 @@ export default function Home() {
 
   setTimeout(StopLoading, 2000);
 
+  const [userName, setUserName] = useState('')
+  const [email, setEmail] = useState('')
+
+  useEffect(() => setUserName(!!localStorage.getItem('name') ? localStorage.getItem('name') : ''), [])
+  useEffect(() => setEmail(!!localStorage.getItem('email') ? localStorage.getItem('email') : ''), [])
+
   return (
     <div>
       {loading && <SplashScreen fading={fading} />}
@@ -38,6 +45,14 @@ export default function Home() {
         <div className="flex flex-col">
           <Navbar />
           <Hero tagLine={"Startups start here."} />
+          <button className="login-with-google-btn" onClick={signInWithGoogle}>
+            Sign in with Google
+          </button>
+
+          <h1>"Login Details"</h1>
+          <h1>{userName}</h1>
+          <h1>{email}</h1>
+          <h1>"End of Login Details"</h1>
         </div>
         <div className="relative top-48">
           <Startups />
