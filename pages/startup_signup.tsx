@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Dropzone } from "../components/Dropzone";
 import StartupFormStruct, { FormQuestion } from "../components/StartupSignupFormStruct"
 
 const questionPages: FormQuestion[] = [];
@@ -64,7 +65,9 @@ questionPages.push(
        </div>
 		</div>
 )}, 
-{"pageId": 3, "question": "How do you want to look?", "pageFunction": null, "questionFormat": (<div></div>)}
+{"pageId": 3, "question": "How do you want to look?", "pageFunction": null, "questionFormat": (<div>
+  {/* <Dropzone /> */}
+</div>)}
 );
 
 interface FormInterface {
