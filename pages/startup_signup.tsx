@@ -66,7 +66,7 @@ questionPages.push(
 		</div>
 )}, 
 {"pageId": 3, "question": "How do you want to look?", "pageFunction": null, "questionFormat": (<div>
-  {/* <Dropzone /> */}
+  <Dropzone />
 </div>)}
 );
 

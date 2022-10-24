@@ -16,7 +16,7 @@ export function Dropzone() {
         }
     }
     return (
-        <form id="form-file-upload" onDragEnter={handleDrag}>
+        <form id="form-file-upload" onDragEnter={handleDrag} onSubmit={(e) => e.preventDefault()}>
         <input id="file-upload" type="file" multiple={true} />
         <label id="label-file-upload" htmlFor="input-file-upload">
             <div>
