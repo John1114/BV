@@ -96,6 +96,7 @@ export default function StartupSignup() {
       for (let [key, value] of Array.from(formData.entries())) {
         formObj[key] = value.toString()
       }
+      //TODO: Add userId as part of form data to be uploaded
 
       //TODO: handle submission and call API
    };
