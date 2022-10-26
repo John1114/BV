@@ -2,4 +2,4 @@ node_modules/
 .next
 *.icloud
 .DS_Store
-src/firebaseConfig.tsx
+util/firebaseConfig.tsx
