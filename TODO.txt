@@ -1,0 +1,18 @@
+FOR Thursday 10/27
+
+startup_signup
+- should we add userId as part of the startup signup form input?
+	* are we sure that those who access this form are invited?
+	* should we make sure they are logged in or have a user id for the website before the form?
+- route after form submission
+	* should I use nextjs router or just a new reload of page to index?
+- display results to user after successful submission?
+- what happens if submission doesn't go through?
+
+startupSignupApi
+- add interface for form data type input to check for required fields
+- if some optional fields are not filled, fill in default
+- IMPORTANT: At deployment, change writing rules!
+
+
+

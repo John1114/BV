@@ -1,6 +1,8 @@
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { Dropzone } from "../components/Dropzone";
 import StartupFormStruct, { FormQuestion } from "../components/StartupSignupFormStruct"
+import addStartupFromForm from "../src/startupSignupApi";
 
 const questionPages: FormQuestion[] = [];
 
@@ -78,6 +80,8 @@ interface FormInterface {
 
 export default function StartupSignup() {
 
+    const router = useRouter();
+
     // TODO: Add React useState for current pageId
     const [pageNumber, setPage] = useState<number>(0);
 
@@ -89,7 +93,7 @@ export default function StartupSignup() {
       }
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       let formData = new FormData(event.currentTarget)
       let formObj: FormInterface = {}
@@ -98,7 +102,13 @@ export default function StartupSignup() {
       }
       //TODO: Add userId as part of form data to be uploaded
 
-      //TODO: handle submission and call API
+      //TODO: test API
+      const res = await addStartupFromForm(formObj);
+
+      //TODO: perhaps display results to user?
+      console.log(res);
+      //TODO: route user to index page?
+      router.push("/");
    };
 
     return (

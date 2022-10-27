@@ -11,10 +11,12 @@ export const signInWithGoogle = () => {
       const name = result.user.displayName;
       const email = result.user.email;
       const profilePic = result.user.photoURL;
-
+      const userId = result.user.uid;
+      console.log(result.user);
       localStorage.setItem("name", name);
       localStorage.setItem("email", email);
       localStorage.setItem("profilePic", profilePic);
+      localStorage.setItem("userId", userId);
     })
     .catch((error) => {
       console.log(error);
