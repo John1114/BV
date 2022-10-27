@@ -25,25 +25,25 @@ import { useRouter } from "next/router";
 import { StaticImageData } from "next/image";
 
 interface companies {
-  id: number;
+  id: string;
   imageData: string;
   accentColor: string;
 }
 
 /* DUMMY DATA: remove this! it's just for show */
 let arr: companies[] = [];
-arr.push({"id": 0, "imageData": Casper.src, "accentColor": "0053A6"},
-{"id": 1, "imageData": Opensea.src, "accentColor": "2081E2"},
-{"id": 2, "imageData": Airbnb.src, "accentColor": "FF5A5F"},
-{"id": 3, "imageData": Warby.src, "accentColor": "DFDFDF"});
+arr.push({"id": "eG44NvYvCP145Q8RO2Pd", "imageData": Casper.src, "accentColor": "0053A6"},
+{"id": "ZfDNnkPrFXw7voMwpIYY", "imageData": Opensea.src, "accentColor": "2081E2"},
+{"id": "gZCT37XxMiBwXBukMRPU", "imageData": Airbnb.src, "accentColor": "FF5A5F"},
+{"id": "ZfDNnkPrFXw7voMwpIYY", "imageData": Warby.src, "accentColor": "DFDFDF"});
 
 export default function Startups() {
   const router = useRouter();
   const [startups, setStartups] = useState<any[]>([]);
-  const [openedModal, setOpenedModal] = useState(-1);
+  const [openedModal, setOpenedModal] = useState<string>("");
 
   function closeModal(){
-    setOpenedModal(-1);
+    setOpenedModal("");
   }
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export default function Startups() {
             <Dialog.Panel>
               <div className="border-0 rounded-lg overflow-hidden flex shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/* STARTUP INFO */}
-                <Startup />
+                <Startup startupId={startup.id}/>
               </div>
               </Dialog.Panel>
             </div>

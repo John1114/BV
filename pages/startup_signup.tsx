@@ -67,9 +67,9 @@ questionPages.push(
        </div>
 		</div>
 )}, 
-{"pageId": 3, "question": "How do you want to look?", "pageFunction": null, "questionFormat": (<div>
-  <Dropzone />
-</div>)}
+// {"pageId": 3, "question": "How do you want to look?", "pageFunction": null, "questionFormat": (<div>
+//   <Dropzone />
+// </div>)}
 );
 
 interface FormInterface {
