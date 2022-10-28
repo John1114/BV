@@ -1,5 +1,7 @@
 FOR Thursday 10/27
 
+- load firestore from firebaseConfig
+
 startup_signup
 - should we add userId as part of the startup signup form input?
 	* are we sure that those who access this form are invited?
