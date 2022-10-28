@@ -4,7 +4,7 @@ import { createRef, Dispatch, SetStateAction, useState } from "react";
 import ReactCrop, { Crop } from "react-image-crop";
 import { toast } from "react-toastify";
 import StartupFormStruct, { FormQuestion } from "../components/StartupSignupFormStruct"
-import addStartupFromForm from "../src/startupSignupApi";
+import addStartupFromForm from "../util/startupSignupApi";
 import styles from '../styles/Form.module.css'
 
 const questionPages: FormQuestion[] = [];
