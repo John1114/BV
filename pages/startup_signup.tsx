@@ -1,112 +1,599 @@
-import { useState } from "react";
-import { Dropzone } from "../components/Dropzone";
-import StartupFormStruct, { FormQuestion } from "../components/StartupSignupFormStruct"
+import Modal from "@mui/material/Modal";
+import { createRef, Dispatch, SetStateAction, useState } from "react";
+import ReactCrop, { Crop } from "react-image-crop";
+import { toast } from "react-toastify";
+import StartupFormStruct, {
+  FormQuestion,
+} from "../components/StartupSignupFormStruct";
+import styles from "../styles/Form.module.css";
 
 const questionPages: FormQuestion[] = [];
+interface VectorProps {
+  accentColor: string;
+}
+function FirstVector({ accentColor }: VectorProps) {
+  return (
+    <svg
+      className={`${styles.top_left_vector}  ${styles.noselect} ${styles.nodrag}`}
+      width="581"
+      z-index="-1"
+      height="760"
+      viewBox="0 0 581 760"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M194.796 -60.6554L501.485 287.537L-34.3108 759.468L-341 411.276L194.796 -60.6554Z"
+        fill={accentColor}
+      />
+      <path
+        d="M501.485 287.537C405.334 372.227 258.734 362.936 174.044 266.785C89.3542 170.635 98.645 24.0345 194.796 -60.6554C290.946 -145.345 437.546 -136.055 522.236 -39.904C606.926 56.2466 597.635 202.847 501.485 287.537Z"
+        fill={accentColor}
+      />
+    </svg>
+  );
+}
+
+function SecondVector({ accentColor }: VectorProps) {
+  return (
+    <svg
+      className={`${styles.bottom_right_vector}  ${styles.noselect} ${styles.nodrag}`}
+      width="636"
+      height="754"
+      viewBox="0 0 636 754"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M368.962 794.473L96.9548 418.563L675.402 -4.19617e-05L947.409 375.91L368.962 794.473Z"
+        fill={accentColor}
+      />
+      <path
+        d="M96.9548 418.563C200.759 343.45 345.801 366.71 420.913 470.514C496.026 574.319 472.767 719.36 368.962 794.473C265.158 869.585 120.116 846.326 45.0037 742.521C-30.1091 638.717 -6.84975 493.676 96.9548 418.563Z"
+        fill={accentColor}
+      />
+    </svg>
+  );
+}
 
 
-questionPages.push(
-  {"pageId": 0, "question": "What is your company's name?", "pageFunction": null,
-"questionFormat": (
-  	<div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center">
-      <input required className="shadow appearance-none border rounded w-full h-24 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-4xl text-center" id="companyName" name="companyName" type="text" placeholder="Company Name"/>
-		</div>
-)},
-{"pageId": 1, "question": "Tell us about your startup", "pageFunction": null,
-"questionFormat": (
-  	<div className="max-w-full pl-20 pr-20 mt-6 pt-10 justify-center items-center">
-      <div className="flex-col w-full">
-      <div className="flex justify-center items-center p-4">
-      <div className = "flex-col w-1/3 justify-center">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="yearFounded">
-          Year Founded
-        </label>
-        <input required className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm" id="yearFounded" name="yearFounded" type="number" placeholder="Year Founded" defaultValue={2022}/>
-      </div>
-      <div className = "flex-col w-1/3 justify-center">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="founders">
-          Founder(s)
-        </label>
-        <input required className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm" id="founders" name="founders" type="text" placeholder="Founder(s)" />
-      </div>
-      <div className = "flex-col w-1/3 justify-center">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="industry">
-          Industry
-        </label>
-        <input required className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm" id="industry" name="industry" type="text" placeholder="Select" />
-      </div>
-      </div>
-      <div className="flex justify-center p-4">
-      <div className = "flex-col w-full">
-      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
-        Description
-      </label>
-      <input required className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm" id="description" name="description" type="text" placeholder="Description" />
-      </div>
-      </div>
-      </div>
-		</div>
-)},
-{"pageId": 2, "question": "Where can we find you?", "pageFunction": null,
-"questionFormat": (
-  	<div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center columns-2">
-       <div className="flex-col">
-       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-        Email
-      </label>
-       <input required className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl" id="email" name="email" type="text" placeholder="Email" />
-       
-       </div>
-       <div className="flex-col">
-       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="website">
-        Website
-      </label>
-       <input required className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl" id="website" name="website" type="text" placeholder="Website" />
-       </div>
-		</div>
-)}, 
-{"pageId": 3, "question": "How do you want to look?", "pageFunction": null, "questionFormat": (<div>
-  <Dropzone />
-</div>)}
-);
+function addPages(setAccent: any) {
+  questionPages.push(
+    {
+      pageId: 0,
+      question: "What is your company's name?",
+      pageFunction: null,
+      questionFormat: (
+        <div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center">
+          <input
+            required
+            className="shadow appearance-none border rounded w-full h-24 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-4xl text-center"
+            id="companyName"
+            name="companyName"
+            type="text"
+            placeholder="Company Name"
+          />
+        </div>
+      ),
+    },
+    {
+      pageId: 1,
+      question: "Tell us about your startup",
+      pageFunction: null,
+      questionFormat: (
+        <div className="max-w-full pl-20 pr-20 mt-6 pt-10 justify-center items-center">
+          <div className="flex-col w-full">
+            <div className="flex justify-center items-center p-4">
+              <div className="flex-col w-1/3 justify-center">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="yearFounded"
+                >
+                  Year Founded
+                </label>
+                <input
+                  required
+                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  id="yearFounded"
+                  name="yearFounded"
+                  type="number"
+                  placeholder="Year Founded"
+                  defaultValue={2022}
+                />
+              </div>
+              <div className="flex-col w-1/3 justify-center">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="founders"
+                >
+                  Founder(s)
+                </label>
+                <input
+                  required
+                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  id="founders"
+                  name="founders"
+                  type="text"
+                  placeholder="Founder(s)"
+                />
+              </div>
+              <div className="flex-col w-1/3 justify-center">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="industry"
+                >
+                  Industry
+                </label>
+                <input
+                  required
+                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  id="industry"
+                  name="industry"
+                  type="text"
+                  placeholder="Select"
+                />
+              </div>
+            </div>
+            <div className="flex justify-center p-4">
+              <div className="flex-col w-full">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="description"
+                >
+                  Description
+                </label>
+                <input
+                  required
+                  className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  id="description"
+                  name="description"
+                  type="text"
+                  placeholder="Description"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      pageId: 2,
+      question: "Where can we find you?",
+      pageFunction: null,
+      questionFormat: (
+        <div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center columns-2">
+          <div className="flex-col">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
+              Email
+            </label>
+            <input
+              required
+              className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl"
+              id="email"
+              name="email"
+              type="text"
+              placeholder="Email"
+            />
+          </div>
+          <div className="flex-col">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="website"
+            >
+              Website
+            </label>
+            <input
+              required
+              className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl"
+              id="website"
+              name="website"
+              type="text"
+              placeholder="Website"
+            />
+          </div>
+        </div>
+      ),
+    },
+    {
+      pageId: 3,
+      question: "How do you want to look?",
+      pageFunction: null,
+      questionFormat: (
+        <div>
+          <LogoForm setAccentColor={setAccent} />
+        </div>
+      ),
+    },
+    {
+      pageId: 4,
+      question: "What are you looking for?",
+      pageFunction: null,
+      questionFormat: (
+        <div>
+          <form>
+            <label>Skills</label>
+            <select multiple={true}>
+              <option>Marketing</option>
+              <option>Javascript</option>
+              <option>Java</option>
+            </select>
+          </form>
+        </div>
+      ),
+    },
+  );
+}
 
 interface FormInterface {
-  [key: string]: string
+  [key: string]: string;
 }
 
 //TODO: nextPage function for last page should be different
 
 export default function StartupSignup() {
+  // TODO: Add React useState for current pageId
+  const [pageNumber, setPage] = useState<number>(0);
+  const [accentColor, setAccentColor] = useState<string>("#FF5A5F");
+  addPages(setAccentColor)
 
-    // TODO: Add React useState for current pageId
-    const [pageNumber, setPage] = useState<number>(0);
+  const toPage = async function (num: number) {
+    if (num > questionPages[questionPages.length - 1].pageId) {
+      document.forms[0].requestSubmit();
+    } else if (num >= 0) {
+      setPage(num);
+    }
+  };
 
-    const toPage = async function(num: number){
-      if (num > questionPages[questionPages.length - 1].pageId){
-        document.forms[0].requestSubmit()
-      }else if (num >= 0){
-        setPage(num)
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    let formData = new FormData(event.currentTarget);
+    let formObj: FormInterface = {};
+    for (let [key, value] of Array.from(formData.entries())) {
+      formObj[key] = value.toString();
+    }
+    //TODO: Add userId as part of form data to be uploaded
+
+    //TODO: handle submission and call API
+  };
+
+  return (
+    <div>
+      <FirstVector accentColor={accentColor} />
+      <SecondVector accentColor={accentColor} />
+      <form
+        id="startup_form"
+        onSubmit={handleSubmit}
+        method="post"
+        className="bg-form_background bg-[length:531px_631px] bg-no-repeat h-screen pt-40"
+      >
+        {questionPages.map((page: FormQuestion) => (
+          <div
+            key={page.pageId.toString()}
+            hidden={page.pageId != pageNumber}
+            className="h-full"
+          >
+            <StartupFormStruct
+              pageId={page.pageId}
+              question={page.question}
+              pageFunction={toPage}
+              questionFormat={page.questionFormat}
+            />
+          </div>
+        ))}
+      </form>
+    </div>
+  );
+}
+
+
+interface RGB {
+  r: number;
+  g: number;
+  b: number;
+}
+
+function hexToRgb(hex: string): RGB {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
       }
+    : {
+        r: 0,
+        g: 0,
+        b: 0,
+      };
+}
+
+function perceievedLuminance(color: RGB): number {
+  return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
+}
+
+
+type Application = {
+  name: string;
+  founders: string;
+  email: string;
+  website: string;
+  twitter: string;
+  facebook: string;
+  instagram: string;
+  linkedin: string;
+  mission: string;
+  year: string;
+  industry: string;
+  accentColor: string;
+  imageData: string;
+  approved: boolean;
+};
+
+const empty = {
+  name: "i",
+  founders: "i",
+  email: "i",
+  website: "i",
+  twitter: "i",
+  instagram: "i",
+  facebook: "i",
+  linkedin: "i",
+  mission: "i",
+  year: "i",
+  industry: "i",
+  accentColor: "i",
+  imageData: "i",
+  approved: false,
+};
+interface LogoFormProps {
+    setAccentColor: Dispatch<SetStateAction<string>>
+  }
+
+export function LogoForm({setAccentColor}: LogoFormProps) {
+  const [app, updateApp] = useState<Application>(empty);
+  const setProperty = (property: string, value: string) => {
+    updateApp({
+      ...app,
+      [property]: value,
+    });
+  };
+  const fileInputRef = createRef<HTMLInputElement>();
+  const colorInputRef = createRef<HTMLInputElement>();
+
+  const [image, setImage] = useState<string>("");
+  const [accentColor, setLocalAccentColor] = useState<string>("#FF5A5F");
+  const [_uploadedFile, setUploadedFile] = useState<File>();
+  const [cropped, setCropped] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleOpen = () => setModalOpen(true);
+  const handleClose = () => {
+    if (cropped) {
+      setModalOpen(false);
+    }
+  };
+
+  const [crop, setCrop] = useState<Crop>({
+    x: 0,
+    y: 0,
+    height: 0,
+    unit: "%",
+    width: 0,
+  });
+  const [imageElt, setImageElt] = useState<HTMLImageElement | undefined>(
+    undefined
+  );
+  const [croppedImageData, setCroppedImageData] = useState("");
+
+  // useEffect(() => {
+  //   if (isSubmitted) {
+  //     setLocalAccentColor("#FF5A5F");
+  //     setImage("");
+  //   }
+  // });
+
+  const getCroppedImage = (crop: Crop) => {
+    if (!imageElt) {
+      return;
+    }
+    const canvas = document.createElement("canvas");
+    const pixelRatio = window.devicePixelRatio;
+    const scaleX = imageElt.naturalWidth / imageElt.width;
+    const scaleY = imageElt.naturalHeight / imageElt.height;
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) {
+      return;
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      let formData = new FormData(event.currentTarget)
-      let formObj: FormInterface = {}
-      for (let [key, value] of Array.from(formData.entries())) {
-        formObj[key] = value.toString()
+    canvas.width = crop.width * pixelRatio * scaleX;
+    canvas.height = crop.height * pixelRatio * scaleY;
+
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    ctx.imageSmoothingQuality = "high";
+
+    ctx.drawImage(
+      imageElt,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width * scaleX,
+      crop.height * scaleY
+    );
+
+    setCroppedImageData(canvas.toDataURL("image/jpeg"));
+  };
+
+  const onLogoUploaded = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files[0]) {
+      return;
+    }
+    setUploadedFile(event.target.files[0]);
+
+    let reader = new FileReader();
+    reader.onload = (ev: ProgressEvent<FileReader>) => {
+      if (ev.target?.result != null) {
+        setImage(ev.target.result.toString());
+        setProperty("imageData", ev.target.result.toString());
       }
-      //TODO: Add userId as part of form data to be uploaded
+      handleOpen();
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  };
 
-      //TODO: handle submission and call API
-   };
+  const logoOnClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
-    return (
-      <form id="startup_form" onSubmit={handleSubmit} method="post" className="bg-form_background bg-[length:531px_631px] bg-no-repeat h-screen pt-40">
-      {questionPages.map((page: FormQuestion) => (
-        <div key={page.pageId.toString()} hidden={page.pageId != pageNumber} className="h-full">
-          <StartupFormStruct pageId={page.pageId} question={page.question} pageFunction={toPage} questionFormat={page.questionFormat}/>
+  const colorOnClick = () => {
+    if (colorInputRef.current) {
+      colorInputRef.current.click();
+    }
+  };
+
+  return (
+    <div className={styles.logo_form}>
+      <Modal open={modalOpen} onClose={handleClose}>
+        <div className={styles.upload_modal}>
+          <div className={styles.modal_box} onClick={() => setCropped(true)}>
+            <ReactCrop
+              src={image}
+              crop={crop}
+              ruleOfThirds
+              onImageLoaded={(newElt: any) => {
+                setCropped(false);
+                setCrop({
+                  x: 0,
+                  y: 0,
+                  height: 0,
+                  unit: "%",
+                  width: 0,
+                });
+                setImageElt(newElt);
+                if (newElt.parentElement) {
+                  let height = 50;
+                  let width = 50;
+                  if (newElt.naturalHeight > newElt.naturalWidth) {
+                    width = (newElt.naturalWidth / newElt.naturalHeight) * 50;
+                  } else {
+                    height = (newElt.naturalHeight / newElt.naturalWidth) * 50;
+                  }
+                  newElt.parentElement.style.height = height + "vh";
+                  newElt.parentElement.style.width = width + "vh";
+                }
+              }}
+              onComplete={getCroppedImage}
+              onChange={(newcrop) => setCrop(newcrop)}
+              imageStyle={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+              }}
+            />
+          </div>
+          <div>
+            <button
+              className={styles.button}
+              onClick={() => {
+                if (cropped) {
+                  setImage(croppedImageData);
+                  setProperty("imageData", croppedImageData);
+                  handleClose();
+                } else {
+                  toast.info(
+                    "Drag on the image or adjust an existing crop box to crop!",
+                    {
+                      autoClose: 5000,
+                      hideProgressBar: false,
+                      position: "top-center",
+                      closeOnClick: true,
+                      progress: undefined,
+                      draggable: true,
+                      pauseOnHover: true,
+                    }
+                  );
+                }
+              }}
+              style={{
+                background: "#FF5A5F",
+                color: "#FFFFFF",
+                fontFamily: "Inter",
+              }}
+            >
+              Crop Logo
+            </button>
+          </div>
         </div>
-      ))}
-      </form>)
+      </Modal>
+      <div className={styles.logo_selector} onClick={logoOnClick}>
+        <div
+          className="image_upload_text"
+          style={image == "" ? { marginBottom: "0.5rem" } : { display: "none" }}
+        >
+          {" "}
+          Upload your Logo
+        </div>
+        {image == "" ? (
+          <div>
+            <img
+              style={image == "" ? { opacity: "70%" } : { display: "none" }}
+              src="/upload_24px.png"
+            />
+          </div>
+        ) : (
+          <div>
+            <img
+              style={{ maxHeight: "9.5rem", maxWidth: "9.5rem" }}
+              src={image}
+            />
+          </div>
+        )}
+        <input
+          type="file"
+          style={{
+            opacity: 0.0,
+            position: "absolute",
+            top: 0,
+            left: -500000, // hide file input off screen to use my styled div
+          }}
+          ref={fileInputRef}
+          onChange={onLogoUploaded}
+        />
+      </div>
+      <div className={styles.color_selector} onClick={colorOnClick}>
+        <div>Select an Accent Color</div>
+        <div
+          className={styles.color_box}
+          style={{
+            backgroundColor: accentColor,
+          }}
+        />
+        <input
+          type="color"
+          style={{
+            opacity: 0,
+            cursor: "pointer",
+          }}
+          onChange={(event) => {
+            if (event.target?.value) {
+              setLocalAccentColor(event.target.value);
+              setAccentColor(event.target.value);
+              setProperty("accentColor", event.target.value);
+              console.log(event.target.value)
+            }
+          }}
+          ref={colorInputRef}
+        />
+      </div>
+    </div>
+  );
 }
+
