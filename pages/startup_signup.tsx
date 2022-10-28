@@ -1,11 +1,11 @@
 import Modal from "@mui/material/Modal";
+import { useRouter } from "next/router";
 import { createRef, Dispatch, SetStateAction, useState } from "react";
 import ReactCrop, { Crop } from "react-image-crop";
 import { toast } from "react-toastify";
-import StartupFormStruct, {
-  FormQuestion,
-} from "../components/StartupSignupFormStruct";
-import styles from "../styles/Form.module.css";
+import StartupFormStruct, { FormQuestion } from "../components/StartupSignupFormStruct"
+import addStartupFromForm from "../src/startupSignupApi";
+import styles from '../styles/Form.module.css'
 
 const questionPages: FormQuestion[] = [];
 interface VectorProps {
@@ -238,16 +238,17 @@ export default function StartupSignup() {
   const [pageNumber, setPage] = useState<number>(0);
   const [accentColor, setAccentColor] = useState<string>("#FF5A5F");
   addPages(setAccentColor)
+  const router = useRouter();
 
-  const toPage = async function (num: number) {
-    if (num > questionPages[questionPages.length - 1].pageId) {
-      document.forms[0].requestSubmit();
-    } else if (num >= 0) {
-      setPage(num);
+    const toPage = async function(num: number){
+      if (num > questionPages[questionPages.length - 1].pageId){
+        document.forms[0].requestSubmit()
+      }else if (num >= 0){
+        setPage(num)
+      }
     }
-  };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     let formData = new FormData(event.currentTarget);
     let formObj: FormInterface = {};
@@ -256,8 +257,14 @@ export default function StartupSignup() {
     }
     //TODO: Add userId as part of form data to be uploaded
 
-    //TODO: handle submission and call API
-  };
+      //TODO: test API
+      const res = await addStartupFromForm(formObj);
+
+      //TODO: perhaps display results to user?
+      console.log(res);
+      //TODO: route user to index page?
+      router.push("/");
+   };
 
   return (
     <div>
