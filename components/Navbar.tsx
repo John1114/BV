@@ -49,7 +49,7 @@ const Navbar = () => {
   }
 
   const checkIfRegistered = async (user: User | undefined) => {
-    const q = query(collection(firestore, "Users"), where("email", "==", user?.email));
+    const q = query(collection(firestore, "users"), where("email", "==", user?.email));
     const snapshot = await getDocs(q)
     if (snapshot.empty) {
       console.log("Need to register")

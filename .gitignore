@@ -2,4 +2,3 @@ node_modules/
 .next
 *.icloud
 .DS_Store
-util/firebaseConfig.tsx
