@@ -1,5 +1,4 @@
 import styles from "../styles/Home.module.css";
-import { signInWithGoogle } from "../src/firebaseFunctions";
 
 import SplashScreen from "../util/splashscreen";
 import { useState, useEffect } from "react";
@@ -45,9 +44,9 @@ export default function Home() {
         <div className="flex flex-col">
           <Navbar />
           <Hero tagLine={"Startups start here."} />
-          <button className="login-with-google-btn" onClick={signInWithGoogle}>
+          {/* <button className="login-with-google-btn" onClick={signInWithGoogle}>
             Sign in with Google
-          </button>
+          </button> */}
 
           <h1>"Login Details"</h1>
           <h1>{userName}</h1>
