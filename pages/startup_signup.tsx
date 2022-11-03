@@ -1,11 +1,12 @@
 import Modal from "@mui/material/Modal";
 import { useRouter } from "next/router";
-import { createRef, Dispatch, SetStateAction, useState } from "react";
+import { createRef, Dispatch, SetStateAction, useEffect, useState } from "react";
 import ReactCrop, { Crop } from "react-image-crop";
 import { toast } from "react-toastify";
 import StartupFormStruct, { FormQuestion } from "../components/StartupSignupFormStruct"
 import addStartupFromForm from "../util/startupSignupApi";
 import styles from '../styles/Form.module.css'
+import SplashScreen from "../util/splashscreen";
 
 const questionPages: FormQuestion[] = [];
 interface VectorProps {
@@ -231,43 +232,65 @@ interface FormInterface {
   [key: string]: string;
 }
 
-//TODO: nextPage function for last page should be different
-
 export default function StartupSignup() {
-  // TODO: Add React useState for current pageId
+  // Add React useState for current pageId
   const [pageNumber, setPage] = useState<number>(0);
   const [accentColor, setAccentColor] = useState<string>("#FF5A5F");
-  addPages(setAccentColor)
+  
   const router = useRouter();
 
-    const toPage = async function(num: number){
-      if (num > questionPages[questionPages.length - 1].pageId){
-        document.forms[0].requestSubmit()
-      }else if (num >= 0){
-        setPage(num)
-      }
+  const [loading, setLoading] = useState<boolean>(true);
+  const [fading, setFading] = useState<boolean>(false);
+  // Waits until the session is loaded before loading the page
+  // if (firebaseAuthState.isLoading) return null
+
+  useEffect(() => {
+    // Solve Hydration issue with useEffect
+    // https://github.com/vercel/next.js/discussions/17443
+    addPages(setAccentColor);
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0;
+    loading
+      ? (document.body.style.overflow = "hidden")
+      : (document.body.style.overflow = "visible");
+  }, [])
+
+  const StopLoading = () => {
+    setFading(true);
+    setTimeout(() => setLoading(false), 1000);
+  };
+
+  setTimeout(StopLoading, 2000);
+
+  const toPage = async function(num: number){
+    if (num > questionPages[questionPages.length - 1].pageId){
+      document.forms[0].requestSubmit()
+    }else if (num >= 0){
+      setPage(num)
     }
+  }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    let formData = new FormData(event.currentTarget);
-    let formObj: FormInterface = {};
-    for (let [key, value] of Array.from(formData.entries())) {
-      formObj[key] = value.toString();
-    }
-    //TODO: Add userId as part of form data to be uploaded
+const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  let formData = new FormData(event.currentTarget);
+  let formObj: FormInterface = {};
+  for (let [key, value] of Array.from(formData.entries())) {
+    formObj[key] = value.toString();
+  }
+  //TODO: Add userId as part of form data to be uploaded
 
-      //TODO: test API
-      const res = await addStartupFromForm(formObj);
+    //TODO: test API
+    const res = await addStartupFromForm(formObj);
 
-      //TODO: perhaps display results to user?
-      console.log(res);
-      //TODO: route user to index page?
-      router.push("/");
-   };
+    //TODO: perhaps display results to user?
+    console.log(res);
+    //TODO: route user to index page?
+    router.push("/");
+  };
 
   return (
     <div>
+      {loading && <SplashScreen fading={fading} />}
       <FirstVector accentColor={accentColor} />
       <SecondVector accentColor={accentColor} />
       <form
