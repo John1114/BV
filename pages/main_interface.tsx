@@ -5,7 +5,8 @@ import { StaticImageData } from 'next/image';
 import SearchComponent from '../components/SearchComponent';
 import { Transition } from "@headlessui/react";
 import { CompanyData } from "../components/StartupInfoWithFirebase";
-import { fakeCompany1 } from '../src/mockData';
+import { fakeCompany1, fakeCompany2 } from '../src/mockData';
+import { height, minHeight } from "@mui/system";
 
 
 export const interfaceBackgroundColor: string = '#EFEFEF'
@@ -84,54 +85,68 @@ export function CompanyCardList() {
     return (
         <div className="h-screen flex flex-col items-center align-middle pt-12 justify-start gap-y-12">
             <CompanyCard data={fakeCompany1}/>
+            <CompanyCard data={fakeCompany2}/>
         </div>
     );
 }
 
 export function CompanyCard({data} : {data : CompanyData}) {
     return (
-        <div style={{backgroundColor: data.accentColor}} 
-        className="h-32 w-96 rounded-md border-box">
+        <div style={{
+            backgroundColor: data.accentColor,
+            minHeight: '24rem',
+            maxHeight: '100%',
+
+                    }} 
+
+        className=" w-9/12 rounded-md border-box shadow-lg">
             {/* Top */}
-            <div>
-                <img src={data.imageData}/>
-                {/* Information */}
-                <div>
-                    <h2>
-                        {data.name}
-                    </h2>
-                    {/* Bottom part of upper area */}
-                    <div>
-                        <div>
-                            <b>Industry</b>
-                            <p>{data.industry}</p>
+            <div className="flex justify-center">
+                <div className="my-2 mx-4 h-1/2 max-h-fit w-11/12">
+                    <div className="flex justify-content items-center align-middle">
+                        <img src={data.imageData} className="left-0 inset-y-0 w-24 h-24"/>
+                        {/* Information */}
+                        <div className="mx-4">
+                            <h2 className="my-2 text-2xl">
+                                {data.name}
+                            </h2>
+                            {/* Bottom part of upper area */}
+                            <div className="grid-cols-3 gap-4 justify-content items-center flex content-between">
+                                <div>
+                                    <b>Industry</b>
+                                    <p>{data.industry}</p>
+                                </div>
+                                <div>
+                                    <b>Founders</b>
+                                    <p>{data.founders}</p>
+                                </div>
+                                <div>
+                                    <b>Contact</b>
+                                    <p>{data.email}</p>
+                                </div>
+                                <div>
+                                    <b>Website</b>
+                                    <p>{data.website}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <b>Founders</b>
-                            <p>{data.founders}</p>
-                        </div>
-                        <div>
-                            <b>Contact</b>
-                            <p>{data.email}</p>
-                        </div>
-                        <div>
-                            <b>Website</b>
-                            <p>{data.website}</p>
-                        </div>
+
                     </div>
                 </div>
-
             </div>
-            {/* Bottom */}
-            <div>
-                {/* Text area */}
-                <p>
-                    <b>
-                        Description:
-                    </b>
-                    {data.mission}
-                </p>
 
+            {/* Bottom */}
+            <div className="flex justify-center w-full h-full pb-10">
+                <div className="h-44 w-11/12 bg-white rounded-md">
+                    {/* Text area */}
+                    <p> 
+                        <b>
+                            Description:
+                        </b>
+                        {data.mission}
+                    </p>
+
+                </div>
             </div>
             
             

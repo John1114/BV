@@ -14,3 +14,16 @@ export const fakeCompany1 : CompanyData = {
     website: "fakecompany.com",
     identifier: "FC"
 }
+
+export const fakeCompany2 : CompanyData = {
+    accentColor: "#DD0000",
+    approved: true,
+    email: "reallyreallylongemailthatiswaytoolong@superfake.com",
+    founders: "Ricard Williams, Ricardo Williamos",
+    imageData: "./assets/brown.jpeg",
+    industry: "Fishing, Industry",
+    mission: "we will be the greatest fake company that there ever was alskjdfaskldjfaksldfjasldjfasdkfjasldfjsad",
+    name: "Fake Company Numero 2 (lonnggg)",
+    website: "fakestcompanythatisfakeandthisislong.com",
+    identifier: "FC"
+}
