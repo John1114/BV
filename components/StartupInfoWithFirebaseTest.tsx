@@ -5,8 +5,8 @@ import {
 	getFirestore,
 } from "firebase/firestore";
 import opensea from '../images/opensea_logo.png'
-import { app } from "../src/firebaseConfig";
 import { useEffect, useState } from "react";
+import { firestore } from "../util/firebaseConfig";
 
 interface StartupDataFormat {
 	companyName?: string;
@@ -41,8 +41,7 @@ export default function StartupInfo({startupId}: startupIdProp) {
 					setLoaded(true);
 				}
 		}
-		const db = getFirestore(app);
-		const docRef = doc(db, "startups", startupId);
+		const docRef = doc(firestore, "startups", startupId);
 		if (!loaded){
 			getDocAsync();
 		}
