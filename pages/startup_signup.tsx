@@ -1,11 +1,15 @@
 import Modal from "@mui/material/Modal";
 import { useRouter } from "next/router";
-import { createRef, Dispatch, SetStateAction, useState } from "react";
+import { createRef, Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import ReactCrop, { Crop } from "react-image-crop";
+import Select from "react-select";
 import { toast } from "react-toastify";
-import StartupFormStruct, { FormQuestion } from "../components/StartupSignupFormStruct"
+import StartupFormStruct, {
+  FormQuestion,
+} from "../components/StartupSignupFormStruct";
 import addStartupFromForm from "../src/startupSignupApi";
-import styles from '../styles/Form.module.css'
+import styles from "../styles/Form.module.css";
+import { skills } from "../util/skills";
 
 const questionPages: FormQuestion[] = [];
 interface VectorProps {
@@ -56,33 +60,27 @@ function SecondVector({ accentColor }: VectorProps) {
   );
 }
 
+const skill = skills;
 
 function addPages(setAccent: any) {
   questionPages.push(
     {
       pageId: 0,
-      question: "What is your company's name?",
-      pageFunction: null,
-      questionFormat: (
-        <div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center">
-          <input
-            required
-            className="shadow appearance-none border rounded w-full h-24 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-4xl text-center"
-            id="companyName"
-            name="companyName"
-            type="text"
-            placeholder="Company Name"
-          />
-        </div>
-      ),
-    },
-    {
-      pageId: 1,
       question: "Tell us about your startup",
       pageFunction: null,
       questionFormat: (
-        <div className="max-w-full pl-20 pr-20 mt-6 pt-10 justify-center items-center">
+        <div className="max-w-full pl-20 pr-20 mt-1 pt-10 justify-center items-center">
           <div className="flex-col w-full">
+            <div>
+              <input
+                required
+                className="shadow appearance-none border rounded w-full h-24 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-4xl text-center"
+                id="companyName"
+                name="companyName"
+                type="text"
+                placeholder="Company Name"
+              />
+            </div>
             <div className="flex justify-center items-center p-4">
               <div className="flex-col w-1/3 justify-center">
                 <label
@@ -157,7 +155,7 @@ function addPages(setAccent: any) {
       ),
     },
     {
-      pageId: 2,
+      pageId: 1,
       question: "Where can we find you?",
       pageFunction: null,
       questionFormat: (
@@ -198,7 +196,7 @@ function addPages(setAccent: any) {
       ),
     },
     {
-      pageId: 3,
+      pageId: 2,
       question: "How do you want to look?",
       pageFunction: null,
       questionFormat: (
@@ -208,22 +206,16 @@ function addPages(setAccent: any) {
       ),
     },
     {
-      pageId: 4,
+      pageId: 3,
       question: "What are you looking for?",
       pageFunction: null,
       questionFormat: (
         <div>
-          <form>
-            <label>Skills</label>
-            <select multiple={true}>
-              <option>Marketing</option>
-              <option>Javascript</option>
-              <option>Java</option>
-            </select>
-          </form>
+          <label>What skills do you need?</label>
+          <Select options={skill} isMulti key={"dropdown"}/>
         </div>
       ),
-    },
+    }
   );
 }
 
@@ -237,16 +229,16 @@ export default function StartupSignup() {
   // TODO: Add React useState for current pageId
   const [pageNumber, setPage] = useState<number>(0);
   const [accentColor, setAccentColor] = useState<string>("#FF5A5F");
-  addPages(setAccentColor)
+  addPages(setAccentColor);
   const router = useRouter();
 
-    const toPage = async function(num: number){
-      if (num > questionPages[questionPages.length - 1].pageId){
-        document.forms[0].requestSubmit()
-      }else if (num >= 0){
-        setPage(num)
-      }
+  const toPage = async function (num: number) {
+    if (num > questionPages[questionPages.length - 1].pageId) {
+      document.forms[0].requestSubmit();
+    } else if (num >= 0) {
+      setPage(num);
     }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -257,14 +249,14 @@ export default function StartupSignup() {
     }
     //TODO: Add userId as part of form data to be uploaded
 
-      //TODO: test API
-      const res = await addStartupFromForm(formObj);
+    //TODO: test API
+    const res = await addStartupFromForm(formObj);
 
-      //TODO: perhaps display results to user?
-      console.log(res);
-      //TODO: route user to index page?
-      router.push("/");
-   };
+    //TODO: perhaps display results to user?
+    console.log(res);
+    //TODO: route user to index page?
+    router.push("/");
+  };
 
   return (
     <div>
@@ -274,7 +266,7 @@ export default function StartupSignup() {
         id="startup_form"
         onSubmit={handleSubmit}
         method="post"
-        className="bg-form_background bg-[length:531px_631px] bg-no-repeat h-screen pt-40"
+        className="bg-[length:531px_631px] bg-no-repeat h-screen pt-40"
       >
         {questionPages.map((page: FormQuestion) => (
           <div
@@ -295,31 +287,6 @@ export default function StartupSignup() {
   );
 }
 
-
-interface RGB {
-  r: number;
-  g: number;
-  b: number;
-}
-
-function hexToRgb(hex: string): RGB {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : {
-        r: 0,
-        g: 0,
-        b: 0,
-      };
-}
-
-function perceievedLuminance(color: RGB): number {
-  return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
-}
 
 
 type Application = {
@@ -356,17 +323,11 @@ const empty = {
   approved: false,
 };
 interface LogoFormProps {
-    setAccentColor: Dispatch<SetStateAction<string>>
-  }
+  setAccentColor: Dispatch<SetStateAction<string>>;
+}
 
-export function LogoForm({setAccentColor}: LogoFormProps) {
+export function LogoForm({ setAccentColor }: LogoFormProps) {
   const [app, updateApp] = useState<Application>(empty);
-  const setProperty = (property: string, value: string) => {
-    updateApp({
-      ...app,
-      [property]: value,
-    });
-  };
   const fileInputRef = createRef<HTMLInputElement>();
   const colorInputRef = createRef<HTMLInputElement>();
 
@@ -390,29 +351,25 @@ export function LogoForm({setAccentColor}: LogoFormProps) {
     unit: "%",
     width: 0,
   });
-  const [imageElt, setImageElt] = useState<HTMLImageElement | undefined>(
-    undefined
-  );
+  // const [imageElt, setImageElt] = useState<HTMLImageElement | undefined>(
+  //   undefined
+  // );
   const [croppedImageData, setCroppedImageData] = useState("");
-
-  // useEffect(() => {
-  //   if (isSubmitted) {
-  //     setLocalAccentColor("#FF5A5F");
-  //     setImage("");
-  //   }
-  // });
+  const imageElt = useRef<HTMLImageElement>(null)
 
   const getCroppedImage = (crop: Crop) => {
-    if (!imageElt) {
+    if (!imageElt.current) {
+      console.log("NO IMAGE")
       return;
     }
     const canvas = document.createElement("canvas");
     const pixelRatio = window.devicePixelRatio;
-    const scaleX = imageElt.naturalWidth / imageElt.width;
-    const scaleY = imageElt.naturalHeight / imageElt.height;
+    const scaleX = imageElt.current.naturalWidth / imageElt.current.width;
+    const scaleY = imageElt.current.naturalHeight / imageElt.current.height;
     const ctx = canvas.getContext("2d");
 
     if (!ctx) {
+      console.log("NO CTX")
       return;
     }
 
@@ -423,7 +380,7 @@ export function LogoForm({setAccentColor}: LogoFormProps) {
     ctx.imageSmoothingQuality = "high";
 
     ctx.drawImage(
-      imageElt,
+      imageElt.current,
       crop.x * scaleX,
       crop.y * scaleY,
       crop.width * scaleX,
@@ -447,7 +404,6 @@ export function LogoForm({setAccentColor}: LogoFormProps) {
     reader.onload = (ev: ProgressEvent<FileReader>) => {
       if (ev.target?.result != null) {
         setImage(ev.target.result.toString());
-        setProperty("imageData", ev.target.result.toString());
       }
       handleOpen();
     };
@@ -472,47 +428,21 @@ export function LogoForm({setAccentColor}: LogoFormProps) {
         <div className={styles.upload_modal}>
           <div className={styles.modal_box} onClick={() => setCropped(true)}>
             <ReactCrop
-              src={image}
               crop={crop}
               ruleOfThirds
-              onImageLoaded={(newElt: any) => {
-                setCropped(false);
-                setCrop({
-                  x: 0,
-                  y: 0,
-                  height: 0,
-                  unit: "%",
-                  width: 0,
-                });
-                setImageElt(newElt);
-                if (newElt.parentElement) {
-                  let height = 50;
-                  let width = 50;
-                  if (newElt.naturalHeight > newElt.naturalWidth) {
-                    width = (newElt.naturalWidth / newElt.naturalHeight) * 50;
-                  } else {
-                    height = (newElt.naturalHeight / newElt.naturalWidth) * 50;
-                  }
-                  newElt.parentElement.style.height = height + "vh";
-                  newElt.parentElement.style.width = width + "vh";
-                }
-              }}
               onComplete={getCroppedImage}
               onChange={(newcrop) => setCrop(newcrop)}
-              imageStyle={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-              }}
-            />
+            > 
+            <img src={image} ref={imageElt}/>
+            </ReactCrop>
           </div>
           <div>
             <button
               className={styles.button}
               onClick={() => {
+                setCropped(true)
                 if (cropped) {
                   setImage(croppedImageData);
-                  setProperty("imageData", croppedImageData);
                   handleClose();
                 } else {
                   toast.info(
@@ -591,10 +521,8 @@ export function LogoForm({setAccentColor}: LogoFormProps) {
           }}
           onChange={(event) => {
             if (event.target?.value) {
-              setLocalAccentColor(event.target.value);
               setAccentColor(event.target.value);
-              setProperty("accentColor", event.target.value);
-              console.log(event.target.value)
+              setLocalAccentColor(event.target.value)
             }
           }}
           ref={colorInputRef}
@@ -603,4 +531,3 @@ export function LogoForm({setAccentColor}: LogoFormProps) {
     </div>
   );
 }
-
