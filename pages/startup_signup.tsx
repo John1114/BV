@@ -20,6 +20,8 @@ import { skills } from "../util/skills";
 import SplashScreen from "../util/splashscreen";
 import ReactImageUploading, { ImageListType } from "react-images-uploading";
 import { useForm } from "react-hook-form";
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../util/firebaseConfig";
 
 const questionPages: FormQuestion[] = [];
 interface VectorProps {
@@ -280,6 +282,9 @@ export default function StartupSignup() {
     // Add skills to form obj
     data["skills"] = selectedSkills.join(",");
 
+    //TODO: check if there is image uploaded, if there is, get and upload file
+    // https://firebase.google.com/docs/storage/web/upload-files#upload_from_a_blob_or_file
+
     console.log(data);
 
     // upload data with API
@@ -482,6 +487,7 @@ export function LogoForm({ setAccentColor }: LogoFormProps) {
             // write your building UI
             <div>
               <button
+              type="button"
                 onClick={onImageUpload}
                 className="outline-offset-2 outline-1 outline-dashed"
               >
@@ -491,7 +497,7 @@ export function LogoForm({ setAccentColor }: LogoFormProps) {
                 <div key={index} className="flex-col items-center mt-5 pt-2">
                   <img src={image.dataURL} alt="" width="100" />
                   <div className="flex-col items-center col-span-1">
-                    <button onClick={() => onImageRemove(index)}>Remove</button>
+                    <button type="button" onClick={() => onImageRemove(index)}>Remove</button>
                   </div>
                 </div>
               ))}
