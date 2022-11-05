@@ -7,10 +7,11 @@ import { toast } from "react-toastify";
 import StartupFormStruct, {
   FormQuestion,
 } from "../components/StartupSignupFormStruct";
-import addStartupFromForm from "../src/startupSignupApi";
+// import addStartupFromForm from "../src/startupSignupApi";
 import styles from "../styles/Form.module.css";
 import { skills } from "../util/skills";
 import SplashScreen from "../util/splashscreen";
+import addStartupFromForm from "../util/startupSignupApi";
 
 const questionPages: FormQuestion[] = [];
 interface VectorProps {
