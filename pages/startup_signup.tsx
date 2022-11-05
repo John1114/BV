@@ -478,7 +478,7 @@ export function LogoForm({ setAccentColor }: LogoFormProps) {
             onImageUpload,
             onImageUpdate,
             onImageRemove,
-          }) => (
+          }: any) => (
             // write your building UI
             <div>
               <button
@@ -487,7 +487,7 @@ export function LogoForm({ setAccentColor }: LogoFormProps) {
               >
                 Click or Drop here
               </button>
-              {imageList.map((image, index) => (
+              {imageList.map((image: any, index: any) => (
                 <div key={index} className="flex-col items-center mt-5 pt-2">
                   <img src={image.dataURL} alt="" width="100" />
                   <div className="flex-col items-center col-span-1">
