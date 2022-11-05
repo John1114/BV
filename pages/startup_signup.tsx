@@ -19,6 +19,7 @@ import styles from "../styles/Form.module.css";
 import { skills } from "../util/skills";
 import SplashScreen from "../util/splashscreen";
 import ReactImageUploading, { ImageListType } from "react-images-uploading";
+import { useForm } from "react-hook-form";
 
 const questionPages: FormQuestion[] = [];
 interface VectorProps {
@@ -71,23 +72,24 @@ function SecondVector({ accentColor }: VectorProps) {
 
 const skill = skills;
 
-function addPages(setAccent: any) {
+function addPages(setAccent: any, setSkills: any, registerFunction: any) {
   questionPages.push(
     {
       pageId: 0,
       question: "Tell us about your startup",
+      triggerFunction: null,
+      requiredNames: ["companyName", "yearFounded", "founders", "industry", "description"],
       pageFunction: null,
       questionFormat: (
         <div className="max-w-full pl-20 pr-20 mt-1 pt-10 justify-center items-center">
           <div className="flex-col w-full">
             <div>
               <input
-                required
                 className="shadow appearance-none border rounded w-full h-24 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-4xl text-center"
                 id="companyName"
-                name="companyName"
                 type="text"
                 placeholder="Company Name"
+                {...registerFunction("companyName", {required: true})}
               />
             </div>
             <div className="flex justify-center items-center p-4">
@@ -102,10 +104,10 @@ function addPages(setAccent: any) {
                   required
                   className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
                   id="yearFounded"
-                  name="yearFounded"
                   type="number"
                   placeholder="Year Founded"
                   defaultValue={2022}
+                  {...registerFunction("yearFounded", {required: true})}
                 />
               </div>
               <div className="flex-col w-1/3 justify-center">
@@ -119,9 +121,9 @@ function addPages(setAccent: any) {
                   required
                   className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
                   id="founders"
-                  name="founders"
                   type="text"
                   placeholder="Founder(s)"
+                  {...registerFunction("founders", {required: true})}
                 />
               </div>
               <div className="flex-col w-1/3 justify-center">
@@ -132,12 +134,11 @@ function addPages(setAccent: any) {
                   Industry
                 </label>
                 <input
-                  required
                   className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
                   id="industry"
-                  name="industry"
                   type="text"
                   placeholder="Select"
+                  {...registerFunction("industry", {required: true})}
                 />
               </div>
             </div>
@@ -150,11 +151,10 @@ function addPages(setAccent: any) {
                   Description
                 </label>
                 <textarea
-                  required
                   className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm h-24 align-text-top"
                   id="description"
-                  name="description"
                   placeholder="Description"
+                  {...registerFunction("description", {required: true})}
                 />
               </div>
             </div>
@@ -165,6 +165,8 @@ function addPages(setAccent: any) {
     {
       pageId: 1,
       question: "Where can we find you?",
+      triggerFunction: null,
+      requiredNames: ["email", "website"],
       pageFunction: null,
       questionFormat: (
         <div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center columns-2">
@@ -176,12 +178,11 @@ function addPages(setAccent: any) {
               Email
             </label>
             <input
-              required
               className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl"
               id="email"
-              name="email"
               type="text"
               placeholder="Email"
+              {...registerFunction("email", {required: true, pattern: /^\S+@\S+$/i})}
             />
           </div>
           <div className="flex-col">
@@ -192,12 +193,11 @@ function addPages(setAccent: any) {
               Website
             </label>
             <input
-              required
               className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl"
               id="website"
-              name="website"
               type="text"
               placeholder="Website"
+              {...registerFunction("website", {required: true})}
             />
           </div>
         </div>
@@ -206,6 +206,8 @@ function addPages(setAccent: any) {
     {
       pageId: 2,
       question: "How do you want to look?",
+      triggerFunction: null,
+      requiredNames: [],
       pageFunction: null,
       questionFormat: (
         <div>
@@ -216,11 +218,14 @@ function addPages(setAccent: any) {
     {
       pageId: 3,
       question: "What are you looking for?",
+      triggerFunction: null,
+      requiredNames: [],
       pageFunction: null,
       questionFormat: (
         <div className="shadow appearance-none rounded ml-20 mr-20">
           <label className="h-30">What skills do you need?</label>
-          <Select options={skill} isMulti key={"dropdown"} />
+          <Select options={skill} isMulti key={"dropdown"}
+          onChange={(value, _) => {setSkills(value.map((item) => {return item.value}))}}/>
         </div>
       ),
     }
@@ -235,7 +240,9 @@ export default function StartupSignup() {
   // Add React useState for current pageId
   const [pageNumber, setPage] = useState<number>(0);
   const [accentColor, setAccentColor] = useState<string>("#FF5A5F");
-
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const { register, handleSubmit, trigger, formState: { errors } } = useForm();
+  
   const router = useRouter();
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -246,7 +253,7 @@ export default function StartupSignup() {
   useEffect(() => {
     // Solve Hydration issue with useEffect
     // https://github.com/vercel/next.js/discussions/17443
-    addPages(setAccentColor);
+    addPages(setAccentColor, setSelectedSkills, register);
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0;
     loading
@@ -269,23 +276,19 @@ export default function StartupSignup() {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    let formData = new FormData(event.currentTarget);
-    let formObj: FormInterface = {};
-    for (let [key, value] of Array.from(formData.entries())) {
-      formObj[key] = value.toString();
-    }
-    //TODO: Add userId as part of form data to be uploaded
+  const onSubmit = async (data: any) => {
+    // Add skills to form obj
+    data["skills"] = selectedSkills.join(",");
 
-    //TODO: test API
-    const res = await addStartupFromForm(formObj);
+    console.log(data);
 
-    //TODO: perhaps display results to user?
+    // upload data with API
+    const res = await addStartupFromForm(data);
+
     console.log(res);
-    //TODO: route user to index page?
+
     router.push("/");
-  };
+  }
 
   return (
     <div>
@@ -294,8 +297,7 @@ export default function StartupSignup() {
       <SecondVector accentColor={accentColor} />
       <form
         id="startup_form"
-        onSubmit={handleSubmit}
-        method="post"
+        onSubmit={handleSubmit(onSubmit)}
         className="bg-[length:531px_631px] bg-no-repeat h-screen pt-40"
       >
         {questionPages.map((page: FormQuestion) => (
@@ -308,6 +310,8 @@ export default function StartupSignup() {
               pageId={page.pageId}
               question={page.question}
               pageFunction={toPage}
+              triggerFunction={trigger}
+              requiredNames={page.requiredNames}
               questionFormat={page.questionFormat}
             />
           </div>
