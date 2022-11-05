@@ -1,6 +1,13 @@
 import Modal from "@mui/material/Modal";
 import { useRouter } from "next/router";
-import { createRef, Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import {
+  createRef,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import ReactCrop, { Crop } from "react-image-crop";
 import Select from "react-select";
 import { toast } from "react-toastify";
@@ -11,6 +18,7 @@ import addStartupFromForm from "../util/startupSignupApi";
 import styles from "../styles/Form.module.css";
 import { skills } from "../util/skills";
 import SplashScreen from "../util/splashscreen";
+import ReactImageUploading, { ImageListType } from "react-images-uploading";
 
 const questionPages: FormQuestion[] = [];
 interface VectorProps {
@@ -141,12 +149,11 @@ function addPages(setAccent: any) {
                 >
                   Description
                 </label>
-                <input
+                <textarea
                   required
-                  className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm h-24 align-text-top"
                   id="description"
                   name="description"
-                  type="text"
                   placeholder="Description"
                 />
               </div>
@@ -211,9 +218,9 @@ function addPages(setAccent: any) {
       question: "What are you looking for?",
       pageFunction: null,
       questionFormat: (
-        <div>
-          <label>What skills do you need?</label>
-          <Select options={skill} isMulti key={"dropdown"}/>
+        <div className="shadow appearance-none rounded ml-20 mr-20">
+          <label className="h-30">What skills do you need?</label>
+          <Select options={skill} isMulti key={"dropdown"} />
         </div>
       ),
     }
@@ -228,7 +235,7 @@ export default function StartupSignup() {
   // Add React useState for current pageId
   const [pageNumber, setPage] = useState<number>(0);
   const [accentColor, setAccentColor] = useState<string>("#FF5A5F");
-  
+
   const router = useRouter();
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -245,31 +252,31 @@ export default function StartupSignup() {
     loading
       ? (document.body.style.overflow = "hidden")
       : (document.body.style.overflow = "visible");
-  }, [])
+  }, []);
 
   const StopLoading = () => {
     setFading(true);
     setTimeout(() => setLoading(false), 1000);
   };
 
-  setTimeout(StopLoading, 2000);
+  setTimeout(StopLoading, 200);
 
-  const toPage = async function(num: number){
-    if (num > questionPages[questionPages.length - 1].pageId){
-      document.forms[0].requestSubmit()
-    }else if (num >= 0){
-      setPage(num)
+  const toPage = async function (num: number) {
+    if (num > questionPages[questionPages.length - 1].pageId) {
+      document.forms[0].requestSubmit();
+    } else if (num >= 0) {
+      setPage(num);
     }
-  }
+  };
 
-const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  let formData = new FormData(event.currentTarget);
-  let formObj: FormInterface = {};
-  for (let [key, value] of Array.from(formData.entries())) {
-    formObj[key] = value.toString();
-  }
-  //TODO: Add userId as part of form data to be uploaded
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    let formData = new FormData(event.currentTarget);
+    let formObj: FormInterface = {};
+    for (let [key, value] of Array.from(formData.entries())) {
+      formObj[key] = value.toString();
+    }
+    //TODO: Add userId as part of form data to be uploaded
 
     //TODO: test API
     const res = await addStartupFromForm(formObj);
@@ -309,8 +316,6 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     </div>
   );
 }
-
-
 
 type Application = {
   name: string;
@@ -374,15 +379,16 @@ export function LogoForm({ setAccentColor }: LogoFormProps) {
     unit: "%",
     width: 0,
   });
+  useEffect(() => setCropped(true), [crop]);
   // const [imageElt, setImageElt] = useState<HTMLImageElement | undefined>(
   //   undefined
   // );
   const [croppedImageData, setCroppedImageData] = useState("");
-  const imageElt = useRef<HTMLImageElement>(null)
+  const imageElt = useRef<HTMLImageElement>(null);
 
   const getCroppedImage = (crop: Crop) => {
     if (!imageElt.current) {
-      console.log("NO IMAGE")
+      console.log("NO IMAGE");
       return;
     }
     const canvas = document.createElement("canvas");
@@ -392,7 +398,7 @@ export function LogoForm({ setAccentColor }: LogoFormProps) {
     const ctx = canvas.getContext("2d");
 
     if (!ctx) {
-      console.log("NO CTX")
+      console.log("NO CTX");
       return;
     }
 
@@ -445,88 +451,49 @@ export function LogoForm({ setAccentColor }: LogoFormProps) {
     }
   };
 
+  const [images, setImages] = useState([]);
+  const onChange = (
+    imageList: ImageListType,
+    addUpdateIndex: number[] | undefined
+  ) => {
+    // data for submit
+    console.log(imageList, addUpdateIndex);
+    setImages(imageList as never[]);
+  };
+
   return (
-    <div className={styles.logo_form}>
-      <Modal open={modalOpen} onClose={handleClose}>
-        <div className={styles.upload_modal}>
-          <div className={styles.modal_box} onClick={() => setCropped(true)}>
-            <ReactCrop
-              crop={crop}
-              ruleOfThirds
-              onComplete={getCroppedImage}
-              onChange={(newcrop) => setCrop(newcrop)}
-            > 
-            <img src={image} ref={imageElt}/>
-            </ReactCrop>
-          </div>
-          <div>
-            <button
-              className={styles.button}
-              onClick={() => {
-                setCropped(true)
-                if (cropped) {
-                  setImage(croppedImageData);
-                  handleClose();
-                } else {
-                  toast.info(
-                    "Drag on the image or adjust an existing crop box to crop!",
-                    {
-                      autoClose: 5000,
-                      hideProgressBar: false,
-                      position: "top-center",
-                      closeOnClick: true,
-                      progress: undefined,
-                      draggable: true,
-                      pauseOnHover: true,
-                    }
-                  );
-                }
-              }}
-              style={{
-                background: "#FF5A5F",
-                color: "#FFFFFF",
-                fontFamily: "Inter",
-              }}
-            >
-              Crop Logo
-            </button>
-          </div>
-        </div>
-      </Modal>
-      <div className={styles.logo_selector} onClick={logoOnClick}>
-        <div
-          className="image_upload_text"
-          style={image == "" ? { marginBottom: "0.5rem" } : { display: "none" }}
+    <div className="flex-col items-center">
+      <div>
+        <ReactImageUploading
+          value={images}
+          multiple={false}
+          onChange={onChange}
         >
-          {" "}
-          Upload your Logo
-        </div>
-        {image == "" ? (
-          <div>
-            <img
-              style={image == "" ? { opacity: "70%" } : { display: "none" }}
-              src="/upload_24px.png"
-            />
-          </div>
-        ) : (
-          <div>
-            <img
-              style={{ maxHeight: "9.5rem", maxWidth: "9.5rem" }}
-              src={image}
-            />
-          </div>
-        )}
-        <input
-          type="file"
-          style={{
-            opacity: 0.0,
-            position: "absolute",
-            top: 0,
-            left: -500000, // hide file input off screen to use my styled div
-          }}
-          ref={fileInputRef}
-          onChange={onLogoUploaded}
-        />
+          {({
+            imageList,
+            onImageUpload,
+            onImageUpdate,
+            onImageRemove,
+          }) => (
+            // write your building UI
+            <div>
+              <button
+                onClick={onImageUpload}
+                className="outline-offset-2 outline-1 outline-dashed"
+              >
+                Click or Drop here
+              </button>
+              {imageList.map((image, index) => (
+                <div key={index} className="flex-col items-center mt-5 pt-2">
+                  <img src={image.dataURL} alt="" width="100" />
+                  <div className="flex-col items-center col-span-1">
+                    <button onClick={() => onImageRemove(index)}>Remove</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </ReactImageUploading>
       </div>
       <div className={styles.color_selector} onClick={colorOnClick}>
         <div>Select an Accent Color</div>
@@ -545,7 +512,7 @@ export function LogoForm({ setAccentColor }: LogoFormProps) {
           onChange={(event) => {
             if (event.target?.value) {
               setAccentColor(event.target.value);
-              setLocalAccentColor(event.target.value)
+              setLocalAccentColor(event.target.value);
             }
           }}
           ref={colorInputRef}
