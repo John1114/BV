@@ -9,8 +9,10 @@ import { useRouter } from "next/router";
 
 /*
 TODO:
+* ASK IF I CAN MOVE checkIfRegistered FUNCTION to a more accessible API place
 - allow change image profile picture
 - load in original data for users
+- test API with authenticated and unauthenticated user
 */
 
 export default function editProfile() {
@@ -31,16 +33,18 @@ export default function editProfile() {
     if (user === undefined){
       router.push("/");
     }else{
+      // check if user is registered
+
       const cleanedData = removeEmptyFields(data);
       console.log(cleanedData);
 
       // update user with API
+      // TODO: Test API
       await updateUserProfile(user.id, data);
   
       //router.push("/");
     }
   }
-
 
 	return (
 		<div id="wrapper" className="h-screen">
