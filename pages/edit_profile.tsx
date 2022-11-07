@@ -1,10 +1,11 @@
 import { Header } from "./main_interface";
 import bear from '../assets/thanks-bear.png';
 import { useForm } from "react-hook-form";
-import updateUserProfile from "../util/userProfileUpdateApi";
+import updateUserProfile, { checkIfRegistered } from "../util/userProfileUpdateApi";
 import { AuthState, useAuth } from "../util/firebaseFunctions";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { DocumentData, QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
 
 
 /*
@@ -17,6 +18,7 @@ TODO:
 
 export default function editProfile() {
   const { register, handleSubmit } = useForm();
+  const { register: registerResume, handleSubmit: handleSubmitResume } = useForm();
   const router = useRouter();
   const { user } = useAuth();
 
@@ -29,20 +31,34 @@ export default function editProfile() {
     return data;
   }
 
+  const submitAllForms = async () => {
+    // Maybe TODO
+  }
+
+  const onResumeSubmit = async (data: any) => {
+    // TODO
+    console.log(data);
+  }
+
   const onSubmit = async (data: any) => {
     if (user === undefined){
       router.push("/");
     }else{
+      
       // check if user is registered
+      const userSnapshot: QueryDocumentSnapshot<DocumentData> | null = await checkIfRegistered(user);
 
-      const cleanedData = removeEmptyFields(data);
-      console.log(cleanedData);
-
-      // update user with API
-      // TODO: Test API
-      await updateUserProfile(user.id, data);
+      if (userSnapshot === null){
+        // TODO: link path to register page
+        router.push("/")
+      }else{
+        const cleanedData = removeEmptyFields(data);
+        console.log(cleanedData);
   
-      //router.push("/");
+        // update user with API
+        // TODO: Test API
+        await updateUserProfile(userSnapshot, data);
+      }
     }
   }
 
@@ -77,27 +93,145 @@ export default function editProfile() {
             <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-4">
               <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                 <h6 className="fw-bold m-0" style={{ color: "#FF5A5F" }}>
-                  Following
-                </h6>
-              </div>
-              <div className="flex-auto p-6" />
-            </div>
-            <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-4">
-              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
-                <h6 className="fw-bold m-0" style={{ color: "#FF5A5F" }}>
-                  Skills
-                </h6>
-              </div>
-              <div className="flex-auto p-6" />
-            </div>
-            <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-4">
-              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
-                <h6 className="fw-bold m-0" style={{ color: "#FF5A5F" }}>
-                  Short Bio
+                  Resume
                 </h6>
               </div>
               <div className="flex-auto p-6">
-                <textarea style={{ height: 84 }} defaultValue={""} />
+                <form
+                onSubmit={handleSubmitResume(onResumeSubmit)}>
+                <div className="flex flex-wrap ">
+                    <div className="relative flex-grow max-w-full flex-1 px-4">
+                <div className="mb-3">
+                  <input type="file" {...registerResume("resume")}/>
+                </div>
+                <div className="mb-3">
+                    <button
+                      className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
+                      type="submit"
+                      style={{ background: "#FF5A5F" }}
+                    >
+                      Save Settings
+                    </button>
+                    </div>
+                    </div>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-4">
+              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
+                <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
+                  Affiliations
+                </p>
+              </div>
+              <div className="flex-auto p-6">
+                <form
+                onSubmit={handleSubmit(onSubmit)}>
+                  <div className="flex flex-wrap ">
+                    <div className="relative flex-grow max-w-full flex-1 px-4">
+                      <div className="mb-3">
+                        <label className="form-label" htmlFor="startup">
+                          <strong>Startup</strong>
+                          <br />
+                        </label>
+                        <input
+                          id="startup"
+                          className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                          type="text"
+                          placeholder="Select..."
+                          {...register("startup")}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label" htmlFor="affiliation">
+                          <strong>Brown University Affiliation</strong>
+                          <br />
+                        </label>
+                        <input
+                          id="affiliation"
+                          className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                          type="text"
+                          placeholder="Select..."
+                          {...register("affiliation")}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <button
+                      className="inline-block ml-4 align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
+                      type="submit"
+                      style={{ background: "#FF5A5F" }}
+                    >
+                      Save&nbsp;Settings
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow">
+              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
+                <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
+                  Websites
+                </p>
+              </div>
+              <div className="flex-auto p-6">
+                <form
+                onSubmit={handleSubmit(onSubmit)}>
+                  <div className="flex flex-wrap ">
+                    <div className="relative flex-grow max-w-full flex-1 px-4">
+                      <div className="mb-3">
+                        <label className="form-label" htmlFor="address">
+                          <strong>LinkedIn</strong>
+                          <br />
+                        </label>
+                        <input
+                          id="linkedin"
+                          className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                          type="url"
+                          placeholder="LinkedIn"
+                          {...register("linkedin")}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label" htmlFor="address">
+                          <strong>Company Website</strong>
+                          <br />
+                        </label>
+                        <input
+                          id="company_website"
+                          className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                          type="url"
+                          placeholder="Company Website"
+                          {...register("company_website")}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label" htmlFor="address">
+                          <strong>Other Websites</strong>
+                          <br />
+                        </label>
+                        <input
+                          id="other_website"
+                          className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                          type="url"
+                          placeholder="Other (Github, Portfolio, etc.)"
+                          {...register("other_website")}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <button
+                      className="inline-block ml-4 align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
+                      type="submit"
+                      style={{ background: "#FF5A5F" }}
+                    >
+                      Save&nbsp;Settings
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
@@ -111,7 +245,8 @@ export default function editProfile() {
                     </p>
                   </div>
                   <div className="flex-auto p-6">
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form
+                    onSubmit={handleSubmit(onSubmit)}>
                       <div className="flex flex-wrap ">
                         <div className="relative flex-grow max-w-full flex-1 px-4">
                           <div className="mb-3">
@@ -145,67 +280,37 @@ export default function editProfile() {
                       <div className="flex flex-wrap ">
                         <div className="relative flex-grow max-w-full flex-1 px-4">
                           <div className="mb-3">
-                            <label className="form-label" htmlFor="concentration">
-                              <strong>Concentration</strong>
+                            <label className="form-label" htmlFor="email">
+                              <strong>Email</strong>
                             </label>
                             <input
-                              id="concentration"
+                              id="email"
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="text"
-                              placeholder="Computer Science"
-                              {...register("concentration")}
+                              placeholder="abc@brown.edu"
+                              {...register("email")}
                             />
                           </div>
                         </div>
                         <div className="relative flex-grow max-w-full flex-1 px-4">
                           <div className="mb-3">
-                            <label className="form-label" htmlFor="class_year">
-                              <strong>Class Year</strong>
-                            </label>
-                            <input
-                              id="class_year"
-                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
-                              type="number"
-                              placeholder={"2022"}
-                              {...register("class_year")}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap ">
-                        <div className="relative flex-grow max-w-full flex-1 px-4">
-                          <div className="mb-3">
-                            <label className="form-label" htmlFor="industry">
-                              <strong>Current Industry</strong>
-                            </label>
-                            <input
-                              id="industry"
-                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
-                              type="text"
-                              placeholder="Software"
-                              {...register("industry")}
-                            />
-                          </div>
-                        </div>
-                        <div className="relative flex-grow max-w-full flex-1 px-4">
-                          <div className="mb-3">
-                            <label className="form-label" htmlFor="recent_experience">
-                              <strong>Most Recent Experience</strong>
+                            <label className="form-label" htmlFor="residence">
+                              <strong>Place of Residence</strong>
                               <br />
                             </label>
                             <input
-                              id="recent_experience"
+                              id="residence"
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="text"
-                              placeholder="MongoDB"
-                              {...register("recent_experience")}
+                              placeholder="Providence"
+                              {...register("residence")}
                             />
                           </div>
                         </div>
                       </div>
                       <div className="mb-3">
                         <button
-                          className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
+                          className="inline-block ml-4 align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
                           type="submit"
                           style={{ background: "#FF5A5F" }}
                         >
@@ -215,108 +320,170 @@ export default function editProfile() {
                     </form>
                   </div>
                 </div>
-                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow">
+                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-3">
                   <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                     <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
-                      Resume &amp; Website
+                      Discovery Settings
                     </p>
                   </div>
                   <div className="flex-auto p-6">
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                      <div className="mb-3">
-                        <label className="form-label" htmlFor="resume">
-                          <strong>Resume Link</strong>
-                          <br />
-                        </label>
-                        <input
-                          id="resume"
-                          className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
-                          type="url"
-                          placeholder="https://drive.google.com"
-                          {...register("resume")}
-                        />
+                    <form
+                    onSubmit={handleSubmit(onSubmit)}>
+                      <div className="flex flex-wrap ">
+                        <div className="relative flex-grow max-w-full flex-1 px-4">
+                          <div className="mb-3">
+                            <label className="form-label" htmlFor="role">
+                              <strong>My Role</strong>
+                              <br />
+                            </label>
+                            <input
+                              id="role"
+                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                              type="text"
+                              placeholder="Select..."
+                              {...register("role")}
+                            />
+                          </div>
+                        </div>
+                        <div className="relative flex-grow max-w-full flex-1 px-4">
+                          <div className="mb-3">
+                            <label className="form-label" htmlFor="industry">
+                              <strong>Current Industry</strong>
+                            </label>
+                            <input
+                              id="industry"
+                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                              type="text"
+                              placeholder="Select..."
+                              {...register("industry")}
+                            />
+                          </div>
+                        </div>
                       </div>
-					            <div className="mb-3">
-                        <label className="form-label" htmlFor="website">
-                          <strong>Personal Website (LinkedIn, GitHub, Portfolio)</strong>
-                          <br />
-                        </label>
-                        <input
-                          id="website"
-                          className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
-                          type="url"
-                          placeholder="https://example.com"
-                          {...register("website")}
-                        />
+                      <div className="flex flex-wrap ">
+                        <div className="relative flex-grow max-w-full flex-1 px-4">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="expertise_find"
+                            >
+                              <strong>Expertise I'm searching for...</strong>
+                              <br />
+                            </label>
+                            <input
+                              id="expertise_find"
+                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                              type="text"
+                              placeholder="Select..."
+                              {...register("expertise_find")}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap ">
+                        <div className="relative flex-grow max-w-full flex-1 px-4">
+                          <div className="mb-3">
+                            <label className="form-label" htmlFor="role_find">
+                              <strong>Roles I'm looking for...</strong>
+                            </label>
+                            <input
+                              id="role_find"
+                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                              type="text"
+                              placeholder="Select..."
+                              {...register("role_find")}
+                            />
+                          </div>
+                        </div>
                       </div>
                       <div className="mb-3">
                         <button
-                          className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
+                          className="inline-block ml-4 align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
                           type="submit"
                           style={{ background: "#FF5A5F" }}
                         >
-                          Save&nbsp;Settings
+                          Save Settings
                         </button>
                       </div>
                     </form>
                   </div>
                 </div>
+                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-5">
+              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
+                <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
+                  Job Experience
+                </p>
+              </div>
+              <div className="flex-auto p-6">
+                <form
+                onSubmit={handleSubmit(onSubmit)}>
+                  <textarea
+                  className="w-full h-64 border"
+                  {...register("experience")}
+                    rows={12}
+                    defaultValue={""}
+                  />
+                  <div className="mb-3">
+                    <button
+                      className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
+                      type="submit"
+                      style={{ background: "#FF5A5F" }}
+                    >
+                      Save Settings
+                    </button>
+                  </div>
+                  </form>
+              </div>
+            </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow m-4">
+        <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow m-4 mr-8">
           <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 overflow-x-hidden overflow-y-hidden rounded-t">
             <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
-              Experience
+              Education
             </p>
           </div>
           <div className="flex-auto p-6">
             <div className="flex flex-wrap ">
               <div className="relative flex-grow max-w-full flex-1 px-4">
-                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 m-4">
-                  <div className="flex-auto p-6">
-                    <h4 className="mb-3">Experience a b c</h4>
-                    <h6 className="text-gray-700 -mt-2 mb-0 mb-2">Job Title</h6>
-                    <h6 className="text-gray-700 -mt-2 mb-0 mb-2">
-                      time range
-                    </h6>
-                    <p className="mb-0">
-                      Nullam id dolor id nibh ultricies vehicula ut id elit.
-                      Cras justo odio, dapibus ac facilisis in, egestas eget
-                      quam. Donec id elit non mi porta gravida at eget metus.
-                    </p>
+                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300">
+                  <div
+                    style={{
+                      position: "static",
+                      borderStyle: "none",
+                      padding: 4
+                    }}
+                  >
+                    <button
+                      className="absolute right-4"
+                      type="button"
+                      style={{
+                        background: "transparent",
+                        color: "rgb(133, 135, 150)",
+                        borderStyle: "none"
+                      }}
+                    >
+                      Edit
+                    </button>
                   </div>
-                </div>
-                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 m-4">
                   <div className="flex-auto p-6">
-                    <h4 className="mb-3">Experience a b c</h4>
-                    <h6 className="text-gray-700 -mt-2 mb-0 mb-2">Job Title</h6>
-                    <h6 className="text-gray-700 -mt-2 mb-0 mb-2">
-                      time range
+                    <h4 className="mb-3 text-xl text-slate-600">Brown University</h4>
+                    <h6 className="text-slate-600 -mt-2 mb-0 mb-2">
+                      Computer Science, BS, Class of 2026
                     </h6>
-                    <p className="mb-0">
-                      Nullam id dolor id nibh ultricies vehicula ut id elit.
-                      Cras justo odio, dapibus ac facilisis in, egestas eget
-                      quam. Donec id elit non mi porta gravida at eget metus.
-                    </p>
                   </div>
                 </div>
               </div>
             </div>
-            {/* <div className="flex flex-wrap mt-4">
-              <div className="relative flex-grow">
-                  
-              </div>
-            </div> */}
           </div>
           <div className="mb-0 bg-[#FF5A5F] border-b-1 border-gray-300 text-gray-900 overflow-x-hidden overflow-y-hidden rounded-b">
-          <button className="bg-[#FF5A5F] border-gray-300 whitespace-no-wrap rounded py-1 px-3 no-underline text-white w-full"
-            type="button">
-                    Add Experience
-            </button>
-          </div>
-          
+              <button className="bg-[#FF5A5F] border-gray-300 whitespace-no-wrap rounded py-1 px-3 no-underline text-white w-full"
+              type="button">
+                     Add Experience
+             </button>
+           </div>
         </div>
       </div>
     </div>
