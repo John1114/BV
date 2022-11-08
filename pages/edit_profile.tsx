@@ -6,11 +6,13 @@ import { AuthState, useAuth } from "../util/firebaseFunctions";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DocumentData, QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
-
+import { affiliations, industryList, roles } from "../util/profileOptions";
+import Select from "react-select";
 
 /*
 TODO:
 * ASK IF I CAN MOVE checkIfRegistered FUNCTION to a more accessible API place
+- add Select... for finding startup
 - allow change image profile picture
 - load in original data for users
 - test API with authenticated and unauthenticated user
@@ -19,12 +21,17 @@ TODO:
 export default function editProfile() {
   const { register, handleSubmit } = useForm();
   const { register: registerResume, handleSubmit: handleSubmitResume } = useForm();
+  const [brownAffiliation, setAffiliation] = useState<string>("");
+  const [myRole, setMyRole] = useState<string>("");
+  const [industry, setIndustry] = useState<string>("");
+  const [expertiseFind, setExpertiseFind] = useState<string[]>([]);
+  const [roleFind, setRoleFind] = useState<string[]>([]);
   const router = useRouter();
   const { user } = useAuth();
 
   function removeEmptyFields(data: any) {
     Object.keys(data).forEach(key => {
-      if (data[key] === '' || data[key] == null) {
+      if (data[key] === '' || data[key] == null || data[key] == undefined) {
         delete data[key];
       }
     });
@@ -52,6 +59,11 @@ export default function editProfile() {
         // TODO: link path to register page
         router.push("/")
       }else{
+        data["affiliation"] = brownAffiliation;
+        data["role"] = myRole;
+        data["industry"] = industry;
+        data["expertise_find"] = expertiseFind.join(",");
+        data["role_find"] = roleFind.join(",");
         const cleanedData = removeEmptyFields(data);
         console.log(cleanedData);
   
@@ -147,13 +159,12 @@ export default function editProfile() {
                           <strong>Brown University Affiliation</strong>
                           <br />
                         </label>
-                        <input
-                          id="affiliation"
-                          className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
-                          type="text"
-                          placeholder="Select..."
-                          {...register("affiliation")}
-                        />
+                        
+                        <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
+                        >
+                        <Select options={affiliations} key={"dropdown"}
+                        onChange={(opt: any, _: any) => {setAffiliation(opt.value)}}/>
+                      </div>
                       </div>
                     </div>
                   </div>
@@ -336,13 +347,11 @@ export default function editProfile() {
                               <strong>My Role</strong>
                               <br />
                             </label>
-                            <input
-                              id="role"
-                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
-                              type="text"
-                              placeholder="Select..."
-                              {...register("role")}
-                            />
+                            <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
+                              >
+                              <Select options={roles} key={"dropdown"}
+                              onChange={(opt: any, _: any) => {setMyRole(opt.value)}}/>
+                            </div>
                           </div>
                         </div>
                         <div className="relative flex-grow max-w-full flex-1 px-4">
@@ -350,13 +359,18 @@ export default function editProfile() {
                             <label className="form-label" htmlFor="industry">
                               <strong>Current Industry</strong>
                             </label>
-                            <input
+                            <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
+                              >
+                              <Select options={industryList} key={"dropdown"}
+                              onChange={(opt: any, _: any) => {setIndustry(opt.value)}}/>
+                            </div>
+                            {/* <input
                               id="industry"
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="text"
                               placeholder="Select..."
                               {...register("industry")}
-                            />
+                            /> */}
                           </div>
                         </div>
                       </div>
@@ -370,13 +384,11 @@ export default function editProfile() {
                               <strong>Expertise I'm searching for...</strong>
                               <br />
                             </label>
-                            <input
-                              id="expertise_find"
-                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
-                              type="text"
-                              placeholder="Select..."
-                              {...register("expertise_find")}
-                            />
+                            <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
+                              >
+                              <Select options={industryList} isMulti key={"dropdown"}
+                              onChange={(value: any, _: any) => {setExpertiseFind(value.map((item: any) => {return item.value}))}}/>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -386,13 +398,11 @@ export default function editProfile() {
                             <label className="form-label" htmlFor="role_find">
                               <strong>Roles I'm looking for...</strong>
                             </label>
-                            <input
-                              id="role_find"
-                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
-                              type="text"
-                              placeholder="Select..."
-                              {...register("role_find")}
-                            />
+                            <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
+                              >
+                              <Select options={roles} isMulti key={"dropdown"}
+                              onChange={(value: any, _: any) => {setRoleFind(value.map((item: any) => {return item.value}))}}/>
+                            </div>
                           </div>
                         </div>
                       </div>
