@@ -14,11 +14,11 @@ import { toast } from "react-toastify";
 import StartupFormStruct, {
   FormQuestion,
 } from "../components/StartupSignupFormStruct";
-import addStartupFromForm from "../util/startupSignupApi";
+import addStartupFromForm, { uploadImageWithRef } from "../util/startupSignupApi";
 import styles from "../styles/Form.module.css";
 import { skills } from "../util/skills";
 import SplashScreen from "../util/splashscreen";
-import ReactImageUploading, { ImageListType } from "react-images-uploading";
+import ReactImageUploading, { ImageListType, ImageType } from "react-images-uploading";
 import { useForm } from "react-hook-form";
 import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../util/firebaseConfig";
@@ -74,7 +74,7 @@ function SecondVector({ accentColor }: VectorProps) {
 
 const skill = skills;
 
-function addPages(setAccent: any, setSkills: any, registerFunction: any) {
+function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUpdater: any) {
   questionPages.push(
     {
       pageId: 0,
@@ -213,7 +213,7 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any) {
       pageFunction: null,
       questionFormat: (
         <div>
-          <LogoForm setAccentColor={setAccent} />
+          <LogoForm setAccentColor={setAccent} imageUpdater={imageUpdater}/>
         </div>
       ),
     },
@@ -243,6 +243,7 @@ export default function StartupSignup() {
   const [pageNumber, setPage] = useState<number>(0);
   const [accentColor, setAccentColor] = useState<string>("#FF5A5F");
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [logoImage, setLogoImage] = useState<ImageType | null>(null);
   const { register, handleSubmit, trigger, formState: { errors } } = useForm();
   
   const router = useRouter();
@@ -255,7 +256,7 @@ export default function StartupSignup() {
   useEffect(() => {
     // Solve Hydration issue with useEffect
     // https://github.com/vercel/next.js/discussions/17443
-    addPages(setAccentColor, setSelectedSkills, register);
+    addPages(setAccentColor, setSelectedSkills, register, setLogoImage);
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0;
     loading
@@ -279,20 +280,36 @@ export default function StartupSignup() {
   };
 
   const onSubmit = async (data: any) => {
-    // Add skills to form obj
-    data["skills"] = selectedSkills.join(",");
+    if ((logoImage !== null) && (logoImage.file !== undefined)){
+        // Add skills to form obj
+        data["skills"] = selectedSkills.join(",");
 
-    //TODO: check if there is image uploaded, if there is, get and upload file
-    // https://firebase.google.com/docs/storage/web/upload-files#upload_from_a_blob_or_file
+        // Check if there is image uploaded, if there is, get and upload file
+        // https://firebase.google.com/docs/storage/web/upload-files#upload_from_a_blob_or_file
 
-    console.log(data);
+        var datetime = new Date();
 
-    // upload data with API
-    const res = await addStartupFromForm(data);
+        // Generate a unique image path by taking the millisecond timestamp of the image being uploaded
+        // Maybe TODO: if user must be registered to use this form,
+        // use user id in conjunction with timestamp to create unique image path
+        const imageStorageUri = `images/${datetime.getTime().toString()}.jpg`
+        const imageRef = ref(storage, imageStorageUri);
+        const imageRes = await uploadImageWithRef(imageRef, logoImage.file);
 
-    console.log(res);
+        if (imageRes){
+          data["imageRef"] = imageStorageUri;
 
-    router.push("/");
+          console.log(data);
+
+          // upload data with API
+          const res = await addStartupFromForm(data);
+
+          console.log(res);
+
+          router.push("/");
+        }
+    }
+
   }
 
   return (
@@ -361,9 +378,10 @@ const empty = {
 };
 interface LogoFormProps {
   setAccentColor: Dispatch<SetStateAction<string>>;
+  imageUpdater: any;
 }
 
-export function LogoForm({ setAccentColor }: LogoFormProps) {
+export function LogoForm({ setAccentColor, imageUpdater }: LogoFormProps) {
   const [app, updateApp] = useState<Application>(empty);
   const fileInputRef = createRef<HTMLInputElement>();
   const colorInputRef = createRef<HTMLInputElement>();
@@ -466,8 +484,10 @@ export function LogoForm({ setAccentColor }: LogoFormProps) {
     addUpdateIndex: number[] | undefined
   ) => {
     // data for submit
-    console.log(imageList, addUpdateIndex);
+    console.log(imageList[0], addUpdateIndex);
+    imageUpdater(imageList[0]);
     setImages(imageList as never[]);
+    console.log(images);
   };
 
   return (
