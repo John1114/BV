@@ -212,7 +212,7 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
       requiredNames: [],
       pageFunction: null,
       questionFormat: (
-        <div>
+        <div className="shadow appearance-none rounded ml-20 mr-20">
           <LogoForm setAccentColor={setAccent} imageUpdater={imageUpdater}/>
         </div>
       ),
@@ -224,7 +224,7 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
       requiredNames: [],
       pageFunction: null,
       questionFormat: (
-        <div className="shadow appearance-none rounded ml-20 mr-20">
+        <div className="shadow appearance-none rounded ml-20 mr-20 pt-20 mb-20">
           <label className="h-30">What skills do you need?</label>
           <Select options={skill} isMulti key={"dropdown"}
           onChange={(value, _) => {setSkills(value.map((item) => {return item.value}))}}/>
@@ -491,8 +491,8 @@ export function LogoForm({ setAccentColor, imageUpdater }: LogoFormProps) {
   };
 
   return (
-    <div className="flex-col items-center">
-      <div>
+    <div className="flex flex-col justify-center items-center pt-20 pb-20">
+      <div className="pt-2 pb-5 border-dashed border-gray-600">
         <ReactImageUploading
           value={images}
           multiple={false}
@@ -505,18 +505,18 @@ export function LogoForm({ setAccentColor, imageUpdater }: LogoFormProps) {
             onImageRemove,
           }: any) => (
             // write your building UI
-            <div>
+            <div className="border-dashed border-2 border-gray-600 rounded align-middle">
               <button
+              className="h-20 p-10 flex-row align-middle rounded-sm"
               type="button"
                 onClick={onImageUpload}
-                className="outline-offset-2 outline-1 outline-dashed"
               >
-                Click or Drop here
+                Upload Image
               </button>
               {imageList.map((image: any, index: any) => (
                 <div key={index} className="flex-col items-center mt-5 pt-2">
                   <img src={image.dataURL} alt="" width="100" />
-                  <div className="flex-col items-center col-span-1">
+                  <div>
                     <button type="button" onClick={() => onImageRemove(index)}>Remove</button>
                   </div>
                 </div>
