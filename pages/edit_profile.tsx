@@ -1,13 +1,15 @@
 import { Header } from "./main_interface";
 import bear from '../assets/thanks-bear.png';
 import { useForm } from "react-hook-form";
-import updateUserProfile, { checkIfRegistered } from "../util/userProfileUpdateApi";
-import { AuthState, useAuth } from "../util/firebaseFunctions";
+import updateUserProfile, { checkIfRegistered, uploadFileWithRef } from "../util/userProfileUpdateApi";
+import { AuthState, useAuth, User } from "../util/firebaseFunctions";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DocumentData, QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
 import { affiliations, industryList, roles } from "../util/profileOptions";
 import Select from "react-select";
+import { ref } from "firebase/storage";
+import { storage } from "../util/firebaseConfig";
 
 /*
 TODO:
@@ -38,35 +40,57 @@ export default function editProfile() {
     return data;
   }
 
-  const submitAllForms = async () => {
-    // Maybe TODO
+  function isEmpty(obj: Object) {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
+}
+
+  // const submitAllForms = async () => {
+  //   // Maybe TODO
+  // }
+
+  const checkUserValidity = async () => {
+    if (user === undefined){
+      return null;
+    }
+    const userSnapshot: QueryDocumentSnapshot<DocumentData> | null = await checkIfRegistered(user);
+    if (userSnapshot === null){
+      return null;
+    }else{
+      return userSnapshot
+    }
   }
 
   const onResumeSubmit = async (data: any) => {
-    // TODO
-    console.log(data);
+    const userSnapshot = await checkUserValidity();
+    if (userSnapshot !== null){
+      const resume = data["resume"][0];
+      if (resume !== undefined){
+        var datetime = new Date();
+        const pdfStorageUri = `resume/${userSnapshot.id}-${datetime.getTime().toString()}.jpg`
+        const resumeRef = ref(storage, pdfStorageUri);
+        const resumeResult = await uploadFileWithRef(resumeRef, resume)
+        if (resumeResult){
+          const res = await updateUserProfile(userSnapshot, {resumeRef: pdfStorageUri})
+          console.log(res);
+          router.push("/");
+        }
+      }
+    }
   }
 
   const onSubmit = async (data: any) => {
-    if (user === undefined){
-      router.push("/");
-    }else{
-      
-      // check if user is registered
-      const userSnapshot: QueryDocumentSnapshot<DocumentData> | null = await checkIfRegistered(user);
+    const userSnapshot = await checkUserValidity();
+    if (userSnapshot !== null){
+      data["affiliation"] = brownAffiliation;
+      data["role"] = myRole;
+      data["industry"] = industry;
+      data["expertise_find"] = expertiseFind.join(",");
+      data["role_find"] = roleFind.join(",");
+      const cleanedData = removeEmptyFields(data);
+      console.log(cleanedData);
 
-      if (userSnapshot === null){
-        // TODO: link path to register page
-        router.push("/")
-      }else{
-        data["affiliation"] = brownAffiliation;
-        data["role"] = myRole;
-        data["industry"] = industry;
-        data["expertise_find"] = expertiseFind.join(",");
-        data["role_find"] = roleFind.join(",");
-        const cleanedData = removeEmptyFields(data);
-        console.log(cleanedData);
-  
+      // check there is data
+      if (!isEmpty(cleanedData)){
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
@@ -114,7 +138,7 @@ export default function editProfile() {
                 <div className="flex flex-wrap ">
                     <div className="relative flex-grow max-w-full flex-1 px-4">
                 <div className="mb-3">
-                  <input type="file" {...registerResume("resume")}/>
+                  <input type="file" accept="application/pdf" {...registerResume("resume")}/>
                 </div>
                 <div className="mb-3">
                     <button

@@ -1,4 +1,5 @@
 import { doc, query, updateDoc, collection, where, getDocs, QueryDocumentSnapshot } from "firebase/firestore";
+import { StorageReference, uploadBytes } from "firebase/storage";
 import { firestore } from "./firebaseConfig";
 import { useAuth, User } from "./firebaseFunctions";
 
@@ -26,3 +27,13 @@ export async function checkIfRegistered(user: User | undefined){
       return snapshot.docs[0]
     }
   }
+
+export async function uploadFileWithRef(storageRef: StorageReference, file: File){
+
+  return uploadBytes(storageRef, file).then((snapshot) => {
+    return true;
+  }).catch((error) => {
+    console.log(error);
+    return false;
+  })
+}
