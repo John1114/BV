@@ -82,6 +82,7 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
       triggerFunction: null,
       requiredNames: ["companyName", "yearFounded", "founders", "industry", "description"],
       pageFunction: null,
+      lastPage: false,
       questionFormat: (
         <div className="max-w-full pl-20 pr-20 mt-1 pt-10 justify-center items-center">
           <div className="flex-col w-full">
@@ -170,6 +171,7 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
       triggerFunction: null,
       requiredNames: ["email", "website"],
       pageFunction: null,
+      lastPage: false,
       questionFormat: (
         <div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center columns-2">
           <div className="flex-col">
@@ -211,8 +213,9 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
       triggerFunction: null,
       requiredNames: [],
       pageFunction: null,
+      lastPage: false,
       questionFormat: (
-        <div className="shadow appearance-none rounded ml-20 mr-20">
+        <div className="appearance-none rounded ml-20 mr-20">
           <LogoForm setAccentColor={setAccent} imageUpdater={imageUpdater}/>
         </div>
       ),
@@ -223,8 +226,9 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
       triggerFunction: null,
       requiredNames: [],
       pageFunction: null,
+      lastPage: true,
       questionFormat: (
-        <div className="shadow appearance-none rounded ml-20 mr-20 pt-20 mb-20">
+        <div className="appearance-none rounded ml-20 mr-20 pt-20 mb-20">
           <label className="h-30">What skills do you need?</label>
           <Select options={skill} isMulti key={"dropdown"}
           onChange={(value, _) => {setSkills(value.map((item) => {return item.value}))}}/>
@@ -306,10 +310,18 @@ export default function StartupSignup() {
 
           console.log(res);
 
-          router.push("/");
+          router.push({pathname: "/", query: {
+            useFlash: true,
+            message: "Successfully created startup!",
+            backgroundColor: "bg-green-300",
+            textColor: "text-emerald-800"}}, "/");
         }
     }
-
+    router.push({pathname: "/", query: {
+      useFlash: true,
+      message: "Successfully created startup!",
+      backgroundColor: "bg-green-300",
+      textColor: "text-emerald-800"}}, "/");
   }
 
   return (
@@ -320,7 +332,7 @@ export default function StartupSignup() {
       <form
         id="startup_form"
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-[length:531px_631px] bg-no-repeat h-screen pt-40"
+        className="bg-[length:531px_631px] bg-no-repeat h-screen pt-20"
       >
         {questionPages.map((page: FormQuestion) => (
           <div
@@ -335,6 +347,7 @@ export default function StartupSignup() {
               triggerFunction={trigger}
               requiredNames={page.requiredNames}
               questionFormat={page.questionFormat}
+              lastPage={page.lastPage}
             />
           </div>
         ))}

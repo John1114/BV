@@ -3461,6 +3461,13 @@ react-drag-drop-files@^2.3.7:
     prop-types "^15.7.2"
     styled-components "^5.3.0"
 
+react-flash-message@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/react-flash-message/-/react-flash-message-1.0.8.tgz#25146e1a229d91e0f40d714344b366c210f4c271"
+  integrity sha512-XND1LenvTjZI9SvGgGxF74SDZih1fS+iN304/Lhwd/vukTyBLJ9PrOvJehdf9KkxdWtK3fxmQl+c/cpZktyMVg==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-hook-form@^7.39.1:
   version "7.39.1"
   resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.39.1.tgz#ded87d4b3f6692d1f9219515f78ca282b6e1ebf7"

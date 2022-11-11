@@ -7,6 +7,7 @@ export interface FormQuestion {
 	requiredNames: string[];
 	questionFormat: any;
 	pageFunction: any;
+	lastPage: boolean;
   }
   
   export default function StartupFormStruct({
@@ -16,6 +17,7 @@ export interface FormQuestion {
 	triggerFunction,
 	questionFormat,
 	pageFunction,
+	lastPage
   }: FormQuestion) {
 	// const { trigger } = useForm();
 	const [valState, setValState] = useState<boolean>(true);
@@ -43,8 +45,12 @@ export interface FormQuestion {
 		{questionFormat}
 
 		<div className="absolute right-6 bottom-6">
-			<button type="button" onClick={onNextPage} className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded">
-				Next Page
+			<button type="button" onClick={(event) => {if (lastPage){event.currentTarget.disabled = true;} onNextPage();}
+				
+				
+				} className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded">
+				{lastPage? "Submit": "Next Page"}
+				
 			</button>
 		</div>
 		{valState? null:
@@ -54,7 +60,7 @@ export interface FormQuestion {
 		
 		<div className="absolute left-6 bottom-6">
 		{ (pageId > 0) ?
-			(<button type="button" onClick={() => (pageFunction(pageId - 1))} className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-6 px-16 rounded">
+			(<button type="button" onClick={(event) => {event.currentTarget.disabled = true; pageFunction(pageId - 1)}} className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-6 px-16 rounded">
 				Previous Page
 			</button>) : null
 		}
