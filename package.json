@@ -13,6 +13,7 @@
     "@types/babel__core": "^7.1.19",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.11.64",
+    "@types/react-color": "3.0.6",
     "@types/react-dom": "^18.0.6",
     "@types/react-image-crop": "^8.1.3",
     "@types/react-loading-overlay": "^1.0.1",
@@ -21,11 +22,18 @@
     "next": "^12.3.1",
     "react": "^17.2.0",
     "react-animated-css": "^1.2.1",
+    "react-color": "2.19.3",
     "react-dom": "^18.2.0",
+    "react-drag-drop-files": "^2.3.7",
+    "react-flash-message": "^1.0.8",
+    "react-hook-form": "^7.39.1",
     "react-image-crop": "^10.0.8",
+    "react-images-uploading": "^3.1.7",
     "react-loading-overlay": "^1.0.1",
+    "react-select": "^5.6.0",
     "react-toastify": "^9.0.8",
-    "superb": "^4.0.0"
+    "superb": "^4.0.0",
+    "xwind": "^0.8.0"
   },
   "scripts": {
     "dev": "next dev",
