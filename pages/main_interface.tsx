@@ -31,9 +31,12 @@ export function Header() {
     return (
         <div style={{
             backgroundColor: interfaceBackgroundColor,
-        }} className="items-center align-middle flex w-screen h-14 px-4 sm:px-6">
+        }} className="items-center align-middle flex w-screen h-14 px-4 sm:px-6 w-full">
             <Logo logo={logo}/>
             <SearchComponent/>
+            <a href="/edit_profile" className="absolute text-lg font-light text-gray-600 transition-all hover:text-red-500 right-12">
+                Edit Profile
+                </a>
         </div>
     )
 }
