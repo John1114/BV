@@ -21,9 +21,26 @@ TODO:
 - test API with authenticated and unauthenticated user
 */
 
+const formNames = [
+  "resumeForm",
+  "affiliationForm",
+  "websiteForm",
+  "userForm",
+  "discoveryForm",
+  "jobExpForm"
+]
+
 export default function editProfile() {
-  const { register, handleSubmit } = useForm();
-  const { register: registerResume, handleSubmit: handleSubmitResume } = useForm();
+  const hookForms = Object.assign({}, ...formNames.map((x: string) =>
+  {
+    const {register: r, handleSubmit: hs} = useForm();
+    return {[x]: {
+      registerFunc: r,
+      handleFunc: hs
+    }}
+  }))
+
+  const {register, handleSubmit} = useForm();
   const { register: registerEducation, handleSubmit: handleAddEducation, reset } = useForm();
   const [brownAffiliation, setAffiliation] = useState<string>("");
   const [myRole, setMyRole] = useState<string>("");
@@ -31,14 +48,14 @@ export default function editProfile() {
   const [expertiseFind, setExpertiseFind] = useState<string[]>([]);
   const [roleFind, setRoleFind] = useState<string[]>([]);
   const [openEdModal, setOpenModal] = useState<boolean>(false);
-  const [educationList, setEducationList] = useState<any[]>([
-    {
-      institution: "Brown University",
-      concentration: "Computer Science",
-      degree_type: "Bachelors",
-      grad_year: 2026
-    }
-  ]);
+  const [educationList, setEducationList] = useState<any[]>([]);
+
+  // {
+  //   institution: "Brown University",
+  //   concentration: "Computer Science",
+  //   degree_type: "Bachelors",
+  //   grad_year: 2026
+  // }
   const [educationEditId, setEducationEditId] = useState<number>(-1);
   const router = useRouter();
   const { user } = useAuth();
@@ -56,9 +73,10 @@ export default function editProfile() {
     return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
 
-  // const submitAllForms = async () => {
-  //   // Maybe TODO
-  // }
+  const submitAllForms = async () => {
+    // Maybe TODO
+    document.forms[0]
+  }
 
   const checkUserValidity = async () => {
     if (user === undefined){
@@ -101,14 +119,63 @@ export default function editProfile() {
     }
   }
 
+  const onAffiliationSubmit = async (data: any) => {
+    const userSnapshot = await checkUserValidity();
+    if (userSnapshot !== null){
+      data["affiliation"] = brownAffiliation;
+      const cleanedData = removeEmptyFields(data);
+      console.log(cleanedData);
+
+      // check there is data
+      if (!isEmpty(cleanedData)){
+        // update user with API
+        // TODO: Test API
+        await updateUserProfile(userSnapshot, data);
+      }
+    }
+  }
+
+  const onDiscoverySubmit = async (data: any) => {
+    const userSnapshot = await checkUserValidity();
+    if (userSnapshot !== null){
+      data["role"] = myRole;
+      data["industry"] = industry;
+      data["expertise_find"] = expertiseFind;
+      data["role_find"] = roleFind;
+      const cleanedData = removeEmptyFields(data);
+      console.log(cleanedData);
+
+      // check there is data
+      if (!isEmpty(cleanedData)){
+        // update user with API
+        // TODO: Test API
+        await updateUserProfile(userSnapshot, data);
+      }
+    }
+  }
+
+  const noSelectSubmit = async (data: any) => {
+    const userSnapshot = await checkUserValidity();
+    if (userSnapshot !== null){
+      const cleanedData = removeEmptyFields(data);
+      console.log(cleanedData);
+
+      // check there is data
+      if (!isEmpty(cleanedData)){
+        await updateUserProfile(userSnapshot, data);
+      }
+    }
+  }
+
   const onSubmit = async (data: any) => {
     const userSnapshot = await checkUserValidity();
     if (userSnapshot !== null){
       data["affiliation"] = brownAffiliation;
       data["role"] = myRole;
       data["industry"] = industry;
-      data["expertise_find"] = expertiseFind.join(",");
-      data["role_find"] = roleFind.join(",");
+      data["expertise_find"] = expertiseFind;
+      data["role_find"] = roleFind;
+      data["education"] = educationList;
       const cleanedData = removeEmptyFields(data);
       console.log(cleanedData);
 
@@ -138,7 +205,7 @@ export default function editProfile() {
 
   function deleteEducation(edId: number){
     const newList = educationList.map((v) => (v));
-    newList.splice(edId, edId);
+    newList.splice(edId, 1);
     console.log(newList);
     setEducationList(newList);
   }
@@ -183,11 +250,12 @@ export default function editProfile() {
               </div>
               <div className="flex-auto p-6">
                 <form
-                onSubmit={handleSubmitResume(onResumeSubmit)}>
+                id="resumeForm"
+                onSubmit={hookForms["resumeForm"].handleFunc(onResumeSubmit)}>
                 <div className="flex flex-wrap ">
                     <div className="relative flex-grow max-w-full flex-1 px-4">
                 <div className="mb-3">
-                  <input type="file" accept="application/pdf" {...registerResume("resume")}/>
+                  <input type="file" accept="application/pdf" {...hookForms["resumeForm"].registerFunc("resume")}/>
                 </div>
                 <div className="mb-3">
                     <button
@@ -211,7 +279,8 @@ export default function editProfile() {
               </div>
               <div className="flex-auto p-6">
                 <form
-                onSubmit={handleSubmit(onSubmit)}>
+                id="affiliationForm"
+                onSubmit={hookForms["affiliationForm"].handleFunc(onAffiliationSubmit)}>
                   <div className="flex flex-wrap ">
                     <div className="relative flex-grow max-w-full flex-1 px-4">
                       <div className="mb-3">
@@ -224,7 +293,7 @@ export default function editProfile() {
                           className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                           type="text"
                           placeholder="Select..."
-                          {...register("startup")}
+                          {...hookForms["affiliationForm"].registerFunc("startup")}
                         />
                       </div>
                       <div className="mb-3">
@@ -262,7 +331,8 @@ export default function editProfile() {
               </div>
               <div className="flex-auto p-6">
                 <form
-                onSubmit={handleSubmit(onSubmit)}>
+                id="websiteForm"
+                onSubmit={hookForms["websiteForm"].handleFunc(noSelectSubmit)}>
                   <div className="flex flex-wrap ">
                     <div className="relative flex-grow max-w-full flex-1 px-4">
                       <div className="mb-3">
@@ -275,7 +345,7 @@ export default function editProfile() {
                           className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                           type="url"
                           placeholder="LinkedIn"
-                          {...register("linkedin")}
+                          {...hookForms["websiteForm"].registerFunc("linkedin")}
                         />
                       </div>
                       <div className="mb-3">
@@ -288,7 +358,7 @@ export default function editProfile() {
                           className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                           type="url"
                           placeholder="Company Website"
-                          {...register("company_website")}
+                          {...hookForms["websiteForm"].registerFunc("company_website")}
                         />
                       </div>
                       <div className="mb-3">
@@ -301,7 +371,7 @@ export default function editProfile() {
                           className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                           type="url"
                           placeholder="Other (Github, Portfolio, etc.)"
-                          {...register("other_website")}
+                          {...hookForms["websiteForm"].registerFunc("other_website")}
                         />
                       </div>
                     </div>
@@ -330,7 +400,8 @@ export default function editProfile() {
                   </div>
                   <div className="flex-auto p-6">
                     <form
-                    onSubmit={handleSubmit(onSubmit)}>
+                    id="userForm"
+                    onSubmit={hookForms["userForm"].handleFunc(noSelectSubmit)}>
                       <div className="flex flex-wrap ">
                         <div className="relative flex-grow max-w-full flex-1 px-4">
                           <div className="mb-3">
@@ -342,7 +413,7 @@ export default function editProfile() {
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="text"
                               placeholder="John"
-                              {...register("first_name")}
+                              {...hookForms["userForm"].registerFunc("first_name")}
                             />
                           </div>
                         </div>
@@ -356,7 +427,7 @@ export default function editProfile() {
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="text"
                               placeholder="Doe"
-                              {...register("last_name")}
+                              {...hookForms["userForm"].registerFunc("last_name")}
                             />
                           </div>
                         </div>
@@ -372,7 +443,7 @@ export default function editProfile() {
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="text"
                               placeholder="abc@brown.edu"
-                              {...register("email")}
+                              {...hookForms["userForm"].registerFunc("email")}
                             />
                           </div>
                         </div>
@@ -387,7 +458,7 @@ export default function editProfile() {
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="text"
                               placeholder="Providence"
-                              {...register("residence")}
+                              {...hookForms["userForm"].registerFunc("residence")}
                             />
                           </div>
                         </div>
@@ -412,7 +483,8 @@ export default function editProfile() {
                   </div>
                   <div className="flex-auto p-6">
                     <form
-                    onSubmit={handleSubmit(onSubmit)}>
+                    id="discoveryForm"
+                    onSubmit={hookForms["discoveryForm"].handleFunc(onDiscoverySubmit)}>
                       <div className="flex flex-wrap ">
                         <div className="relative flex-grow max-w-full flex-1 px-4">
                           <div className="mb-3">
@@ -492,10 +564,15 @@ export default function editProfile() {
               </div>
               <div className="flex-auto p-6">
                 <form
-                onSubmit={handleSubmit(onSubmit)}>
+                id="jobExpForm"
+                onSubmit={hookForms["jobExpForm"].handleFunc(noSelectSubmit)}>
+                  <label className="form-label" htmlFor="experience">
+                    <strong>Tell us about your job experience(s)</strong>
+                  </label>
                   <textarea
-                  className="w-full h-64 border"
-                  {...register("experience")}
+                  id="experience"
+                  className="w-full h-64 border p-2"
+                  {...hookForms["jobExpForm"].registerFunc("experience")}
                     rows={12}
                     defaultValue={""}
                   />
@@ -515,7 +592,7 @@ export default function editProfile() {
             </div>
           </div>
         </div>
-        <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow m-4 mr-8">
+        <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow m-4 mr-8 mb-16">
           <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 overflow-x-hidden overflow-y-hidden rounded-t">
             <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
               Education
@@ -524,9 +601,15 @@ export default function editProfile() {
           <div className="flex-auto p-6">
             <div className="flex flex-wrap ">
               <div className="relative flex-grow max-w-full flex-1 px-4">
-                {educationList.map((item, index) => {
+                {(educationList.length == 0) ?
+                  (<div className="text-[#858796]">
+                    No education currently
+                  </div>)
+                :
+                
+                educationList.map((item, index) => {
                   return (
-                    <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-3">
+                  <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-3">
                   <div
                     style={{
                       position: "static",
@@ -571,7 +654,11 @@ export default function editProfile() {
            </div>
         </div>
       </div>
+      <button type="button" className="fixed bg-red-500 hover:bg-red-400 text-white font-bold py-3 px-16 rounded-t bottom-0 w-full">
+          Save all changes
+      </button>
     </div>
+    
 
           {/* MODAL START */}
 
@@ -618,7 +705,7 @@ export default function editProfile() {
                               id="institution"
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="text"
-                              placeholder="Brown University"
+                              placeholder="Ex: ABC University"
                               {...registerEducation("institution", {required: true})}
                             />
                           </div>
@@ -633,7 +720,7 @@ export default function editProfile() {
                               id="concentration"
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="text"
-                              placeholder="Computer Science"
+                              placeholder="Ex: Computer Science"
                               {...registerEducation("concentration", {required: true})}
                             />
                           </div>
@@ -672,7 +759,7 @@ export default function editProfile() {
                               id="grad_year"
                               className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
                               type="number"
-                              placeholder="2022"
+                              placeholder="Ex: 2022"
                               {...registerEducation("grad_year", {required: true})}
                             />
                           </div>
@@ -697,17 +784,7 @@ export default function editProfile() {
           </Transition.Root>
 
           {/* MODAL END */}
-    <footer className="bg-white sticky-footer">
-      <div className="container mx-auto sm:px-4 my-auto">
-        <div className="text-center my-auto copyright">
-          <span>Copyright © BV 2022</span>
-        </div>
-      </div>
-    </footer>
   </div>
-  <a className="border rounded inline scroll-to-top" href="#page-top">
-    <i className="fas fa-angle-up" />
-  </a>
 </div>
 
 	)
