@@ -60,6 +60,15 @@ let roles: Option[] = [
 	{value: "other", label: "Other"}
 ]
 
+let degreeTypes: Option[] = [
+	{value: "associates", label: "Associates"},
+	{value: "bachelors", label: "Bachelors"},
+	{value: "masters", label: "Masters"},
+	{value: "doctorate", label: "Doctorate"},
+	{value: "postdoctoral-studies", label: "Postdoctoral Studies"},
+	{value: "technical-diploma", label: "Technical Diploma"}
+]
+
 let industryList: Option[] = []
 
 industry_or_skills.split("\n").forEach(industry => {
@@ -70,3 +79,4 @@ industry_or_skills.split("\n").forEach(industry => {
 export {roles}
 export {industryList}
 export {affiliations}
+export {degreeTypes}

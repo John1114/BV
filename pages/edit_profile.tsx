@@ -3,13 +3,14 @@ import bear from '../assets/thanks-bear.png';
 import { useForm } from "react-hook-form";
 import updateUserProfile, { checkIfRegistered, uploadFileWithRef } from "../util/userProfileUpdateApi";
 import { AuthState, useAuth, User } from "../util/firebaseFunctions";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DocumentData, QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
-import { affiliations, industryList, roles } from "../util/profileOptions";
+import { affiliations, industryList, roles, degreeTypes } from "../util/profileOptions";
 import Select from "react-select";
 import { ref } from "firebase/storage";
 import { storage } from "../util/firebaseConfig";
+import { Dialog, Transition } from "@headlessui/react";
 
 /*
 TODO:
@@ -23,11 +24,22 @@ TODO:
 export default function editProfile() {
   const { register, handleSubmit } = useForm();
   const { register: registerResume, handleSubmit: handleSubmitResume } = useForm();
+  const { register: registerEducation, handleSubmit: handleAddEducation, reset } = useForm();
   const [brownAffiliation, setAffiliation] = useState<string>("");
   const [myRole, setMyRole] = useState<string>("");
   const [industry, setIndustry] = useState<string>("");
   const [expertiseFind, setExpertiseFind] = useState<string[]>([]);
   const [roleFind, setRoleFind] = useState<string[]>([]);
+  const [openEdModal, setOpenModal] = useState<boolean>(false);
+  const [educationList, setEducationList] = useState<any[]>([
+    {
+      institution: "Brown University",
+      concentration: "Computer Science",
+      degree_type: "Bachelors",
+      grad_year: 2026
+    }
+  ]);
+  const [educationEditId, setEducationEditId] = useState<number>(-1);
   const router = useRouter();
   const { user } = useAuth();
 
@@ -60,18 +72,29 @@ export default function editProfile() {
     }
   }
 
+  const addEducation = async (data: any) => {
+    console.log(data);
+    if (educationEditId === -1){
+      educationList.push(data);
+      setEducationList(educationList);
+    }else{
+      educationList[educationEditId] = data;
+      setEducationList(educationList);
+    }
+    closeModal();
+  }
+
   const onResumeSubmit = async (data: any) => {
     const userSnapshot = await checkUserValidity();
     if (userSnapshot !== null){
       const resume = data["resume"][0];
       if (resume !== undefined){
         var datetime = new Date();
-        const pdfStorageUri = `resume/${userSnapshot.id}-${datetime.getTime().toString()}.jpg`
+        const pdfStorageUri = `resume/${userSnapshot.id}-${datetime.getTime().toString()}.pdf`
         const resumeRef = ref(storage, pdfStorageUri);
         const resumeResult = await uploadFileWithRef(resumeRef, resume)
         if (resumeResult){
-          const res = await updateUserProfile(userSnapshot, {resumeRef: pdfStorageUri})
-          console.log(res);
+          await updateUserProfile(userSnapshot, {resumeRef: pdfStorageUri})
           router.push("/");
         }
       }
@@ -96,6 +119,32 @@ export default function editProfile() {
         await updateUserProfile(userSnapshot, data);
       }
     }
+  }
+
+  function editEducation(edId: number){
+    if (edId >= 0){
+      reset(educationList[edId]);
+    }else{
+      reset({
+        institution: "",
+        concentration: "",
+        degree_type: "",
+        grad_year: ""
+      });
+    }
+    setEducationEditId(edId);
+    setOpenModal(true);
+  }
+
+  function deleteEducation(edId: number){
+    const newList = educationList.map((v) => (v));
+    newList.splice(edId, edId);
+    console.log(newList);
+    setEducationList(newList);
+  }
+
+  function closeModal(){
+    setOpenModal(false);
   }
 
 	return (
@@ -388,13 +437,6 @@ export default function editProfile() {
                               <Select options={industryList} key={"dropdown"}
                               onChange={(opt: any, _: any) => {setIndustry(opt.value)}}/>
                             </div>
-                            {/* <input
-                              id="industry"
-                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
-                              type="text"
-                              placeholder="Select..."
-                              {...register("industry")}
-                            /> */}
                           </div>
                         </div>
                       </div>
@@ -482,7 +524,9 @@ export default function editProfile() {
           <div className="flex-auto p-6">
             <div className="flex flex-wrap ">
               <div className="relative flex-grow max-w-full flex-1 px-4">
-                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300">
+                {educationList.map((item, index) => {
+                  return (
+                    <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-3">
                   <div
                     style={{
                       position: "static",
@@ -491,36 +535,168 @@ export default function editProfile() {
                     }}
                   >
                     <button
-                      className="absolute right-4"
+                      className="absolute right-20 bg-transparent border-none text-[#858796] hover:text-gray-400"
                       type="button"
-                      style={{
-                        background: "transparent",
-                        color: "rgb(133, 135, 150)",
-                        borderStyle: "none"
-                      }}
+                      onClick={() => {editEducation(index);}}
                     >
                       Edit
                     </button>
+                    <button
+                      className="absolute right-4 bg-transparent border-none text-[#858796] hover:text-gray-400"
+                      type="button"
+                      onClick={() => {deleteEducation(index);}}
+                    >
+                      Delete
+                    </button>
                   </div>
                   <div className="flex-auto p-6">
-                    <h4 className="mb-3 text-xl text-slate-600">Brown University</h4>
+                    <h4 className="mb-3 text-xl text-slate-600">{item["institution"]}</h4>
                     <h6 className="text-slate-600 -mt-2 mb-0 mb-2">
-                      Computer Science, BS, Class of 2026
+                      {item["concentration"]}, {item["degree_type"]}, Class of {item["grad_year"]}
                     </h6>
                   </div>
                 </div>
+                  )
+                })
+                }
               </div>
             </div>
           </div>
           <div className="mb-0 bg-[#FF5A5F] border-b-1 border-gray-300 text-gray-900 overflow-x-hidden overflow-y-hidden rounded-b">
               <button className="bg-[#FF5A5F] border-gray-300 whitespace-no-wrap rounded py-1 px-3 no-underline text-white w-full"
+              onClick={() => {editEducation(-1)}}
               type="button">
-                     Add Experience
+                     Add Education
              </button>
            </div>
         </div>
       </div>
     </div>
+
+          {/* MODAL START */}
+
+          <Transition.Root show={openEdModal} as={Fragment}>
+            <Dialog as="div" className="relative z-10" onClose={closeModal}>
+            <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-100"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div
+            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none h-full"
+          >
+            <Dialog.Panel className="relative min-w-0 break-words w-10/12 my-6 mx-auto border-1 border-gray-300 rounded-lg overflow-hidden flex shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                  <div className="py-6 px-12 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
+                    <p className="m-0 fw-bold text-3xl" style={{ color: "#FF5A5F" }}>
+                      Add Education
+                    </p>
+                  </div>
+                  <div className="flex-auto p-6">
+                    <form
+                    onSubmit={handleAddEducation(addEducation)}>
+                        <div className="relative flex-grow max-w-full flex-1 px-4">
+                          <div className="mb-3">
+                            <label className="form-label" htmlFor="institution">
+                              <strong>Institution</strong>
+                            </label>
+                            <input
+                              id="institution"
+                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                              type="text"
+                              placeholder="Brown University"
+                              {...registerEducation("institution", {required: true})}
+                            />
+                          </div>
+                        </div>
+                      <div className="flex flex-wrap ">
+                      <div className="relative flex-grow max-w-full flex-1 px-4">
+                          <div className="mb-3">
+                            <label className="form-label" htmlFor="concentration">
+                              <strong>Concentration</strong>
+                            </label>
+                            <input
+                              id="concentration"
+                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                              type="text"
+                              placeholder="Computer Science"
+                              {...registerEducation("concentration", {required: true})}
+                            />
+                          </div>
+                        </div>
+                        <div className="relative flex-grow max-w-full flex-1 px-4">
+                          <div className="mb-3">
+                            <label className="form-label" htmlFor="degree_type">
+                              <strong>Degree Type</strong>
+                            </label>
+                            {/* <input
+                              id="degree_type"
+                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                              type="text"
+                              placeholder="BS"
+                              
+                            /> */}
+                            <select id="degree_type"
+                            placeholder="Degree Type"
+                            className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                            {...registerEducation("degree_type", {required: true})}>
+                              <option value="" disabled selected>Select degree type</option>
+                              {/* Here is where I got the degree types: https://support.joinhandshake.com/hc/en-us/articles/360033919914-Segments-Class-Of-Degree-Types */}
+                              {degreeTypes.map((item) => (
+                                <option value={item.label}>{item.label}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="relative flex-grow max-w-full flex-1 px-4">
+                          <div className="mb-3">
+                            <label className="form-label" htmlFor="grad_year">
+                              <strong>Graduation Year</strong>
+                              <br />
+                            </label>
+                            <input
+                              id="grad_year"
+                              className="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"
+                              type="number"
+                              placeholder="2022"
+                              {...registerEducation("grad_year", {required: true})}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-gray-400 ml-4 mb-3">* please fill in all fields</div>
+                      <div className="mb-3">
+                        <button
+                          className="inline-block ml-4 align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
+                          type="submit"
+                          style={{ background: "#FF5A5F" }}
+                        >
+                          {(educationEditId === -1) ? "Add": "Save"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+              </Dialog.Panel>
+          </div>
+          </Transition.Child>
+            </Dialog>
+          </Transition.Root>
+
+          {/* MODAL END */}
     <footer className="bg-white sticky-footer">
       <div className="container mx-auto sm:px-4 my-auto">
         <div className="text-center my-auto copyright">
