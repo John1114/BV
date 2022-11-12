@@ -50,7 +50,7 @@ export default function Home() {
     <div>
       {loading && <SplashScreen fading={fading} />}
       {flashState.useFlash?
-            (<Message message={flashState.message} backgroundColor={flashState.backgroundColor} textColor={flashState.textColor} />)
+            (<Message message={flashState.message} backgroundColor={flashState.backgroundColor} textColor={flashState.textColor} width="w-1/2"/>)
             :null}
       <div className="box-border">
         <div className="flex flex-col">

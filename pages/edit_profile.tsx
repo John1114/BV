@@ -11,13 +11,16 @@ import Select from "react-select";
 import { ref } from "firebase/storage";
 import { storage } from "../util/firebaseConfig";
 import { Dialog, Transition } from "@headlessui/react";
+import React from "react";
+import Message from "../components/FlashMessage";
 
 /*
 TODO:
-* ASK IF I CAN MOVE checkIfRegistered FUNCTION to a more accessible API place
+- add flash message after saving settings
+- discuss API function placements
 - add Select... for finding startup
-- allow change image profile picture
 - load in original data for users
+- check if image changed before allowing users to upload
 - test API with authenticated and unauthenticated user
 */
 
@@ -28,7 +31,86 @@ const formNames = [
   "userForm",
   "discoveryForm",
   "jobExpForm"
-]
+];
+
+export class PictureUploader extends React.Component<{uploadFunction: any, stateUpdateFunction: any},
+{picture: any, src: any, uploadFunction: any, stateUpdateFunction: any}> {
+  /* Modified after: https://www.pluralsight.com/guides/using-react.js-and-jquery-to-update-a-profile-picture-with-a-preview#module-overallcode */
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      picture: false,
+      src: false,
+      uploadFunction: props.uploadFunction,
+      stateUpdateFunction: props.stateUpdateFunction
+    }
+  }
+
+  handlePictureSelected(event: any) {
+    var picture = event.target.files[0];
+    if (picture) {
+      var src = URL.createObjectURL(picture);
+
+      this.setState({
+        picture: picture,
+        src: src
+      });
+      this.state.stateUpdateFunction({
+        picture: picture,
+        src: src
+      })
+    }
+  }
+
+  renderPreview() {
+    if(this.state.src) {
+      return (
+        <img src={this.state.src}
+        className="rounded-full mb-3 mt-4"
+          width={160}
+          height={160}/>
+      );
+    } else {
+      return (
+        <img src={bear.src}
+        className="rounded-full mb-3 mt-4"
+          width={160}
+          height={160}/>
+      );
+    }
+  }
+
+  render() {
+    return (
+      <div className="flex-auto p-6 text-center shadow">
+        {this.renderPreview()}
+        <div className="mb-3">
+        <button
+          className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
+          type="button"
+          onClick={() => {
+            var picInput = document.getElementById("profilePicture");
+            if (picInput !== null){
+              picInput.click();
+            }
+          }}
+          style={{ background: "#FF5A5F" }}
+        >
+          Change Photo
+        </button>
+          <input
+          type="file"
+          id="profilePicture"
+          accept="image/*"
+          onChange={this.handlePictureSelected.bind(this)}
+          style={{ display: "none" }}
+        />
+        </div>
+      </div>
+    );
+  }
+}
 
 export default function editProfile() {
   const hookForms = Object.assign({}, ...formNames.map((x: string) =>
@@ -40,7 +122,6 @@ export default function editProfile() {
     }}
   }))
 
-  const {register, handleSubmit} = useForm();
   const { register: registerEducation, handleSubmit: handleAddEducation, reset } = useForm();
   const [brownAffiliation, setAffiliation] = useState<string>("");
   const [myRole, setMyRole] = useState<string>("");
@@ -49,6 +130,10 @@ export default function editProfile() {
   const [roleFind, setRoleFind] = useState<string[]>([]);
   const [openEdModal, setOpenModal] = useState<boolean>(false);
   const [educationList, setEducationList] = useState<any[]>([]);
+  const [profilePicState, setProfilePicState] = useState<{picture: any, src: any}>({picture: false, src: false});
+  const [flashState, setFlashState] = useState<{
+    useFlash: boolean, message: string, backgroundColor: string, textColor: string
+  }>({useFlash: false, message: "", backgroundColor: "", textColor: ""});
 
   // {
   //   institution: "Brown University",
@@ -56,13 +141,13 @@ export default function editProfile() {
   //   degree_type: "Bachelors",
   //   grad_year: 2026
   // }
+
   const [educationEditId, setEducationEditId] = useState<number>(-1);
-  const router = useRouter();
   const { user } = useAuth();
 
   function removeEmptyFields(data: any) {
     Object.keys(data).forEach(key => {
-      if (data[key] === '' || data[key] == null || data[key] == undefined) {
+      if (data[key] === '' || data[key] == null || data[key] == undefined || ((data[key].length? true: false) && (data[key].length == 0))) {
         delete data[key];
       }
     });
@@ -74,16 +159,35 @@ export default function editProfile() {
 }
 
   const submitAllForms = async () => {
-    // Maybe TODO
-    document.forms[0]
+    let formsToSubmit: number[] = [];
+    for (var i = 0; i < document.forms.length; i++){
+      if (document.forms[i].id in formNames){
+        formsToSubmit.push(i);
+      }
+    }
+    formsToSubmit.forEach(index => {
+      document.forms[index].requestSubmit();
+    });
+    onProfilePicSubmit();
+    onManualSubmit({"education": educationList});
   }
 
   const checkUserValidity = async () => {
     if (user === undefined){
+      setFlashState({
+        useFlash: true,
+        message: "You have not logged in with a valid email yet",
+        backgroundColor: "bg-red-600",
+        textColor: "text-[#750404]"
+      });
       return null;
     }
     const userSnapshot: QueryDocumentSnapshot<DocumentData> | null = await checkIfRegistered(user);
     if (userSnapshot === null){
+      setFlashState({
+        useFlash: true,
+        message: "You have not logged in with a valid email yet", backgroundColor: "bg-red-600", textColor: "text-[#750404]"
+      });
       return null;
     }else{
       return userSnapshot
@@ -102,18 +206,42 @@ export default function editProfile() {
     closeModal();
   }
 
+  const onProfilePicSubmit = async () => {
+    const userSnapshot = await checkUserValidity();
+    console.log(userSnapshot);
+    if ((userSnapshot !== null) && (profilePicState.picture !== false)){
+      console.log("hello");
+      var datetime = new Date();
+      const imgStorageUri = `images/${userSnapshot.id}-${datetime.getTime().toString()}.jpg`;
+      const picRef = ref(storage, imgStorageUri);
+      const picResult = await uploadFileWithRef(picRef, profilePicState.picture);
+      if (picResult){
+        await updateUserProfile(userSnapshot, {profilePicRef: imgStorageUri});
+        setFlashState({
+          useFlash: true,
+          message: "Update successful!",
+          backgroundColor: "bg-green-300",
+          textColor: "text-emerald-800"});
+      }
+    }
+  }
+
   const onResumeSubmit = async (data: any) => {
     const userSnapshot = await checkUserValidity();
     if (userSnapshot !== null){
       const resume = data["resume"][0];
       if (resume !== undefined){
         var datetime = new Date();
-        const pdfStorageUri = `resume/${userSnapshot.id}-${datetime.getTime().toString()}.pdf`
+        const pdfStorageUri = `resume/${userSnapshot.id}-${datetime.getTime().toString()}.pdf`;
         const resumeRef = ref(storage, pdfStorageUri);
-        const resumeResult = await uploadFileWithRef(resumeRef, resume)
+        const resumeResult = await uploadFileWithRef(resumeRef, resume);
         if (resumeResult){
-          await updateUserProfile(userSnapshot, {resumeRef: pdfStorageUri})
-          router.push("/");
+          await updateUserProfile(userSnapshot, {resumeRef: pdfStorageUri});
+          setFlashState({
+            useFlash: true,
+            message: "Update successful!",
+            backgroundColor: "bg-green-300",
+            textColor: "text-emerald-800"});
         }
       }
     }
@@ -131,6 +259,11 @@ export default function editProfile() {
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
+        setFlashState({
+          useFlash: true,
+          message: "Update successful!",
+          backgroundColor: "bg-green-300",
+          textColor: "text-emerald-800"});
       }
     }
   }
@@ -150,6 +283,11 @@ export default function editProfile() {
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
+        setFlashState({
+          useFlash: true,
+          message: "Update successful!",
+          backgroundColor: "bg-green-300",
+          textColor: "text-emerald-800"});
       }
     }
   }
@@ -163,27 +301,30 @@ export default function editProfile() {
       // check there is data
       if (!isEmpty(cleanedData)){
         await updateUserProfile(userSnapshot, data);
+        setFlashState({
+          useFlash: true,
+          message: "Update successful!",
+          backgroundColor: "bg-green-300",
+          textColor: "text-emerald-800"});
       }
     }
   }
 
-  const onSubmit = async (data: any) => {
+  const onManualSubmit = async (data: any) => {
     const userSnapshot = await checkUserValidity();
     if (userSnapshot !== null){
-      data["affiliation"] = brownAffiliation;
-      data["role"] = myRole;
-      data["industry"] = industry;
-      data["expertise_find"] = expertiseFind;
-      data["role_find"] = roleFind;
-      data["education"] = educationList;
-      const cleanedData = removeEmptyFields(data);
-      console.log(cleanedData);
+      console.log(data);
 
       // check there is data
-      if (!isEmpty(cleanedData)){
+      if (!isEmpty(data)){
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
+        setFlashState({
+          useFlash: true,
+          message: "Update successful!",
+          backgroundColor: "bg-green-300",
+          textColor: "text-emerald-800"});
       }
     }
   }
@@ -217,31 +358,39 @@ export default function editProfile() {
 	return (
 		<div id="wrapper" className="h-screen">
 			<Header />
+      {flashState.useFlash?
+            (<Message
+              message={flashState.message}
+              backgroundColor={flashState.backgroundColor}
+              textColor={flashState.textColor}
+              duration={1500}/>)
+            :null}
   <div id="content-wrapper" className="flex flex-col">
     <div id="content">
       <div className="container mx-auto sm:px-4 max-w-full mx-auto sm:px-4">
         <h3 className="text-gray-900 m-4 text-4xl">Profile</h3>
         <div className="flex flex-wrap  mb-3">
           <div className="lg:w-1/3 pr-4 pl-4">
-            <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-3">
-              <div className="flex-auto p-6 text-center shadow">
-                <img
-                  className="rounded-full mb-3 mt-4"
-                  src={bear.src}
-                  width={160}
-                  height={160}
-                />
-                <div className="mb-3">
-                  <button
-                    className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
-                    type="button"
-                    style={{ background: "#FF5A5F" }}
-                  >
-                    Change Photo
-                  </button>
-                </div>
-              </div>
-            </div>
+          <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-3">
+
+            <PictureUploader uploadFunction={() => {onProfilePicSubmit()}} stateUpdateFunction={setProfilePicState}/>
+            <button
+            className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
+            type="button"
+            onClick={onProfilePicSubmit}
+            style={{ background: "#FF5A5F" }}
+          >
+            Upload
+          </button>
+          <button
+            className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
+            type="button"
+            onClick={() => {console.log(flashState)}}
+            style={{ background: "#FF5A5F" }}
+          >
+            Something Else
+          </button>
+          </div>
             <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-4">
               <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                 <h6 className="fw-bold m-0" style={{ color: "#FF5A5F" }}>
@@ -654,7 +803,9 @@ export default function editProfile() {
            </div>
         </div>
       </div>
-      <button type="button" className="fixed bg-red-500 hover:bg-red-400 text-white font-bold py-3 px-16 rounded-t bottom-0 w-full">
+      <button type="button"
+      onClick={submitAllForms}
+      className="fixed bg-red-500 hover:bg-red-400 text-white font-bold py-3 px-16 rounded-t bottom-0 w-full">
           Save all changes
       </button>
     </div>
