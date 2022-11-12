@@ -388,7 +388,7 @@ export default function editProfile() {
             onClick={() => {console.log(flashState)}}
             style={{ background: "#FF5A5F" }}
           >
-            Something Else
+            log FlashState (debug)
           </button>
           </div>
             <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-4">
