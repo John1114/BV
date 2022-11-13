@@ -15,7 +15,7 @@ export default function Message({
 	width,
 	duration
 }: FlashState){
-	let flashClassName = `${backgroundColor} h-16 p-4 absolute l-0 rounded-br flex place-content-center`
+	let flashClassName = `${backgroundColor} h-16 p-4 fixed l-0 rounded-br flex place-content-center z-10 t-0`
 	if (width){
 		flashClassName += ` ${width}`
 	}else{

@@ -131,6 +131,7 @@ export default function editProfile() {
   const [openEdModal, setOpenModal] = useState<boolean>(false);
   const [educationList, setEducationList] = useState<any[]>([]);
   const [profilePicState, setProfilePicState] = useState<{picture: any, src: any}>({picture: false, src: false});
+  const [flashTimeout, setFlashTimeout] = useState<number>(1500);
   const [flashState, setFlashState] = useState<{
     useFlash: boolean, message: string, backgroundColor: string, textColor: string
   }>({useFlash: false, message: "", backgroundColor: "", textColor: ""});
@@ -144,6 +145,15 @@ export default function editProfile() {
 
   const [educationEditId, setEducationEditId] = useState<number>(-1);
   const { user } = useAuth();
+
+  const hideFlash = () => {
+    setFlashState({useFlash: false, message: "", backgroundColor: "", textColor: ""});
+  }
+
+  const showFlash = (newState: any) => {
+    setFlashState(newState);
+    window.setTimeout(hideFlash, flashTimeout);
+  }
 
   function removeEmptyFields(data: any) {
     Object.keys(data).forEach(key => {
@@ -174,7 +184,7 @@ export default function editProfile() {
 
   const checkUserValidity = async () => {
     if (user === undefined){
-      setFlashState({
+      showFlash({
         useFlash: true,
         message: "You have not logged in with a valid email yet",
         backgroundColor: "bg-red-600",
@@ -184,7 +194,7 @@ export default function editProfile() {
     }
     const userSnapshot: QueryDocumentSnapshot<DocumentData> | null = await checkIfRegistered(user);
     if (userSnapshot === null){
-      setFlashState({
+      showFlash({
         useFlash: true,
         message: "You have not logged in with a valid email yet", backgroundColor: "bg-red-600", textColor: "text-[#750404]"
       });
@@ -217,7 +227,7 @@ export default function editProfile() {
       const picResult = await uploadFileWithRef(picRef, profilePicState.picture);
       if (picResult){
         await updateUserProfile(userSnapshot, {profilePicRef: imgStorageUri});
-        setFlashState({
+        showFlash({
           useFlash: true,
           message: "Update successful!",
           backgroundColor: "bg-green-300",
@@ -237,11 +247,11 @@ export default function editProfile() {
         const resumeResult = await uploadFileWithRef(resumeRef, resume);
         if (resumeResult){
           await updateUserProfile(userSnapshot, {resumeRef: pdfStorageUri});
-          setFlashState({
+          showFlash({
             useFlash: true,
             message: "Update successful!",
             backgroundColor: "bg-green-300",
-            textColor: "text-emerald-800"});
+            textColor: "text-emerald-800"})
         }
       }
     }
@@ -259,7 +269,7 @@ export default function editProfile() {
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
-        setFlashState({
+        showFlash({
           useFlash: true,
           message: "Update successful!",
           backgroundColor: "bg-green-300",
@@ -283,7 +293,7 @@ export default function editProfile() {
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
-        setFlashState({
+        showFlash({
           useFlash: true,
           message: "Update successful!",
           backgroundColor: "bg-green-300",
@@ -301,7 +311,7 @@ export default function editProfile() {
       // check there is data
       if (!isEmpty(cleanedData)){
         await updateUserProfile(userSnapshot, data);
-        setFlashState({
+        showFlash({
           useFlash: true,
           message: "Update successful!",
           backgroundColor: "bg-green-300",
@@ -320,7 +330,7 @@ export default function editProfile() {
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
-        setFlashState({
+        showFlash({
           useFlash: true,
           message: "Update successful!",
           backgroundColor: "bg-green-300",
@@ -357,14 +367,13 @@ export default function editProfile() {
 
 	return (
 		<div id="wrapper" className="h-screen">
-			<Header />
-      {flashState.useFlash?
+            {flashState.useFlash &&
             (<Message
               message={flashState.message}
               backgroundColor={flashState.backgroundColor}
               textColor={flashState.textColor}
-              duration={1500}/>)
-            :null}
+              duration={1500}/>)}
+			<Header />
   <div id="content-wrapper" className="flex flex-col">
     <div id="content">
       <div className="container mx-auto sm:px-4 max-w-full mx-auto sm:px-4">
