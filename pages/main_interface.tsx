@@ -15,6 +15,10 @@ function Logo({logo}: {logo: StaticImageData}) {
     return (<img src={logo.src} alt="logo" className="h-12 w-12 object-scale-down"/>);
 }
 
+function ProfilePic({pic}: {pic: StaticImageData}) {
+    return (<img src={pic.src} alt="pfp" className="h-12 w-12 object-scale-down shadow rounded-full "/>);
+}
+
 
 export default function MainPage() {
 
@@ -32,8 +36,14 @@ export function Header() {
         <div style={{
             backgroundColor: interfaceBackgroundColor,
         }} className="items-center align-middle flex w-screen h-14 px-4 sm:px-6">
-            <Logo logo={logo}/>
-            <SearchComponent/>
+            <div className="items-center align-middle flex w-screen h-14 px-4 sm:px-6">
+                <Logo logo={logo}/>
+                <SearchComponent/>
+            </div>
+            <div>
+                <ProfilePic pic={logo}/>
+            </div> 
+            
         </div>
     )
 }
@@ -56,7 +66,7 @@ export function SearchOptions() {
             backgroundColor: interfaceBackgroundColor,
         }} >
                 <button onMouseOver={() => setShowSidebar(true)} onMouseLeave={() => setShowSidebar(false)}
-                    className={`w-20 hover:w-60`} >
+                    className={`w-24 hover:w-64`} >
                     <> 
                         {
                             showSidebar ? (
