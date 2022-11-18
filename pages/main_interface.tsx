@@ -12,11 +12,12 @@ import { height, minHeight } from "@mui/system";
 export const interfaceBackgroundColor: string = '#EFEFEF'
 
 function Logo({logo}: {logo: StaticImageData}) {
-    return (<img src={logo.src} alt="logo" className="h-12 w-12 object-scale-down"/>);
+    return (<a href="/main_interface"><img src={logo.src} alt="logo" className="h-12 w-12 object-scale-down"/></a>);
 }
 
 function ProfilePic({pic}: {pic: StaticImageData}) {
-    return (<img src={pic.src} alt="pfp" className="h-12 w-12 object-scale-down shadow rounded-full "/>);
+    return (<a href="/edit_profile" className="text-lg font-light text-gray-600 transition-all hover:text-red-500 right-12">
+        <img src={pic.src} alt="pfp" className="h-12 w-12 object-scale-down shadow rounded-full "/></a>);
 }
 
 
@@ -41,9 +42,7 @@ export function Header() {
                 <SearchComponent/>
             </div>
             <div>
-                <a href="/edit_profile" className="text-lg font-light text-gray-600 transition-all hover:text-red-500 right-12">
-                    Edit Profile
-                </a>
+                
 
 
             </div>
