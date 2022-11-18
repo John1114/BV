@@ -14,11 +14,16 @@ import { toast } from "react-toastify";
 import StartupFormStruct, {
   FormQuestion,
 } from "../components/StartupSignupFormStruct";
-import addStartupFromForm, { uploadImageWithRef } from "../util/startupSignupApi";
+import addStartupFromForm, {
+  uploadImageWithRef,
+} from "../util/startupSignupApi";
 import styles from "../styles/Form.module.css";
 import { skills } from "../util/skills";
 import SplashScreen from "../util/splashscreen";
-import ReactImageUploading, { ImageListType, ImageType } from "react-images-uploading";
+import ReactImageUploading, {
+  ImageListType,
+  ImageType,
+} from "react-images-uploading";
 import { useForm } from "react-hook-form";
 import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../util/firebaseConfig";
@@ -74,13 +79,18 @@ function SecondVector({ accentColor }: VectorProps) {
 
 const skill = skills;
 
-function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUpdater: any) {
+function addPages(
+  setAccent: any,
+  setSkills: any,
+  registerFunction: any,
+  imageUpdater: any
+) {
   questionPages.push(
     {
       pageId: 0,
       question: "Tell us about your startup",
       triggerFunction: null,
-      requiredNames: ["companyName", "yearFounded", "founders", "industry", "description"],
+      requiredNames: ["companyName", "yearFounded", "founders", "industry"],
       pageFunction: null,
       lastPage: false,
       questionFormat: (
@@ -92,11 +102,11 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
                 id="companyName"
                 type="text"
                 placeholder="Company Name"
-                {...registerFunction("companyName", {required: true})}
+                {...registerFunction("companyName", { required: true })}
               />
             </div>
             <div className="flex justify-center items-center p-4">
-              <div className="flex-col w-1/3 justify-center">
+              <div className="flex-col w-1/2 justify-center">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="yearFounded"
@@ -110,10 +120,27 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
                   type="number"
                   placeholder="Year Founded"
                   defaultValue={2022}
-                  {...registerFunction("yearFounded", {required: true})}
+                  {...registerFunction("yearFounded", { required: true })}
                 />
               </div>
-              <div className="flex-col w-1/3 justify-center">
+              <div className="flex-col w-1/2 justify-center">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="industry"
+                >
+                  Industry
+                </label>
+                <input
+                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  id="industry"
+                  type="text"
+                  placeholder="Select"
+                  {...registerFunction("industry", { required: true })}
+                />
+              </div>
+            </div>
+            <div className="flex justify-center items-center p-4">
+              <div className="flex-col w-1/2 justify-center">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="founders"
@@ -126,41 +153,72 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
                   id="founders"
                   type="text"
                   placeholder="Founder(s)"
-                  {...registerFunction("founders", {required: true})}
+                  {...registerFunction("First Name", { required: true })}
                 />
               </div>
-              <div className="flex-col w-1/3 justify-center">
+              <div className="flex-col w-1/2 justify-center">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="industry"
+                  htmlFor="founders"
+                ></label>
+                <input
+                  required
+                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  id="founders"
+                  type="text"
+                  placeholder="Last Name"
+                  {...registerFunction("founders", { required: true })}
+                />
+              </div>
+            </div>
+            <div className="flex justify-center items-center p-4">
+              <div className="flex-col w-1/2 justify-center">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="current_stage"
                 >
-                  Industry
+                  Current Stage
                 </label>
                 <input
+                  required
                   className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
-                  id="industry"
+                  id="current_stage"
                   type="text"
-                  placeholder="Select"
-                  {...registerFunction("industry", {required: true})}
+                  {...registerFunction("Current Stage", { required: true })}
                 />
               </div>
-            </div>
-            <div className="flex justify-center p-4">
-              <div className="flex-col w-full">
+              <div className="flex-col w-1/2 justify-center">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="description"
+                  htmlFor="size"
                 >
-                  Description
+                  Size
                 </label>
-                <textarea
-                  className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm h-24 align-text-top"
-                  id="description"
-                  placeholder="Description"
-                  {...registerFunction("description", {required: true})}
+                <input
+                  required
+                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  id="size"
+                  type="text"
+                  placeholder="Number of Employees"
+                  {...registerFunction("founders", { required: true })}
                 />
               </div>
             </div>
+            <div className="flex-col w-full p-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="location"
+            >
+              Location
+            </label>
+            <p className="font-light text-xs">Where are you based? Remotely?</p>
+            <input
+              className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm align-text-top"
+              id="description"
+              placeholder="Location"
+              {...registerFunction("location", { required: true })}
+            />
+          </div>
           </div>
         </div>
       ),
@@ -174,6 +232,20 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
       lastPage: false,
       questionFormat: (
         <div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center columns-2">
+          <div className="flex-col w-full">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="description"
+            >
+              Description
+            </label>
+            <textarea
+              className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm h-24 align-text-top"
+              id="description"
+              placeholder="Description"
+              {...registerFunction("description", { required: true })}
+            />
+          </div>
           <div className="flex-col">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -186,7 +258,10 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
               id="email"
               type="text"
               placeholder="Email"
-              {...registerFunction("email", {required: true, pattern: /^\S+@\S+$/i})}
+              {...registerFunction("email", {
+                required: true,
+                pattern: /^\S+@\S+$/i,
+              })}
             />
           </div>
           <div className="flex-col">
@@ -201,7 +276,7 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
               id="website"
               type="text"
               placeholder="Website"
-              {...registerFunction("website", {required: true})}
+              {...registerFunction("website", { required: true })}
             />
           </div>
         </div>
@@ -216,7 +291,7 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
       lastPage: false,
       questionFormat: (
         <div className="appearance-none rounded ml-20 mr-20">
-          <LogoForm setAccentColor={setAccent} imageUpdater={imageUpdater}/>
+          <LogoForm setAccentColor={setAccent} imageUpdater={imageUpdater} />
         </div>
       ),
     },
@@ -230,8 +305,18 @@ function addPages(setAccent: any, setSkills: any, registerFunction: any, imageUp
       questionFormat: (
         <div className="appearance-none rounded ml-20 mr-20 pt-20 mb-20">
           <label className="h-30">What skills do you need?</label>
-          <Select options={skill} isMulti key={"dropdown"}
-          onChange={(value, _) => {setSkills(value.map((item) => {return item.value}))}}/>
+          <Select
+            options={skill}
+            isMulti
+            key={"dropdown"}
+            onChange={(value, _) => {
+              setSkills(
+                value.map((item) => {
+                  return item.value;
+                })
+              );
+            }}
+          />
         </div>
       ),
     }
@@ -248,8 +333,13 @@ export default function StartupSignup() {
   const [accentColor, setAccentColor] = useState<string>("#FF5A5F");
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [logoImage, setLogoImage] = useState<ImageType | null>(null);
-  const { register, handleSubmit, trigger, formState: { errors } } = useForm();
-  
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    formState: { errors },
+  } = useForm();
+
   const router = useRouter();
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -284,45 +374,59 @@ export default function StartupSignup() {
   };
 
   const onSubmit = async (data: any) => {
-    if ((logoImage !== null) && (logoImage.file !== undefined)){
-        // Add skills to form obj
-        data["skills"] = selectedSkills.join(",");
+    if (logoImage !== null && logoImage.file !== undefined) {
+      // Add skills to form obj
+      data["skills"] = selectedSkills.join(",");
 
-        // Check if there is image uploaded, if there is, get and upload file
-        // https://firebase.google.com/docs/storage/web/upload-files#upload_from_a_blob_or_file
+      // Check if there is image uploaded, if there is, get and upload file
+      // https://firebase.google.com/docs/storage/web/upload-files#upload_from_a_blob_or_file
 
-        var datetime = new Date();
+      var datetime = new Date();
 
-        // Generate a unique image path by taking the millisecond timestamp of the image being uploaded
-        // Maybe TODO: if user must be registered to use this form,
-        // use user id in conjunction with timestamp to create unique image path
-        const imageStorageUri = `images/${datetime.getTime().toString()}.jpg`
-        const imageRef = ref(storage, imageStorageUri);
-        const imageRes = await uploadImageWithRef(imageRef, logoImage.file);
+      // Generate a unique image path by taking the millisecond timestamp of the image being uploaded
+      // Maybe TODO: if user must be registered to use this form,
+      // use user id in conjunction with timestamp to create unique image path
+      const imageStorageUri = `images/${datetime.getTime().toString()}.jpg`;
+      const imageRef = ref(storage, imageStorageUri);
+      const imageRes = await uploadImageWithRef(imageRef, logoImage.file);
 
-        if (imageRes){
-          data["imageRef"] = imageStorageUri;
+      if (imageRes) {
+        data["imageRef"] = imageStorageUri;
 
-          console.log(data);
+        console.log(data);
 
-          // upload data with API
-          const res = await addStartupFromForm(data);
+        // upload data with API
+        const res = await addStartupFromForm(data);
 
-          console.log(res);
+        console.log(res);
 
-          router.push({pathname: "/", query: {
-            useFlash: true,
-            message: "Successfully created startup!",
-            backgroundColor: "bg-green-300",
-            textColor: "text-emerald-800"}}, "/");
-        }
+        router.push(
+          {
+            pathname: "/",
+            query: {
+              useFlash: true,
+              message: "Successfully created startup!",
+              backgroundColor: "bg-green-300",
+              textColor: "text-emerald-800",
+            },
+          },
+          "/"
+        );
+      }
     }
-    router.push({pathname: "/", query: {
-      useFlash: true,
-      message: "Successfully created startup!",
-      backgroundColor: "bg-green-300",
-      textColor: "text-emerald-800"}}, "/");
-  }
+    router.push(
+      {
+        pathname: "/",
+        query: {
+          useFlash: true,
+          message: "Successfully created startup!",
+          backgroundColor: "bg-green-300",
+          textColor: "text-emerald-800",
+        },
+      },
+      "/"
+    );
+  };
 
   return (
     <div>
@@ -520,8 +624,8 @@ export function LogoForm({ setAccentColor, imageUpdater }: LogoFormProps) {
             // write your building UI
             <div className="border-dashed border-2 border-gray-600 rounded align-middle">
               <button
-              className="h-20 p-10 flex-row align-middle rounded-sm"
-              type="button"
+                className="h-20 p-10 flex-row align-middle rounded-sm"
+                type="button"
                 onClick={onImageUpload}
               >
                 Upload Image
@@ -530,7 +634,9 @@ export function LogoForm({ setAccentColor, imageUpdater }: LogoFormProps) {
                 <div key={index} className="flex-col items-center mt-5 pt-2">
                   <img src={image.dataURL} alt="" width="100" />
                   <div>
-                    <button type="button" onClick={() => onImageRemove(index)}>Remove</button>
+                    <button type="button" onClick={() => onImageRemove(index)}>
+                      Remove
+                    </button>
                   </div>
                 </div>
               ))}
