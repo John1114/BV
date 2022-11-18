@@ -45,10 +45,7 @@ export interface FormQuestion {
 		{questionFormat}
 
 		<div className="absolute right-6 bottom-6">
-			<button type="button" onClick={(event) => {if (lastPage){event.currentTarget.disabled = true;} onNextPage();}
-				
-				
-				} className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded">
+			<button type="button" onClick={(event) => {if (lastPage){event.currentTarget.disabled = true;} onNextPage();}} className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded">
 				{lastPage? "Submit": "Next Page"}
 				
 			</button>

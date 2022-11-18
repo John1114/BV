@@ -4,17 +4,27 @@ interface FlashState{
 	message: string;
 	backgroundColor: string;
 	textColor: string;
+	width?: string;
+	duration?: number;
 }
 
 export default function Message({
 	message,
 	backgroundColor,
-	textColor
+	textColor,
+	width,
+	duration
 }: FlashState){
-	const flashClassName = `${backgroundColor} h-16 p-4 absolute w-1/2 l-0 rounded-br flex place-content-center`
+	let flashClassName = `${backgroundColor} h-16 p-4 fixed l-0 rounded-br flex place-content-center z-10 t-0`
+	if (width){
+		flashClassName += ` ${width}`
+	}else{
+		flashClassName += " w-full"
+	}
+	
 	const textClassName = `${textColor} align-middle`
 	return (
-		<FlashMessage duration={5000}>
+		<FlashMessage duration={duration? duration: 5000}>
 		  <div className={flashClassName}>
 			<strong className={textClassName}>{message}</strong>
 		  </div>
