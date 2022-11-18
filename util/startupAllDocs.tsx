@@ -1,5 +1,4 @@
-import { collection, addDoc, getDocs } from "firebase/firestore";
-import { StorageReference, uploadBytes } from "firebase/storage";
+import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "./firebaseConfig";
 
 export default async function getStartupDocs(data: any){
