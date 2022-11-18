@@ -14,7 +14,7 @@ export default function StartupInfo() {
         <div className="">
 
             {/* If we are storing an "accentColor" attribute for each company,
-            this class needs to change with each company */}
+            this class needs to change with each company (Ex: "bg-[#2c6dd4]")*/}
             <div className="bg-blue-600">
 
 

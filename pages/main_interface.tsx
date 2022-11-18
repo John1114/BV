@@ -42,8 +42,10 @@ export function Header() {
             </div>
             <div>
                 <ProfilePic pic={logo}/>
+                <a href="/edit_profile" className="absolute text-lg font-light text-gray-600 transition-all hover:text-red-500 right-12">
+                    Edit Profile
+                </a>
             </div> 
-            
         </div>
     )
 }
