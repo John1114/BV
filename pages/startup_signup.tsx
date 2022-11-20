@@ -27,6 +27,7 @@ import ReactImageUploading, {
 import { useForm } from "react-hook-form";
 import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../util/firebaseConfig";
+import { Founders } from "../components/Founders";
 
 const questionPages: FormQuestion[] = [];
 interface VectorProps {
@@ -90,18 +91,24 @@ function addPages(
       pageId: 0,
       question: "Tell us about your startup",
       triggerFunction: null,
-      requiredNames: ["companyName", "yearFounded", "founders", "industry"],
+      //requiredNames: ["companyName", "yearFounded", "founders", "industry"],
+      requiredNames: [],
       pageFunction: null,
       lastPage: false,
       questionFormat: (
-        <div className="max-w-full pl-20 pr-20 mt-1 pt-10 justify-center items-center">
+        <div className="max-w-full pl-20 pr-20 mt-1 pt-10 justify-center items-center overscroll-contain">
           <div className="flex-col w-full">
-            <div>
+            <div className="p-4">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="yearFounded"
+              >
+                Name
+              </label>
               <input
-                className="shadow appearance-none border rounded w-full h-24 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-4xl text-center"
+                className="shadow appearance-none border-2 border-black rounded w-full h-14 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-4xl text-center"
                 id="companyName"
                 type="text"
-                placeholder="Company Name"
                 {...registerFunction("companyName", { required: true })}
               />
             </div>
@@ -115,15 +122,14 @@ function addPages(
                 </label>
                 <input
                   required
-                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  className="shadow w-5/6 h-14 appearance-none border-2 rounded border-black py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
                   id="yearFounded"
                   type="number"
-                  placeholder="Year Founded"
                   defaultValue={2022}
                   {...registerFunction("yearFounded", { required: true })}
                 />
               </div>
-              <div className="flex-col w-1/2 justify-center">
+              <div className="flex-col w-1/2 justify-center mt-2">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="industry"
@@ -131,45 +137,15 @@ function addPages(
                   Industry
                 </label>
                 <input
-                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  className="shadow w-5/6 h-14 appearance-none border-2 border-black rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
                   id="industry"
                   type="text"
-                  placeholder="Select"
                   {...registerFunction("industry", { required: true })}
                 />
               </div>
             </div>
             <div className="flex justify-center items-center p-4">
-              <div className="flex-col w-1/2 justify-center">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="founders"
-                >
-                  Founder(s)
-                </label>
-                <input
-                  required
-                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
-                  id="founders"
-                  type="text"
-                  placeholder="Founder(s)"
-                  {...registerFunction("First Name", { required: true })}
-                />
-              </div>
-              <div className="flex-col w-1/2 justify-center">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="founders"
-                ></label>
-                <input
-                  required
-                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
-                  id="founders"
-                  type="text"
-                  placeholder="Last Name"
-                  {...registerFunction("founders", { required: true })}
-                />
-              </div>
+              <Founders registerFunction={registerFunction}/>
             </div>
             <div className="flex justify-center items-center p-4">
               <div className="flex-col w-1/2 justify-center">
@@ -181,7 +157,7 @@ function addPages(
                 </label>
                 <input
                   required
-                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  className="shadow h-14 w-5/6 appearance-none border-2 border-black rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
                   id="current_stage"
                   type="text"
                   {...registerFunction("Current Stage", { required: true })}
@@ -196,29 +172,29 @@ function addPages(
                 </label>
                 <input
                   required
-                  className="shadow appearance-none border rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
+                  className="shadow w-5/6 h-14 appearance-none border-2 border-black rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
                   id="size"
                   type="text"
-                  placeholder="Number of Employees"
-                  {...registerFunction("founders", { required: true })}
+                  {...registerFunction("size", { required: true })}
                 />
               </div>
             </div>
             <div className="flex-col w-full p-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="location"
-            >
-              Location
-            </label>
-            <p className="font-light text-xs">Where are you based? Remotely?</p>
-            <input
-              className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm align-text-top"
-              id="description"
-              placeholder="Location"
-              {...registerFunction("location", { required: true })}
-            />
-          </div>
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="location"
+              >
+                Location
+              </label>
+              <p className="font-light text-xs">
+                Where are you based? Remotely?
+              </p>
+              <input
+                className="shadow h-14 appearance-none border-2 border-black rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm align-text-top"
+                id="description"
+                {...registerFunction("location", { required: true })}
+              />
+            </div>
           </div>
         </div>
       ),
@@ -227,56 +203,43 @@ function addPages(
       pageId: 1,
       question: "Where can we find you?",
       triggerFunction: null,
-      requiredNames: ["email", "website"],
+      // requiredNames: ["email", "website"],
+      requiredNames: [],
       pageFunction: null,
       lastPage: false,
       questionFormat: (
-        <div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center columns-2">
-          <div className="flex-col w-full">
+        <div className="max-w-full pl-20 pr-20 mt-6 pt-20 justify-center items-center">
+          <div className="flex-row">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="description"
             >
               Description
             </label>
+            <p className="font-light text-xs">Tell us what your startup does</p>
             <textarea
-              className="shadow appearance-none border rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm h-24 align-text-top"
+              className="shadow appearance-none border-2 border-black rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm h-24 align-text-top"
               id="description"
               placeholder="Description"
               {...registerFunction("description", { required: true })}
             />
           </div>
-          <div className="flex-col">
+          <div className="flex-row pt-5">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="email"
+              htmlFor="mission_statement"
             >
-              Email
+              Mission Statement
             </label>
-            <input
-              className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl"
-              id="email"
-              type="text"
-              placeholder="Email"
-              {...registerFunction("email", {
-                required: true,
-                pattern: /^\S+@\S+$/i,
-              })}
-            />
-          </div>
-          <div className="flex-col">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="website"
-            >
-              Website
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl"
-              id="website"
-              type="text"
-              placeholder="Website"
-              {...registerFunction("website", { required: true })}
+            <p className="font-light text-xs">
+              Tell us what your core values are and what drives you as a
+              company.
+            </p>
+            <textarea
+              className="shadow appearance-none border-2 border-black rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm h-24 align-text-top"
+              id="description"
+              placeholder="Mission Statement"
+              {...registerFunction("mission_statement", { required: true })}
             />
           </div>
         </div>
@@ -297,26 +260,46 @@ function addPages(
     },
     {
       pageId: 3,
-      question: "What are you looking for?",
+      question: "Where can we find you?",
       triggerFunction: null,
       requiredNames: [],
       pageFunction: null,
       lastPage: true,
       questionFormat: (
-        <div className="appearance-none rounded ml-20 mr-20 pt-20 mb-20">
-          <label className="h-30">What skills do you need?</label>
-          <Select
-            options={skill}
-            isMulti
-            key={"dropdown"}
-            onChange={(value, _) => {
-              setSkills(
-                value.map((item) => {
-                  return item.value;
-                })
-              );
-            }}
-          />
+        <div className="appearance-none rounded ml-20 mr-20 pt-10 mb-20">
+          <div className="flex-col">
+            {/* <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
+              Email
+            </label>
+            <input
+              className="shadow appearance-none border rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl"
+              id="email"
+              type="text"
+              placeholder="Email"
+              {...registerFunction("email", {
+                required: true,
+                pattern: /^\S+@\S+$/i,
+              })}
+            /> */}
+          </div>
+          <div className="flex-col">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="website"
+            >
+              Website
+            </label>
+            <input
+              className="shadow appearance-none border-2 border-black rounded w-full h-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl"
+              id="website"
+              type="text"
+              placeholder="Website"
+              {...registerFunction("website", { required: true })}
+            />
+          </div>
         </div>
       ),
     }
@@ -608,7 +591,7 @@ export function LogoForm({ setAccentColor, imageUpdater }: LogoFormProps) {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center pt-20 pb-20">
+    <div className="flex flex-col items-center pt-20 pb-20">
       <div className="pt-2 pb-5 border-dashed border-gray-600">
         <ReactImageUploading
           value={images}
@@ -666,6 +649,41 @@ export function LogoForm({ setAccentColor, imageUpdater }: LogoFormProps) {
           }}
           ref={colorInputRef}
         />
+      </div>
+      <div className="pt-2 pb-5 border-dashed border-gray-600">
+        <ReactImageUploading
+          value={images}
+          multiple={false}
+          onChange={onChange}
+        >
+          {({
+            imageList,
+            onImageUpload,
+            onImageUpdate,
+            onImageRemove,
+          }: any) => (
+            // write your building UI
+            <div className="border-dashed border-2 border-gray-600 rounded align-middle">
+              <button
+                className="h-20 p-10 flex-row align-middle rounded-sm"
+                type="button"
+                onClick={onImageUpload}
+              >
+                Upload Additional Media
+              </button>
+              {imageList.map((image: any, index: any) => (
+                <div key={index} className="flex-col items-center mt-5 pt-2">
+                  <img src={image.dataURL} alt="" width="100" />
+                  <div>
+                    <button type="button" onClick={() => onImageRemove(index)}>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </ReactImageUploading>
       </div>
     </div>
   );
