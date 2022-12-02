@@ -109,15 +109,15 @@ export function CompanyCard({data} : {data : CompanyData}) {
     return (
         <div style={{
             backgroundColor: data.accentColor,
-            minHeight: '24rem',
-            maxHeight: '100%',
+            minHeight: '18rem',
+            
 
                     }} 
 
         className=" w-9/12 rounded-md border-box shadow-lg">
             {/* Top */}
             <div className="flex justify-center">
-                <div className="my-2 mx-4 h-1/2 max-h-fit w-11/12">
+                <div className="my-2 mx-4 w-11/12">
                     <div className="flex justify-content items-center align-middle">
                         <img src={data.imageData} className="left-0 inset-y-0 w-24 h-24"/>
                         {/* Information */}
@@ -151,7 +151,7 @@ export function CompanyCard({data} : {data : CompanyData}) {
             </div>
 
             {/* Bottom */}
-            <div className="flex justify-center w-full h-full pb-10">
+            <div className="mb-8 mt-2 flex justify-center w-full">
                 <div className="h-44 w-11/12 bg-white rounded-md">
                     {/* Text area */}
                     <p> 
