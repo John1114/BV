@@ -2,11 +2,11 @@ import { Header } from "./main_interface";
 import bear from '../assets/thanks-bear.png';
 import { useForm } from "react-hook-form";
 import updateUserProfile, { checkIfRegistered, uploadFileWithRef } from "../util/userProfileUpdateApi";
-import { AuthState, useAuth, User } from "../util/firebaseFunctions";
+import { AuthState, useAuth, User, FirebaseAuthContext } from "../util/firebaseFunctions";
 import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DocumentData, QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
-import { affiliations, industryList, roles, degreeTypes } from "../util/profileOptions";
+import { affiliations, industryList, roles, degreeTypes, Option } from "../util/profileOptions";
 import Select from "react-select";
 import { ref } from "firebase/storage";
 import { storage } from "../util/firebaseConfig";
@@ -115,15 +115,17 @@ export class PictureUploader extends React.Component<{uploadFunction: any, state
 export default function editProfile() {
   const hookForms = Object.assign({}, ...formNames.map((x: string) =>
   {
-    const {register: r, handleSubmit: hs} = useForm();
+    const {register: r, handleSubmit: hs, reset: resetF} = useForm();
     return {[x]: {
       registerFunc: r,
-      handleFunc: hs
+      handleFunc: hs,
+      resetFunc: resetF
     }}
   }))
 
   const { register: registerEducation, handleSubmit: handleAddEducation, reset } = useForm();
   const [brownAffiliation, setAffiliation] = useState<string>("");
+  const [affiliationDefaultValue, setAffDefault] = useState<Option | undefined>(undefined);
   const [myRole, setMyRole] = useState<string>("");
   const [industry, setIndustry] = useState<string>("");
   const [expertiseFind, setExpertiseFind] = useState<string[]>([]);
@@ -136,6 +138,10 @@ export default function editProfile() {
     useFlash: boolean, message: string, backgroundColor: string, textColor: string
   }>({useFlash: false, message: "", backgroundColor: "", textColor: ""});
 
+  const [educationEditId, setEducationEditId] = useState<number>(-1);
+  const { user } = useAuth();
+  const router = useRouter();
+
   // {
   //   institution: "Brown University",
   //   concentration: "Computer Science",
@@ -143,8 +149,42 @@ export default function editProfile() {
   //   grad_year: 2026
   // }
 
-  const [educationEditId, setEducationEditId] = useState<number>(-1);
-  const { user } = useAuth();
+  useEffect(() => {
+    console.log(user);
+    if (user !== undefined){
+      setAffDefault(findOptionInOpts("Alumni", affiliations, true));
+      console.log(affiliationDefaultValue);
+      onLoad();
+    }
+  });
+
+  const onLoad = async () => {
+    const snapshot = await checkUserValidity();
+    if (snapshot !== null){
+      // TODO: get current user info
+      const userData = snapshot.data();
+      console.log(userData);
+    }else{
+      console.log("hi");
+      router.push({pathname: "/", query: {
+        useFlash: true,
+        message: "You have not logged in yet",
+        backgroundColor: "bg-red-600",
+        textColor: "text-[#750404]"}}, "/");
+    }
+  }
+
+  const setAllDefaults = async () => {
+    
+  }
+
+  const findOptionInOpts = (label: string, options: Option[], useLabel: boolean = false) => {
+    if (useLabel){
+      return options.find(opt => opt.label == label);
+    }
+    return options.find(opt => opt.value == label);
+    
+  }
 
   const hideFlash = () => {
     setFlashState({useFlash: false, message: "", backgroundColor: "", textColor: ""});
@@ -462,7 +502,7 @@ export default function editProfile() {
                         
                         <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
                         >
-                        <Select options={affiliations} key={"dropdown"}
+                        <Select options={affiliations} key={"dropdown"} value={affiliationDefaultValue || 'Select'}
                         onChange={(opt: any, _: any) => {setAffiliation(opt.value)}}/>
                       </div>
                       </div>
