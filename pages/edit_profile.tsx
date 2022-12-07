@@ -33,6 +33,13 @@ const formNames = [
   "jobExpForm"
 ];
 
+interface Field {
+  name: string,
+  multi: boolean,
+  setFunc: any,
+  optList: string
+}
+
 export class PictureUploader extends React.Component<{uploadFunction: any, stateUpdateFunction: any},
 {picture: any, src: any, uploadFunction: any, stateUpdateFunction: any}> {
   /* Modified after: https://www.pluralsight.com/guides/using-react.js-and-jquery-to-update-a-profile-picture-with-a-preview#module-overallcode */
@@ -115,28 +122,43 @@ export class PictureUploader extends React.Component<{uploadFunction: any, state
 export default function editProfile() {
   const hookForms = Object.assign({}, ...formNames.map((x: string) =>
   {
-    const {register: r, handleSubmit: hs, reset: resetF} = useForm();
+    const {register: r, handleSubmit: hs, reset: resetF, getValues: gv} = useForm();
     return {[x]: {
       registerFunc: r,
       handleFunc: hs,
-      resetFunc: resetF
+      resetFunc: resetF,
+      getValuesFunc: gv
     }}
   }))
 
   const { register: registerEducation, handleSubmit: handleAddEducation, reset } = useForm();
-  const [brownAffiliation, setAffiliation] = useState<string>("");
-  const [affiliationDefaultValue, setAffDefault] = useState<Option | undefined>(undefined);
-  const [myRole, setMyRole] = useState<string>("");
-  const [industry, setIndustry] = useState<string>("");
-  const [expertiseFind, setExpertiseFind] = useState<string[]>([]);
-  const [roleFind, setRoleFind] = useState<string[]>([]);
+  const [brownAffiliation, setAffiliation] = useState<Option | undefined>(undefined);
+  const [myRole, setMyRole] = useState<Option | undefined>(undefined);
+  const [industry, setIndustry] = useState<Option | undefined>(undefined);
+  const [expertiseFind, setExpertiseFind] = useState<Option[]>([]);
+  const [roleFind, setRoleFind] = useState<Option[]>([]);
   const [openEdModal, setOpenModal] = useState<boolean>(false);
   const [educationList, setEducationList] = useState<any[]>([]);
+  const [lastSubmittedResume, setLastResume] = useState<string | undefined>(undefined);
   const [profilePicState, setProfilePicState] = useState<{picture: any, src: any}>({picture: false, src: false});
   const [flashTimeout, setFlashTimeout] = useState<number>(1500);
   const [flashState, setFlashState] = useState<{
     useFlash: boolean, message: string, backgroundColor: string, textColor: string
   }>({useFlash: false, message: "", backgroundColor: "", textColor: ""});
+
+  const optionLists: any = {
+    aff: affiliations,
+    ind: industryList,
+    roles: roles
+  }
+
+  const specialFields = [
+    {name: "affiliation", multi: false, setFunc: setAffiliation, optList: "aff"},
+    {name: "role", multi: false, setFunc: setMyRole, optList: "roles"},
+    {name: "industry", multi: false, setFunc: setIndustry, optList: "ind"},
+    {name: "expertise_find", multi: true, setFunc: setExpertiseFind, optList: "ind"},
+    {name: "role_find", multi: true, setFunc: setRoleFind, optList: "roles"}
+  ];
 
   const [educationEditId, setEducationEditId] = useState<number>(-1);
   const { user } = useAuth();
@@ -152,8 +174,6 @@ export default function editProfile() {
   useEffect(() => {
     console.log(user);
     if (user !== undefined){
-      setAffDefault(findOptionInOpts("Alumni", affiliations, true));
-      console.log(affiliationDefaultValue);
       onLoad();
     }
   });
@@ -164,6 +184,7 @@ export default function editProfile() {
       // TODO: get current user info
       const userData = snapshot.data();
       console.log(userData);
+      setAllDefaults(userData);
     }else{
       console.log("hi");
       router.push({pathname: "/", query: {
@@ -174,8 +195,20 @@ export default function editProfile() {
     }
   }
 
-  const setAllDefaults = async () => {
-    
+  const setAllDefaults = async (data: any) => {
+    formNames.forEach((name) => {
+      let valuesDict = new Map();
+      Object.keys(hookForms[name].getValuesFunc()).map((k: string) => {
+          if (data.hasOwnProperty(k)){
+            valuesDict.set(k, data[k]);
+          }
+        })
+      hookForms[name].resetF(valuesDict);
+      specialFields.forEach((field: Field) => {
+        field.setFunc(findOptionInOpts(data[field.name], optionLists[field.optList], false))
+      });
+      setEducationList(data["education"]);
+    })
   }
 
   const findOptionInOpts = (label: string, options: Option[], useLabel: boolean = false) => {
@@ -183,7 +216,6 @@ export default function editProfile() {
       return options.find(opt => opt.label == label);
     }
     return options.find(opt => opt.value == label);
-    
   }
 
   const hideFlash = () => {
@@ -300,7 +332,7 @@ export default function editProfile() {
   const onAffiliationSubmit = async (data: any) => {
     const userSnapshot = await checkUserValidity();
     if (userSnapshot !== null){
-      data["affiliation"] = brownAffiliation;
+      data["affiliation"] = brownAffiliation? brownAffiliation.value: "";
       const cleanedData = removeEmptyFields(data);
       console.log(cleanedData);
 
@@ -321,10 +353,10 @@ export default function editProfile() {
   const onDiscoverySubmit = async (data: any) => {
     const userSnapshot = await checkUserValidity();
     if (userSnapshot !== null){
-      data["role"] = myRole;
-      data["industry"] = industry;
-      data["expertise_find"] = expertiseFind;
-      data["role_find"] = roleFind;
+      data["role"] = myRole? myRole.value: "";
+      data["industry"] = industry? industry.value: "";
+      data["expertise_find"] = expertiseFind.map((opt) => opt.value);
+      data["role_find"] = roleFind.map((opt) => opt.value);
       const cleanedData = removeEmptyFields(data);
       console.log(cleanedData);
 
@@ -454,6 +486,7 @@ export default function editProfile() {
                     <div className="relative flex-grow max-w-full flex-1 px-4">
                 <div className="mb-3">
                   <input type="file" accept="application/pdf" {...hookForms["resumeForm"].registerFunc("resume")}/>
+                  {lastSubmittedResume? (<p>Last Submitted: {lastSubmittedResume}</p>): (<p>No Previous Submission</p>)}
                 </div>
                 <div className="mb-3">
                     <button
@@ -502,8 +535,8 @@ export default function editProfile() {
                         
                         <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
                         >
-                        <Select options={affiliations} key={"dropdown"} value={affiliationDefaultValue || 'Select'}
-                        onChange={(opt: any, _: any) => {setAffiliation(opt.value)}}/>
+                        <Select options={affiliations} key={"dropdown"} value={brownAffiliation || 'Select'}
+                        onChange={(opt: any, _: any) => {setAffiliation(opt)}}/>
                       </div>
                       </div>
                     </div>
@@ -692,8 +725,8 @@ export default function editProfile() {
                             </label>
                             <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
                               >
-                              <Select options={roles} key={"dropdown"}
-                              onChange={(opt: any, _: any) => {setMyRole(opt.value)}}/>
+                              <Select options={roles} key={"dropdown"} value={myRole || 'Select'}
+                              onChange={(opt: any, _: any) => {setMyRole(opt)}}/>
                             </div>
                           </div>
                         </div>
@@ -704,8 +737,8 @@ export default function editProfile() {
                             </label>
                             <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
                               >
-                              <Select options={industryList} key={"dropdown"}
-                              onChange={(opt: any, _: any) => {setIndustry(opt.value)}}/>
+                              <Select options={industryList} key={"dropdown"} value={industry || 'Select'}
+                              onChange={(opt: any, _: any) => {setIndustry(opt)}}/>
                             </div>
                           </div>
                         </div>
@@ -722,8 +755,8 @@ export default function editProfile() {
                             </label>
                             <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
                               >
-                              <Select options={industryList} isMulti key={"dropdown"}
-                              onChange={(value: any, _: any) => {setExpertiseFind(value.map((item: any) => {return item.value}))}}/>
+                              <Select options={industryList} isMulti key={"dropdown"} value={expertiseFind || 'Select'}
+                              onChange={(value: any, _: any) => {setExpertiseFind(value.map((opt: Option) => opt))}}/>
                             </div>
                           </div>
                         </div>
@@ -736,8 +769,8 @@ export default function editProfile() {
                             </label>
                             <div className="block appearance-none w-full mb-1 bg-white text-gray-800 rounded"
                               >
-                              <Select options={roles} isMulti key={"dropdown"}
-                              onChange={(value: any, _: any) => {setRoleFind(value.map((item: any) => {return item.value}))}}/>
+                              <Select options={roles} isMulti key={"dropdown"} value={roleFind || 'Select'}
+                              onChange={(value: any, _: any) => {setRoleFind(value.map((item: any) => item))}}/>
                             </div>
                           </div>
                         </div>
