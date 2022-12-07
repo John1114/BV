@@ -12,7 +12,12 @@ import { height, minHeight } from "@mui/system";
 export const interfaceBackgroundColor: string = '#EFEFEF'
 
 function Logo({logo}: {logo: StaticImageData}) {
-    return (<img src={logo.src} alt="logo" className="h-12 w-12 object-scale-down"/>);
+    return (<a href="/main_interface"><img src={logo.src} alt="logo" className="h-12 w-12 object-scale-down"/></a>);
+}
+
+function ProfilePic({pic}: {pic: StaticImageData}) {
+    return (<a href="/edit_profile" className="text-lg font-light text-gray-600 transition-all hover:text-red-500 right-12">
+        <img src={pic.src} alt="pfp" className="h-12 w-12 object-scale-down shadow rounded-full "/></a>);
 }
 
 
@@ -32,11 +37,18 @@ export function Header() {
         <div style={{
             backgroundColor: interfaceBackgroundColor,
         }} className="items-center align-middle flex w-screen h-14 px-4 sm:px-6">
-            <Logo logo={logo}/>
-            <SearchComponent/>
-            <a href="/edit_profile" className="absolute text-lg font-light text-gray-600 transition-all hover:text-red-500 right-12">
-                Edit Profile
-                </a>
+            <div className="items-center align-middle flex w-screen h-14 px-4 sm:px-6">
+                <Logo logo={logo}/>
+                <SearchComponent/>
+            </div>
+            <div>
+                
+
+
+            </div>
+            <div>
+                <ProfilePic pic={logo}/>
+            </div> 
         </div>
     )
 }
@@ -59,7 +71,7 @@ export function SearchOptions() {
             backgroundColor: interfaceBackgroundColor,
         }} >
                 <button onMouseOver={() => setShowSidebar(true)} onMouseLeave={() => setShowSidebar(false)}
-                    className={`w-20 hover:w-60`} >
+                    className={`w-24 hover:w-64`} >
                     <> 
                         {
                             showSidebar ? (
