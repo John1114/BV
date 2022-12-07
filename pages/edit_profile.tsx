@@ -1,7 +1,7 @@
 import { Header } from "./main_interface";
 import bear from '../assets/thanks-bear.png';
 import { useForm } from "react-hook-form";
-import updateUserProfile, { checkIfRegistered, uploadFileWithRef } from "../util/userProfileUpdateApi";
+import updateUserProfile, { checkIfRegistered, deleteFileWithRef, uploadFileWithRef } from "../util/userProfileUpdateApi";
 import { AuthState, useAuth, User, FirebaseAuthContext } from "../util/firebaseFunctions";
 import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -13,6 +13,7 @@ import { storage } from "../util/firebaseConfig";
 import { Dialog, Transition } from "@headlessui/react";
 import React from "react";
 import Message from "../components/FlashMessage";
+import { time } from "console";
 
 /*
 TODO:
@@ -38,6 +39,12 @@ interface Field {
   multi: boolean,
   setFunc: any,
   optList: string
+}
+
+interface Resume {
+  time: string,
+  uri: string,
+  rawTime: string
 }
 
 export class PictureUploader extends React.Component<{uploadFunction: any, stateUpdateFunction: any},
@@ -139,12 +146,13 @@ export default function editProfile() {
   const [roleFind, setRoleFind] = useState<Option[]>([]);
   const [openEdModal, setOpenModal] = useState<boolean>(false);
   const [educationList, setEducationList] = useState<any[]>([]);
-  const [lastSubmittedResume, setLastResume] = useState<string | undefined>(undefined);
+  const [lastSubmittedResume, setLastResume] = useState<Resume | undefined>(undefined);
   const [profilePicState, setProfilePicState] = useState<{picture: any, src: any}>({picture: false, src: false});
   const [flashTimeout, setFlashTimeout] = useState<number>(1500);
   const [flashState, setFlashState] = useState<{
     useFlash: boolean, message: string, backgroundColor: string, textColor: string
   }>({useFlash: false, message: "", backgroundColor: "", textColor: ""});
+  const [loaded, setLoaded] = useState<boolean>(false);
 
   const optionLists: any = {
     aff: affiliations,
@@ -173,20 +181,21 @@ export default function editProfile() {
 
   useEffect(() => {
     console.log(user);
-    if (user !== undefined){
+    if ((user !== undefined) && !loaded){
+      setLoaded(true);
       onLoad();
     }
   });
 
   const onLoad = async () => {
     const snapshot = await checkUserValidity();
+    console.log(1);
     if (snapshot !== null){
       // TODO: get current user info
       const userData = snapshot.data();
       console.log(userData);
       setAllDefaults(userData);
     }else{
-      console.log("hi");
       router.push({pathname: "/", query: {
         useFlash: true,
         message: "You have not logged in yet",
@@ -197,18 +206,38 @@ export default function editProfile() {
 
   const setAllDefaults = async (data: any) => {
     formNames.forEach((name) => {
-      let valuesDict = new Map();
+      let valuesDict = Object.create(null);
       Object.keys(hookForms[name].getValuesFunc()).map((k: string) => {
           if (data.hasOwnProperty(k)){
-            valuesDict.set(k, data[k]);
+            valuesDict[k] = data[k];
           }
         })
-      hookForms[name].resetF(valuesDict);
-      specialFields.forEach((field: Field) => {
-        field.setFunc(findOptionInOpts(data[field.name], optionLists[field.optList], false))
-      });
-      setEducationList(data["education"]);
+        console.log(valuesDict);
+      hookForms[name].resetFunc(valuesDict);
     })
+    specialFields.forEach((field: Field) => {
+      if (field.multi){
+        field.setFunc(data[field.name].map((val: string) => findOptionInOpts(val, optionLists[field.optList], false)))
+      }else{
+        field.setFunc(findOptionInOpts(data[field.name], optionLists[field.optList], false))
+      }
+    });
+    setEducationList(data["education"]);
+    processPrevResume(data["resumeRef"])
+  }
+
+  const processPrevResume = (resumeUri: string | undefined) => {
+    if (resumeUri){
+      const s = resumeUri.split("-")
+      const rawT = s[s.length - 1];
+      setLastResume({
+        time: new Date(parseInt(rawT)).toLocaleString(),
+        uri: resumeUri,
+        rawTime: rawT
+      })
+    }
+
+    
   }
 
   const findOptionInOpts = (label: string, options: Option[], useLabel: boolean = false) => {
@@ -319,6 +348,11 @@ export default function editProfile() {
         const resumeResult = await uploadFileWithRef(resumeRef, resume);
         if (resumeResult){
           await updateUserProfile(userSnapshot, {resumeRef: pdfStorageUri});
+          if (lastSubmittedResume){
+            // TODO: check if old resumes should be deleted or kept
+            // const oldResumeRef = ref(storage, lastSubmittedResume.uri);
+            // await deleteFileWithRef(oldResumeRef);
+          }
           showFlash({
             useFlash: true,
             message: "Update successful!",
@@ -486,7 +520,7 @@ export default function editProfile() {
                     <div className="relative flex-grow max-w-full flex-1 px-4">
                 <div className="mb-3">
                   <input type="file" accept="application/pdf" {...hookForms["resumeForm"].registerFunc("resume")}/>
-                  {lastSubmittedResume? (<p>Last Submitted: {lastSubmittedResume}</p>): (<p>No Previous Submission</p>)}
+                  {lastSubmittedResume? (<p>Last Submitted: {lastSubmittedResume.time}</p>): (<p>No Previous Submission</p>)}
                 </div>
                 <div className="mb-3">
                     <button
