@@ -6,7 +6,8 @@ export default function ColorPicker({setAccent}: {setAccent: Dispatch<SetStateAc
       <input type="color" className="rounded-lg border w-[50px] h-[50px]" onChange={color => {
         console.log(color.currentTarget.value)
         setAccent(color.currentTarget.value)
-        }} />
+        }} 
+        />
     </div>
   );
 }

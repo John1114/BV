@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { skills } from "../util/skills";
 import "../util/signupUtils";
 import MainForm from "../components/SignupForm/MainForm";
-import { FirstVector } from "../util/signupUtils";
+import { FirstVector, SecondVector } from "../util/signupUtils";
 
 
 
@@ -20,6 +20,7 @@ export default function StartupSignup() {
     <div className="flex justify-center align-middle h-screen pt-5 pb-5 w-screen bg-slate-100 items-center">
       <MainForm setAccent={setAccentColor}/>
       <FirstVector accentColor={accentColor}></FirstVector>
+      <SecondVector accentColor={accentColor}></SecondVector>
     </div>
   );
 }

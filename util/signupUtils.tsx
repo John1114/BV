@@ -285,7 +285,7 @@ export function FirstVector({ accentColor }: VectorProps) {
 export function SecondVector({ accentColor }: VectorProps) {
   return (
     <svg
-      className={`${styles.bottom_right_vector}  ${styles.noselect} ${styles.nodrag}`}
+      className={`lg:w-fit w-0 ${styles.bottom_right_vector}  ${styles.noselect} ${styles.nodrag}`}
       width="636"
       height="754"
       viewBox="0 0 636 754"
