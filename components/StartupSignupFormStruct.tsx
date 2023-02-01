@@ -31,9 +31,9 @@ export default function StartupFormStruct({
   return (
     <div
       id={pageId.toString()}
-      className="relative rounded-lg overflow-auto shadow-lg mx-auto h-5/6 w-4/6 bg-white"
+      className="relative rounded-lg overflow-y-scroll shadow-lg mx-auto h-5/6 w-4/6 bg-white flex flex-col justify-between"
     >
-      <div className="bg-slate-100">
+      <div className="bg-slate-100 sticky">
         <div className="max-w-3xl pl-20 h-24 relative overflow-x-hidden">
           <div className="absolute bottom-0">
             <h1 className="text-3xl md:text-5xl font-bold text-slate-400">
@@ -42,60 +42,129 @@ export default function StartupFormStruct({
           </div>
         </div>
       </div>
-      {questionFormat}
-
-      {pageId != 0 ? (
-        <div className="absolute right-6 bottom-6">
-          <button
-            type="button"
-            onClick={(event) => {
-              if (lastPage) {
-                event.currentTarget.disabled = true;
-              }
-              onNextPage();
-            }}
-            className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded"
-          >
-            {lastPage ? "Submit" : "Next Page"}
-          </button>
-        </div>
-      ) : (
-        <div className="absolute right-6 pb-5">
-          <div className="flex">
-            <button
-              type="button"
-              onClick={(event) => {
-                if (lastPage) {
-                  event.currentTarget.disabled = true;
-                }
-                onNextPage();
-              }}
-              className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded"
-            >
-              {lastPage ? "Submit" : "Next Page"}
-            </button>
+      <div className="overflow-y-scroll h-[500px] flex flex-col justify-between">
+        {questionFormat}
+        <div className="flex flex-row-reverse justify-between bottom-0">
+          {pageId != 0 ? (
+            <div className="flex pr-5 py-5">
+              <button
+                type="button"
+                onClick={(event) => {
+                  if (lastPage) {
+                    event.currentTarget.disabled = true;
+                  }
+                  onNextPage();
+                }}
+                className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded"
+              >
+                {lastPage ? "Submit" : "Next Page"}
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-row-reverse pr-5 mb-5">
+              <button
+                type="button"
+                onClick={(event) => {
+                  if (lastPage) {
+                    event.currentTarget.disabled = true;
+                  }
+                  onNextPage();
+                }}
+                className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded"
+              >
+                {lastPage ? "Submit" : "Next Page"}
+              </button>
+            </div>
+          )}
+          {valState ? null : (
+            <div className="right-60 bottom-6 text-red-600">
+              Please fill out all fields before proceeding
+            </div>
+          )}
+          <div className="flex pl-5 h-min pt-5 flex-row">
+            {pageId > 0 ? (
+              <button
+                type="button"
+                onClick={(event) => {
+                  pageFunction(pageId - 1);
+                }}
+                className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-6 px-16 rounded previous-page"
+              >
+                Previous Page
+              </button>
+            ) : null}
           </div>
         </div>
-      )}
-      {valState ? null : (
-        <div className="absolute right-60 bottom-6 text-red-600">
-          Please fill out all fields before proceeding
-        </div>
-      )}
-
-      <div className="absolute left-6 bottom-6">
-        {pageId > 0 ? (
-          <button
-            type="button"
-            onClick={(event) => {
-              pageFunction(pageId - 1);
-            }}
-            className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-6 px-16 rounded"
-          >
-            Previous Page
-          </button>
-        ) : null}
       </div>
     </div>
+
+    // <div
+    //   id={pageId.toString()}
+    //   className="relative rounded-lg overflow-auto shadow-lg mx-auto h-5/6 w-4/6 bg-white"
+    // >
+    //   <div className="bg-slate-100">
+    //     <div className="max-w-3xl pl-20 h-24 relative overflow-x-hidden">
+    //       <div className="absolute bottom-0">
+    //         <h1 className="text-3xl md:text-5xl font-bold text-slate-400">
+    //           {question}
+    //         </h1>
+    //       </div>
+    //     </div>
+    //   </div>
+    //   <div className="overflow-y-scroll h-[500px]">
+    //     {questionFormat}
+    //     <div className="flex flex-row-reverse">
+    //     {pageId != 0 ? (
+    //       <div className="flex flex-row-reverse pr-5 py-6">
+    //         <button
+    //           type="button"
+    //           onClick={(event) => {
+    //             if (lastPage) {
+    //               event.currentTarget.disabled = true;
+    //             }
+    //             onNextPage();
+    //           }}
+    //           className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded"
+    //         >
+    //           {lastPage ? "Submit" : "Next Page"}
+    //         </button>
+    //       </div>
+    //     ) : (
+    //         <div className="flex flex-row-reverse pr-5">
+    //           <button
+    //             type="button"
+    //             onClick={(event) => {
+    //               if (lastPage) {
+    //                 event.currentTarget.disabled = true;
+    //               }
+    //               onNextPage();
+    //             }}
+    //             className="bg-red-500 hover:bg-red-400 text-white font-bold py-6 px-16 rounded"
+    //           >
+    //             {lastPage ? "Submit" : "Next Page"}
+    //           </button>
+    //         </div>
+    //     )}
+    //     {valState ? null : (
+    //       <div className="right-60 bottom-6 text-red-600">
+    //         Please fill out all fields before proceeding
+    //       </div>
+    //     )}
+    //     <div className="left-6 bottom-6">
+    //       {pageId > 0 ? (
+    //         <button
+    //           type="button"
+    //           onClick={(event) => {
+    //             pageFunction(pageId - 1);
+    //           }}
+    //           className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-6 px-16 rounded"
+    //         >
+    //           Previous Page
+    //         </button>
+    //       ) : null}
+    //     </div>
+    //     </div>
+    //   </div>
+    // </div>
   );
 }

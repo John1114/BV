@@ -252,3 +252,10 @@ h1 {
     transform:translateX(25%);
   }
 }
+
+
+@layer components {
+  .form-primary {
+    @apply shadow w-full h-14 appearance-none border-2 border-black rounded py-1 px-2 text-gray-700 leading-tight text-sm
+  }
+}
