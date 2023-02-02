@@ -43,16 +43,10 @@ export default function Home() {
   return (
     <div>
       {loading && <SplashScreen fading={fading} />}
-<<<<<<< HEAD
       {flashState.useFlash &&
             (<Message message={flashState.message}
             backgroundColor={flashState.backgroundColor}
             textColor={flashState.textColor} width="w-1/2"/>)}
-=======
-      {flashState.useFlash ?
-            (<Message message={flashState.message} backgroundColor={flashState.backgroundColor} textColor={flashState.textColor} />)
-            : null}
->>>>>>> startup-signup-2
       <div className="box-border">
       <Landing />
       </div>
