@@ -1,7 +1,8 @@
 import StyledInput from "../formComponents/StyledInput";
 import { TemplateProps } from './FirstPage';
+import { FormRow } from '../formComponents/Page';
 
-export default function FourthPage({register}: TemplateProps) {
+export default function FourthPage({register}: TemplateProps): FormRow[] {
   return [
     {
       items: [

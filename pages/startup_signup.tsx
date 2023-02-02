@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { skills } from "../util/skills";
 import "../util/signupUtils";
-import MainForm from "../components/SignupForm/MainForm";
+import StartupForm from "../components/SignupForm/StartupForm";
 import { FirstVector, SecondVector } from "../util/signupUtils";
 
 
@@ -18,7 +18,7 @@ export default function StartupSignup() {
 
   return (
     <div className="flex justify-center align-middle h-screen pt-5 pb-5 w-screen bg-slate-100 items-center">
-      <MainForm setAccent={setAccentColor}/>
+      <StartupForm setAccent={setAccentColor}/>
       <FirstVector accentColor={accentColor}></FirstVector>
       <SecondVector accentColor={accentColor}></SecondVector>
     </div>

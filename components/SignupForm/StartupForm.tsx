@@ -1,12 +1,10 @@
 import React, { SetStateAction } from "react";
-import FirstPage from "./pages/FirstPage";
+import FirstPage from "./StartupFormPages/FirstPage";
 import Page, { FormRow } from "./formComponents/Page";
-import { Founders } from "./formComponents/Founders";
-import StyledInput from "./formComponents/StyledInput";
 import { PageProps } from "./formComponents/Page";
-import SecondPage from "./pages/SecondPage";
-import ThirdPage from "./pages/ThirdPage";
-import FourthPage from "./pages/FourthPage";
+import SecondPage from "./StartupFormPages/SecondPage";
+import ThirdPage from "./StartupFormPages/ThirdPage";
+import FourthPage from "./StartupFormPages/FourthPage";
 import { useForm } from "react-hook-form";
 import {Dispatch} from 'react';
 
@@ -14,7 +12,7 @@ export interface MainFormProps{
   setAccent: Dispatch<SetStateAction<string>>
 }
 
-function MainForm({setAccent}: MainFormProps) {
+function StartupForm({setAccent}: MainFormProps) {
   const {
     register,
     handleSubmit,
@@ -75,4 +73,4 @@ function MainForm({setAccent}: MainFormProps) {
   );
 }
 
-export default MainForm;
+export default StartupForm;

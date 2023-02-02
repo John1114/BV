@@ -2,13 +2,9 @@ import React from "react";
 import StyledInput from "../formComponents/StyledInput";
 import FatInput from "../formComponents/FatInput";
 import { TemplateProps } from './FirstPage';
+import { FormRow } from '../formComponents/Page';
 
-export default function SecondPage({register}: TemplateProps): {
-  items: {
-    name: string;
-    element: JSX.Element;
-  }[];
-}[] {
+export default function SecondPage({register}: TemplateProps): FormRow[] {
   return [
     {
       items: [

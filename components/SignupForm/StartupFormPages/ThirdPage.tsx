@@ -2,17 +2,13 @@ import React, { SetStateAction } from "react";
 import ColorPicker from "../formComponents/ColorPicker";
 import Uploader from "../formComponents/Uploader";
 import {Dispatch} from 'react';
+import { FormRow } from '../formComponents/Page';
 
 export interface MediaProps{
     setAccent: Dispatch<SetStateAction<string>>;
 }
 
-export default function ThirdPage({setAccent}: MediaProps): {
-  items: {
-    name: string;
-    element: JSX.Element;
-  }[];
-}[] {
+export default function ThirdPage({setAccent}: MediaProps): FormRow[] {
   return [
     {
       items: [

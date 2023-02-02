@@ -2,12 +2,13 @@ import React from "react";
 import { Founders } from "../formComponents/Founders";
 import StyledInput from "../formComponents/StyledInput";
 import { UseFormRegister, FieldValues } from 'react-hook-form';
+import { FormRow } from "../formComponents/Page";
 
 export interface TemplateProps {
   register: UseFormRegister<FieldValues>;
 }
 
-export default function FirstPage({register}: TemplateProps) {
+export default function FirstPage({register}: TemplateProps): FormRow[] {
   return [
     {
       items: [
