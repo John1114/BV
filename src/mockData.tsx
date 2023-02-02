@@ -19,7 +19,7 @@ export const fakeCompany2 : CompanyData = {
     accentColor: "#DD0000",
     approved: true,
     email: "reallyreallylongemailthatiswaytoolong@superfake.com",
-    founders: "Ricard Williams, Ricardo Williamos",
+    founders: "Ricard Williams, Ricardo Williams",
     imageData: "./assets/brown.jpeg",
     industry: "Fishing, Industry",
     mission: "we will be the greatest fake company that there ever was alskjdfaskldjfaksldfjasldjfasdkfjasldfjsad",
