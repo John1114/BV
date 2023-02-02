@@ -8,9 +8,9 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Startups from "./startups";
 
-import logo from "../assets/logo.jpeg";
 import Message from "../components/FlashMessage";
-import { useRouter } from "next/router";
+import { useRouter, Router } from "next/router";
+import Landing from "./landing";
 
 export default function Home() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,39 +40,21 @@ export default function Home() {
 
   setTimeout(StopLoading, 2000);
 
-  const [userName, setUserName] = useState('')
-  const [email, setEmail] = useState('')
-
-  useEffect(() => setUserName(!!localStorage.getItem('name') ? localStorage.getItem('name') : ''), [])
-  useEffect(() => setEmail(!!localStorage.getItem('email') ? localStorage.getItem('email') : ''), [])
-
   return (
     <div>
       {loading && <SplashScreen fading={fading} />}
+<<<<<<< HEAD
       {flashState.useFlash &&
             (<Message message={flashState.message}
             backgroundColor={flashState.backgroundColor}
             textColor={flashState.textColor} width="w-1/2"/>)}
+=======
+      {flashState.useFlash ?
+            (<Message message={flashState.message} backgroundColor={flashState.backgroundColor} textColor={flashState.textColor} />)
+            : null}
+>>>>>>> startup-signup-2
       <div className="box-border">
-        <div className="flex flex-col">
-          <Navbar />
-          <Hero tagLine={"Startups start here."} />
-          {/* <button className="login-with-google-btn" onClick={signInWithGoogle}>
-            Sign in with Google
-          </button> */}
-
-          <h1>"Login Details"</h1>
-          <h1>{userName}</h1>
-          <h1>{email}</h1>
-          <h1>"End of Login Details"</h1>
-        </div>
-        <div className="relative top-48">
-          <Startups />
-        </div>
-
-        <div className="relative top-96 h-2 my-24">
-          <Footer logo={logo} />
-        </div>
+      <Landing />
       </div>
     </div>
   );

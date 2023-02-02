@@ -1,4 +1,4 @@
-import { app } from "./firebaseConfig"
+import { app, firestore } from "./firebaseConfig"
 import {
   getAuth,
   GoogleAuthProvider,
@@ -8,14 +8,9 @@ import {
   signOut as signOutFirebase
 } from "firebase/auth"
 import { createContext, useContext, useEffect, useState } from "react";
+import { query, collection, where, getDocs } from "firebase/firestore";
+import { User } from "./types";
 
-
-export interface User {
-    id: string;
-    email: string;
-    name: string;
-    profilePicture: string;
-}
 
 export interface AuthState {
     /** Indicates if the current user is logged in. */
@@ -58,10 +53,6 @@ async function signInWithGoogle(): Promise<User> {
     const email = result.user.email;
     const profilePic = result.user.photoURL;
 
-    localStorage.setItem("name", name);
-    localStorage.setItem("email", email);
-    localStorage.setItem("profilePic", profilePic);
-
     return firebaseUserToUser(user);
 }
 
@@ -100,3 +91,26 @@ export function useFirebaseAuth() {
 export function useAuth() {
     return useContext(FirebaseAuthContext);
 }
+
+export function isLoggedIn() {
+    if (auth.currentUser?.email != null && auth.currentUser?.displayName != null) {
+        checkIfRegistered(auth.currentUser?.email).then(r => {
+            if (r) {return true} else {return false}
+        }).catch(e => {
+            return false
+        })
+    } 
+    return false
+  }
+
+export async function checkIfRegistered(email: string) {
+    const q = query(collection(firestore, "users"), where("email", "==", email));
+    const snapshot = await getDocs(q)
+    if (snapshot.empty) {
+      console.log("Need to register")
+      return false
+    } else {
+      console.log("You are registered")
+      return true
+    }
+  }
