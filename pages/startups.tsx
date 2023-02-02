@@ -35,7 +35,21 @@ let arr: companies[] = [];
 arr.push({"id": "eG44NvYvCP145Q8RO2Pd", "imageData": Casper.src, "accentColor": "0053A6"},
 {"id": "ZfDNnkPrFXw7voMwpIYY", "imageData": Opensea.src, "accentColor": "2081E2"},
 {"id": "gZCT37XxMiBwXBukMRPU", "imageData": Airbnb.src, "accentColor": "FF5A5F"},
-{"id": "ZfDNnkPrFXw7voMwpIYY", "imageData": Warby.src, "accentColor": "DFDFDF"});
+{"id": "ZfDNnkPrFaw7voMwpIYi", "imageData": Warby.src, "accentColor": "DFDFDF"},
+{"id": "eG44NvYvCP145Q831O2Pd", "imageData": Casper.src, "accentColor": "0053A6"},
+{"id": "ZfDNnkPrFXw7vovwpIYY", "imageData": Opensea.src, "accentColor": "2081E2"},
+{"id": "gZCT37XxMiBwXBukqweRPU", "imageData": Airbnb.src, "accentColor": "FF5A5F"},
+{"id": "ZfDNnkPrFXw7voMw124xIYi", "imageData": Warby.src, "accentColor": "DFDFDF"},
+
+// {"id": "eG44NvYvCP145Q8RO2Pd", "imageData": Casper.src, "accentColor": "0053A6"},
+// {"id": "ZfDNnkPrFXw7voMwpIYY", "imageData": Opensea.src, "accentColor": "2081E2"},
+// {"id": "gZCT37XxMiBwXBukMRPU", "imageData": Airbnb.src, "accentColor": "FF5A5F"},
+// {"id": "ZfDNnkPrFaw7voMwpIYi", "imageData": Warby.src, "accentColor": "DFDFDF"},
+// {"id": "eG44NvYvCP145Q831O2Pd", "imageData": Casper.src, "accentColor": "0053A6"},
+// {"id": "ZfDNnkPrFXw7vovwpIYY", "imageData": Opensea.src, "accentColor": "2081E2"},
+// {"id": "gZCT37XxMiBwXBukqweRPU", "imageData": Airbnb.src, "accentColor": "FF5A5F"},
+// {"id": "ZfDNnkPrFXw7voMw124xIYi", "imageData": Warby.src, "accentColor": "DFDFDF"}
+);
 
 export default function Startups() {
   const router = useRouter();

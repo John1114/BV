@@ -19,7 +19,7 @@ export default function Landing() {
             <Startups />
         </div>
 
-        <div className="relative top-96 h-2 my-24">
+        <div className="relative top-32 h-2 my-24">
             <Footer logo={logo} />
         </div>
     </>
