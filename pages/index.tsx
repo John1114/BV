@@ -43,10 +43,11 @@ export default function Home() {
   return (
     <div>
       {loading && <SplashScreen fading={fading} />}
-      {flashState.useFlash &&
+      {flashState.useFlash?
             (<Message message={flashState.message}
             backgroundColor={flashState.backgroundColor}
-            textColor={flashState.textColor} width="w-1/2"/>)}
+            textColor={flashState.textColor} width="w-1/2"/>):null}
+      
       <div className="box-border">
       <Landing />
       </div>

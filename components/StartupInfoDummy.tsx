@@ -13,11 +13,12 @@ export default function StartupInfo() {
 
     return (<>
     
-        <div className="bg-blue-600">
+        <div className="static bg-blue-600">
+        <div className="mt-8 top-0 left-0 right-0 absolute xl:top-1/4 xl:right-[57rem]">
+                        <img src={opensea.src} className="h-32 w-32 mx-auto rounded-full border-4 border-white" />
+                    </div>
              <div className="max-w-3xl px-4 mx-auto h-64 relative overflow-x-hidden">
-                 <div className="mt-8 relative">
-                            <img src={opensea.src} className="h-32 w-32 mx-auto rounded-full border-4 border-white" />
-                         </div>
+             
                    <div className="absolute bottom-0">
                        <h1 className="text-3xl md:text-5xl font-bold text-white">
                              At a glance: <span className="font-light">OpenSea</span>
