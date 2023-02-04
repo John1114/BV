@@ -6,21 +6,35 @@ import Navbar from "../components/Navbar";
 
 
 export default function Landing() {
+    // return (
+    //     <>
+    //     <Navbar/>
+    //     <Hero tagLine={"Startups start here."} />
+    //     <Startups />
+    //     <Footer logo={logo} />
+    //     </>
+    // )
     return(
-    <>
+    <div >
         <Navbar />
-        <div className="flex flex-col">
+        <Hero tagLine={"Startups start here."} />
+        <div className="relative top-16">
+            <Startups />
+        </div>
+        <div className="relative top-16">
+        <Footer logo={logo} />
+        </div>
+        
+        {/* <div className="flex flex-col h-screen w-screen">
             <Hero tagLine={"Startups start here."} />
-            {/* <button className="login-with-google-btn" onClick={signInWithGoogle}>
-            Sign in with Google
-            </button> */}
         </div>
         <div className="relative top-48">
             <Startups />
         </div>
 
-        <div className="relative top-96 h-2 my-24">
+        <div className="relative top-32 h-2 my-24">
             <Footer logo={logo} />
-        </div>
-    </>
-)}
+        </div> */}
+    </div>
+)
+}
