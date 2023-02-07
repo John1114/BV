@@ -14,6 +14,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import React from "react";
 import Message from "../components/FlashMessage";
 import { time } from "console";
+import MinimizableElement from "../components/MinimizableElement";
 
 /*
 TODO:
@@ -485,10 +486,33 @@ export default function editProfile() {
         <h3 className="text-gray-900 m-4 text-4xl">Profile</h3>
         <div className="flex flex-wrap">
           <div className="w-full lg:w-1/3 pr-4 pl-4">
-          <div>
-            {/* Modeled after this: https://tailwindcss.com/docs/hover-focus-and-other-states#open-closed-state
-            However, used the peer to toggle CSS logic of object appearance.
-            Reason for this method is to save number of loading times with React useState */}
+            <MinimizableElement child={
+              <>
+              <PictureUploader uploadFunction={() => {onProfilePicSubmit()}} stateUpdateFunction={setProfilePicState}/>
+              <button
+              className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
+              type="button"
+              onClick={onProfilePicSubmit}
+              style={{ background: "#FF5A5F" }}
+            >
+              Save
+            </button>
+            </>
+            } name={"Profile Picture"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+         
+          {/* Save for DEBUG purposes */}
+          {/* <button
+            className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
+            type="button"
+            onClick={() => {console.log(flashState)}}
+            style={{ background: "#FF5A5F" }}
+          >
+            log FlashState (debug)
+          </button> */}
+          {/* <div>
           <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4">                           
             <summary className="w-full text-lg font-semibold">
                 Profile Picture
@@ -508,29 +532,11 @@ export default function editProfile() {
             Save
           </button>
 
-          {/* Save for DEBUG purposes */}
-          {/* <button
-            className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
-            type="button"
-            onClick={() => {console.log(flashState)}}
-            style={{ background: "#FF5A5F" }}
-          >
-            log FlashState (debug)
-          </button> */}
           </div>
-          </div>
-          <div>
-          <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4">                           
-            <summary className="w-full text-lg font-semibold">
-                Resume
-            </summary>
-        </details>
-
-            <div className="
-            hidden peer-open:flex peer-open:transition-none peer-open:opacity-100 peer-open:visible
-          lg:flex lg:transition-none lg:opacity-100 lg:visible
-          relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4">
-              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
+          </div> */}
+            <MinimizableElement child={
+              <>
+              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900">
                 <h6 className="fw-bold m-0" style={{ color: "#FF5A5F" }}>
                   Resume
                 </h6>
@@ -540,8 +546,8 @@ export default function editProfile() {
                 id="resumeForm"
                 onSubmit={hookForms["resumeForm"].handleFunc(onResumeSubmit)}>
                 <div className="flex flex-wrap ">
-                    <div className="relative flex-grow max-w-full flex-1 px-4">
-                <div className="mb-3">
+                  <div className="relative flex-grow max-w-full px-3">
+                <div className="mb-3 overflow-hidden">
                   <input type="file" accept="application/pdf" {...hookForms["resumeForm"].registerFunc("resume")}/>
                   {lastSubmittedResume? (<p>Last Submitted: {lastSubmittedResume.time}</p>): (<p>No Previous Submission</p>)}
                 </div>
@@ -558,19 +564,13 @@ export default function editProfile() {
                     </div>
                 </form>
               </div>
-            </div>
-            </div>
-            <div>
-            <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4">                           
-            <summary className="w-full text-lg font-semibold">
-                Affiliations
-            </summary>
-        </details>
-
-            <div className="
-            hidden peer-open:flex peer-open:transition-none peer-open:opacity-100 peer-open:visible
-          lg:flex lg:transition-none lg:opacity-100 lg:visible
-          relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4">
+            </>
+            } name={"Resume"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+            <MinimizableElement child={
+              <>
               <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                 <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                   Affiliations
@@ -620,20 +620,13 @@ export default function editProfile() {
                   </div>
                 </form>
               </div>
-            </div>
-            </div>
-
-            <div>
-            <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4">                           
-              <summary className="w-full text-lg font-semibold">
-                  Websites
-              </summary>
-          </details>
-
-            <div className="
-            hidden peer-open:flex peer-open:transition-none peer-open:opacity-100 peer-open:visible
-          lg:flex lg:transition-none lg:opacity-100 lg:visible
-          relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4">
+            </>
+            } name={"Affiliations"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+            <MinimizableElement child={
+              <>
               <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                 <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                   Websites
@@ -697,21 +690,15 @@ export default function editProfile() {
                   </div>
                 </form>
               </div>
+            </>
+            } name={"Websites"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
             </div>
-          </div>
-          </div>
-
           <div className="w-full lg:w-2/3 pr-4 pl-4">
-                <div>
-                <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4">                           
-                  <summary className="w-full text-lg font-semibold">
-                      User Settings
-                  </summary>
-              </details>
-              <div className="
-            hidden peer-open:flex peer-open:transition-none peer-open:opacity-100 peer-open:visible
-          lg:flex lg:transition-none lg:opacity-100 lg:visible
-          relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4">
+          <MinimizableElement child={
+              <>
                   <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                     <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                       User Settings
@@ -793,19 +780,14 @@ export default function editProfile() {
                       </div>
                     </form>
                   </div>
-                </div>
-                </div>
-                <div>
-                <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4">                           
-                  <summary className="w-full text-lg font-semibold">
-                  Discovery Settings
-                  </summary>
-              </details>
-              <div className="
-            hidden peer-open:flex peer-open:transition-none peer-open:opacity-100 peer-open:visible
-          lg:flex lg:transition-none lg:opacity-100 lg:visible
-          relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4">
-                  <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
+            </>
+            } name={"User Settings"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+            <MinimizableElement child={
+              <>
+              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                     <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                       Discovery Settings
                     </p>
@@ -884,18 +866,13 @@ export default function editProfile() {
                       </div>
                     </form>
                   </div>
-                </div>
-                </div>
-                <div>
-                <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4">                           
-                  <summary className="w-full text-lg font-semibold">
-                      Job Experience
-                  </summary>
-              </details>
-              <div className="
-            hidden peer-open:flex peer-open:transition-none peer-open:opacity-100 peer-open:visible
-          lg:flex lg:transition-none lg:opacity-100 lg:visible
-          relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4">
+            </>
+            } name={"Discovery Settings"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+            <MinimizableElement child={
+              <>
               <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                 <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                   Job Experience
@@ -926,20 +903,16 @@ export default function editProfile() {
                   </div>
                   </form>
               </div>
-            </div>
-            </div>
+            </>
+            } name={"Job Experience"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
           </div>
         </div>
         <div className="w-full">
-        <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4 ml-4 mr-4">                           
-                  <summary className="w-full text-lg font-semibold">
-                      Education
-                  </summary>
-              </details>
-              <div className="
-            hidden peer-open:flex peer-open:transition-none peer-open:opacity-100 peer-open:visible
-          lg:flex lg:transition-none lg:opacity-100 lg:visible
-          relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 m-4">
+        <MinimizableElement child={
+              <>
              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 overflow-x-hidden overflow-y-hidden rounded-t">
             <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
               Education
@@ -999,7 +972,12 @@ export default function editProfile() {
                      Add Education
              </button>
            </div>
-        </div>
+            </>
+            } name={"Education"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 m-4"}
+            extraButtonToggleClasses={"ml-4 mr-4"}
+            />
         </div>
       </div>
       <button type="button"
