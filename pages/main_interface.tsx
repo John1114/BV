@@ -5,10 +5,34 @@ import { StaticImageData } from 'next/image';
 import SearchComponent from '../components/SearchComponent';
 import { Transition } from "@headlessui/react";
 import { CompanyData } from "../components/StartupInfoWithFirebase";
+import { User } from "../util/types";
 import { fakeCompany1, fakeCompany2 } from '../src/mockData';
 import { height, minHeight } from "@mui/system";
 import Select from "react-select";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+
+
+/*
+
+    how to organize front page
+
+    make sure switching between pages is easy
+
+    navbar
+        main logo (takes you to main page)
+        search
+        pfp
+    lower area
+        sidebar
+        navigatible area
+            data loader
+                company/person cards
+                    (these should start in mobile mode, then extend out into desktop mode)
+                    description is hidden until either desktop becomes big enough or show more is shown
+
+*/
+
+
 
 
 interface Option {
@@ -67,23 +91,30 @@ export function Header() {
 
 
 export function InteractSection() {
+
+    const [showUsers, setShowUsers] = useState(false);
+
     return (
         <div className="w-screen h-screen flex">
-            <SearchOptions/>
-            <MainArea/>
+            <SearchOptions setShowUsers={setShowUsers}/>
+            <MainArea isUser={showUsers}/>
         </div>
     )
 }
 
-export function SearchOptions() {
+export function SearchOptions({ setShowUsers } : { setShowUsers : any} ) {
     const [showSidebar, setShowSidebar] = useState(false);
   
+
+    // EVENTUAL TODO, little artifact when it pops out, it takes a second to load in
+    // also, resizing isn't picking up for this top part? maybe just restart
     return (
-        <div className="flex h-full" style={{
+        <div className="hidden md:flex md:visible md:opacity-100 md:transition-none sm:h-full" style={{
             backgroundColor: interfaceBackgroundColor,
         }} >
-                <button onMouseOver={() => setShowSidebar(true)} onMouseLeave={() => setShowSidebar(false)}
-                    className={`w-24 hover:w-64 h-full`} >
+            
+                <button onMouseOver={() =>  setShowSidebar(true)} onMouseLeave={() => setShowSidebar(false)}
+                    className={`duration-150 hover:duration-150 w-16 hover:w-64 h-full`} >
                     <> 
                         {
                             showSidebar ? (
@@ -91,8 +122,8 @@ export function SearchOptions() {
                                 <Tabs>
                                     <div style={{ minHeight: '80%' }} className="w-full h-full align-middle">
                                         <TabList className="bg-white object-top justify-center flex gap-4">
-                                            <Tab className="outline m-2 p-2 hover:bg-slate-400">People</Tab>
-                                            <Tab className="outline m-2 p-2 hover:bg-slate-400">Startups</Tab>
+                                            <Tab className="outline m-2 p-2 hover:bg-slate-400" onClick={ () => setShowUsers(true) }>People</Tab>
+                                            <Tab className="outline m-2 p-2 hover:bg-slate-400" onClick={ () => setShowUsers(false) }>Startups</Tab>
                                         </TabList>
                                 
                                         <div>
@@ -155,11 +186,35 @@ export function SearchOptions() {
     );
 }
 
-export function MainArea() {
+export function MainArea({isUser} : {isUser : boolean}) {
     return (
-        <div
-        className="h-screen w-screen bg-white bg-opacity-100">
-            <CompanyCardList/>
+
+        <>
+         { isUser ? ( 
+            <div
+            className="h-screen w-screen bg-white bg-opacity-100">
+                <UserCardList/>
+            </div>
+            
+            ) : (
+
+                <div
+            className="h-screen w-screen bg-white bg-opacity-100">
+                <CompanyCardList/>
+            </div>
+            )
+
+
+        }
+        </>
+        
+    );
+}
+
+export function UserCardList() {
+    return (
+        <div className="h-screen flex flex-col items-center align-middle pt-12 justify-start gap-y-12">
+            <UserCard data={fakeCompany1}/>
         </div>
     );
 }
@@ -180,7 +235,7 @@ export function CompanyCard({data} : {data : CompanyData}) {
 
                     }} 
 
-        className=" w-9/12 rounded-md border-box shadow-lg">
+        className="w-9/12 rounded-md border-box shadow-lg">
             {/* Top */}
             <div className="flex justify-center">
                 <div className="my-2 mx-4 h-1/2 max-h-fit w-11/12">
@@ -213,13 +268,76 @@ export function CompanyCard({data} : {data : CompanyData}) {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
 
             {/* Bottom */}
-            <div className="flex justify-center w-full h-full pb-10">
+            <div className="hidden xl:flex justify-center w-full h-full pb-10">
+                <div className="h-44 w-11/12 bg-white rounded-md">
+                    {/* Text area */}
+                    <p> 
+                        <b>
+                            Description:
+                        </b>
+                        {data.mission}
+                    </p>
+
+                </div>
+            </div>
+            
+            
+        </div>
+    );
+}
+
+
+export function UserCard({data} : {data : CompanyData}) {
+    return (
+        <div style={{
+            backgroundColor: data.accentColor,
+
+                    }} 
+
+        className="w-9/12 rounded-md border-box shadow-lg">
+            {/* Top */}
+            <div className="flex justify-center">
+                <div className="my-2 mx-4 h-1/2 max-h-fit w-11/12">
+                    <div className="flex justify-content items-center align-middle">
+                        <img src={data.imageData} className="left-0 inset-y-0 w-24 h-24"/>
+                        {/* Information */}
+                        <div className="mx-4 w-full">
+                            <div className="justify-content items-center">
+                                <h2 className="w-full my-2 text-2xl flex-wrap mx-1 overflow-wrap">
+                                    {data.name}
+                                </h2>
+                            </div>
+                            {/* Bottom part of upper area */}
+                            <div className="grid-cols-3 gap-4 justify-content items-center flex flex-wrap content-between overflow-wrap">
+                                <div>
+                                    <b>User Info</b>
+                                    <p>{data.industry}</p>
+                                </div>
+                                <div >
+                                    <b>Founders</b>
+                                    <p className="w-full flex-wrap mx-1">{data.founders}</p>
+                                </div>
+                                <div>
+                                    <b>Contact</b>
+                                    <p>{data.email}</p>
+                                </div>
+                                <div>
+                                    <b>Website</b>
+                                    <p>{data.website}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Bottom */}
+            <div className="hidden xl:flex justify-center w-full h-full pb-10">
                 <div className="h-44 w-11/12 bg-white rounded-md">
                     {/* Text area */}
                     <p> 
