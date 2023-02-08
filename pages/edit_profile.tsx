@@ -15,13 +15,13 @@ import React from "react";
 import Message from "../components/FlashMessage";
 import { time } from "console";
 import MinimizableElement from "../components/MinimizableElement";
+import getFromFileStorage from "../util/getFirebaseApi";
 
 /*
 TODO:
-- add flash message after saving settings
 - discuss API function placements
 - add Select... for finding startup
-- load in original data for users
+- load in image data for users
 - check if image changed before allowing users to upload
 - test API with authenticated and unauthenticated user
 */
@@ -153,6 +153,7 @@ export default function editProfile() {
   const [flashState, setFlashState] = useState<{
     useFlash: boolean, message: string, backgroundColor: string, textColor: string
   }>({useFlash: false, message: "", backgroundColor: "", textColor: ""});
+  const [baseImage, setBaseImage] = useState<ImageData | undefined>(undefined);
   const [loaded, setLoaded] = useState<boolean>(false);
 
   const optionLists: any = {
@@ -224,7 +225,15 @@ export default function editProfile() {
       }
     });
     setEducationList(data["education"]);
-    processPrevResume(data["resumeRef"])
+    processPrevResume(data["resumeRef"]);
+    processPrevProfilePic(data["profilePicRef"]);
+  }
+
+  const processPrevProfilePic = (picUri: string | undefined) => {
+    if (picUri) {
+      getFromFileStorage(picUri);
+      //TODO: Set base image and pass to PictureUploader
+    }
   }
 
   const processPrevResume = (resumeUri: string | undefined) => {
