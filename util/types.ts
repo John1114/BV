@@ -1,3 +1,5 @@
+import { StringLike } from "@firebase/util";
+
 type Degree = {
     type: string;
     school: string;
@@ -32,6 +34,30 @@ export type User = {
     reasonContactedAdditional: string;
     brownAffilitation: string[];
     brownAffilitationOther: string[];
+}
 
+type Founder = {
+    firstName: string;
+    lastName: string;
+}
+
+export type Startup = {
+    name: string;
+    yearFounded: number;
+    industry: string;
+    founders: Founder[];
+    currentStage: string;
+    size: number;
+    location: string;
+    description: string;
+    missionStatement: string;
+    logo: string,
+    additionalMedia: string[],
+    accentColor: string,
+    website: string,
+    twitter: string,
+    linkedin: string,
+    facebook: string,
+    instagram: string
 
 }
