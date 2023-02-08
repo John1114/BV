@@ -2,7 +2,7 @@ import { Header } from "./main_interface";
 import bear from '../assets/thanks-bear.png';
 import { useForm } from "react-hook-form";
 import updateUserProfile, { checkIfRegistered, deleteFileWithRef, uploadFileWithRef } from "../util/userProfileUpdateApi";
-import { AuthState, useAuth, User, FirebaseAuthContext } from "../util/firebaseFunctions";
+import { AuthState, useAuth, FirebaseAuthContext } from "../util/firebaseFunctions";
 import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DocumentData, QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
@@ -14,6 +14,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import React from "react";
 import Message from "../components/FlashMessage";
 import { time } from "console";
+import MinimizableElement from "../components/MinimizableElement";
 
 /*
 TODO:
@@ -480,14 +481,47 @@ export default function editProfile() {
               textColor={flashState.textColor}
               duration={1500}/>)}
 			<Header />
-  <div id="content-wrapper" className="flex flex-col">
-    <div id="content">
-      <div className="container mx-auto sm:px-4 max-w-full mx-auto sm:px-4">
+    <div id="content" className="pb-20">
+      <div className="mx-auto sm:px-4 max-w-full">
         <h3 className="text-gray-900 m-4 text-4xl">Profile</h3>
-        <div className="flex flex-wrap  mb-3">
-          <div className="lg:w-1/3 pr-4 pl-4">
-          <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-3">
-
+        <div className="flex flex-wrap">
+          <div className="w-full lg:w-1/3 pr-4 pl-4">
+            <MinimizableElement child={
+              <>
+              <PictureUploader uploadFunction={() => {onProfilePicSubmit()}} stateUpdateFunction={setProfilePicState}/>
+              <button
+              className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
+              type="button"
+              onClick={onProfilePicSubmit}
+              style={{ background: "#FF5A5F" }}
+            >
+              Save
+            </button>
+            </>
+            } name={"Profile Picture"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+         
+          {/* Save for DEBUG purposes */}
+          {/* <button
+            className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
+            type="button"
+            onClick={() => {console.log(flashState)}}
+            style={{ background: "#FF5A5F" }}
+          >
+            log FlashState (debug)
+          </button> */}
+          {/* <div>
+          <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4">                           
+            <summary className="w-full text-lg font-semibold">
+                Profile Picture
+            </summary>
+        </details>
+          <div className="
+          hidden peer-open:flex peer-open:transition-none peer-open:opacity-100 peer-open:visible
+          lg:flex lg:transition-none lg:opacity-100 lg:visible
+          relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4">
             <PictureUploader uploadFunction={() => {onProfilePicSubmit()}} stateUpdateFunction={setProfilePicState}/>
             <button
             className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
@@ -495,19 +529,14 @@ export default function editProfile() {
             onClick={onProfilePicSubmit}
             style={{ background: "#FF5A5F" }}
           >
-            Upload
+            Save
           </button>
-          <button
-            className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
-            type="button"
-            onClick={() => {console.log(flashState)}}
-            style={{ background: "#FF5A5F" }}
-          >
-            log FlashState (debug)
-          </button>
+
           </div>
-            <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-4">
-              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
+          </div> */}
+            <MinimizableElement child={
+              <>
+              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900">
                 <h6 className="fw-bold m-0" style={{ color: "#FF5A5F" }}>
                   Resume
                 </h6>
@@ -517,8 +546,8 @@ export default function editProfile() {
                 id="resumeForm"
                 onSubmit={hookForms["resumeForm"].handleFunc(onResumeSubmit)}>
                 <div className="flex flex-wrap ">
-                    <div className="relative flex-grow max-w-full flex-1 px-4">
-                <div className="mb-3">
+                  <div className="relative flex-grow max-w-full px-3">
+                <div className="mb-3 overflow-hidden">
                   <input type="file" accept="application/pdf" {...hookForms["resumeForm"].registerFunc("resume")}/>
                   {lastSubmittedResume? (<p>Last Submitted: {lastSubmittedResume.time}</p>): (<p>No Previous Submission</p>)}
                 </div>
@@ -535,8 +564,13 @@ export default function editProfile() {
                     </div>
                 </form>
               </div>
-            </div>
-            <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-4">
+            </>
+            } name={"Resume"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+            <MinimizableElement child={
+              <>
               <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                 <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                   Affiliations
@@ -586,9 +620,13 @@ export default function editProfile() {
                   </div>
                 </form>
               </div>
-            </div>
-
-            <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow">
+            </>
+            } name={"Affiliations"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+            <MinimizableElement child={
+              <>
               <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                 <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                   Websites
@@ -652,12 +690,15 @@ export default function editProfile() {
                   </div>
                 </form>
               </div>
+            </>
+            } name={"Websites"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
             </div>
-          </div>
-          <div className="lg:w-2/3 pr-4 pl-4">
-            <div className="flex flex-wrap ">
-              <div className="relative flex-grow max-w-full flex-1 px-4">
-                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-3">
+          <div className="w-full lg:w-2/3 pr-4 pl-4">
+          <MinimizableElement child={
+              <>
                   <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                     <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                       User Settings
@@ -739,9 +780,14 @@ export default function editProfile() {
                       </div>
                     </form>
                   </div>
-                </div>
-                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-3">
-                  <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
+            </>
+            } name={"User Settings"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+            <MinimizableElement child={
+              <>
+              <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                     <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                       Discovery Settings
                     </p>
@@ -820,8 +866,13 @@ export default function editProfile() {
                       </div>
                     </form>
                   </div>
-                </div>
-                <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow mb-5">
+            </>
+            } name={"Discovery Settings"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
+            <MinimizableElement child={
+              <>
               <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 py-3">
                 <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
                   Job Experience
@@ -852,13 +903,17 @@ export default function editProfile() {
                   </div>
                   </form>
               </div>
-            </div>
-              </div>
-            </div>
+            </>
+            } name={"Job Experience"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
+            />
           </div>
         </div>
-        <div className="relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 shadow m-4 mr-8 mb-16">
-          <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 overflow-x-hidden overflow-y-hidden rounded-t">
+        <div className="w-full">
+        <MinimizableElement child={
+              <>
+             <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900 overflow-x-hidden overflow-y-hidden rounded-t">
             <p className="m-0 fw-bold" style={{ color: "#FF5A5F" }}>
               Education
             </p>
@@ -917,6 +972,12 @@ export default function editProfile() {
                      Add Education
              </button>
            </div>
+            </>
+            } name={"Education"}
+            backgroundColor={"#FF5A5F"}
+            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 m-4"}
+            extraButtonToggleClasses={"ml-4 mr-4"}
+            />
         </div>
       </div>
       <button type="button"
@@ -1051,7 +1112,6 @@ export default function editProfile() {
           </Transition.Root>
 
           {/* MODAL END */}
-  </div>
 </div>
 
 	)
