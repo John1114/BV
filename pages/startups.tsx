@@ -35,7 +35,21 @@ let arr: companies[] = [];
 arr.push({"id": "eG44NvYvCP145Q8RO2Pd", "imageData": Casper.src, "accentColor": "0053A6"},
 {"id": "ZfDNnkPrFXw7voMwpIYY", "imageData": Opensea.src, "accentColor": "2081E2"},
 {"id": "gZCT37XxMiBwXBukMRPU", "imageData": Airbnb.src, "accentColor": "FF5A5F"},
-{"id": "ZfDNnkPrFXw7voMwpIYY", "imageData": Warby.src, "accentColor": "DFDFDF"});
+{"id": "ZfDNnkPrFaw7voMwpIYi", "imageData": Warby.src, "accentColor": "DFDFDF"},
+{"id": "eG44NvYvCP145Q831O2Pd", "imageData": Casper.src, "accentColor": "0053A6"},
+{"id": "ZfDNnkPrFXw7vovwpIYY", "imageData": Opensea.src, "accentColor": "2081E2"},
+{"id": "gZCT37XxMiBwXBukqweRPU", "imageData": Airbnb.src, "accentColor": "FF5A5F"},
+{"id": "ZfDNnkPrFXw7voMw124xIYi", "imageData": Warby.src, "accentColor": "DFDFDF"},
+
+// {"id": "eG44NvYvCP145Q8RO2Pd", "imageData": Casper.src, "accentColor": "0053A6"},
+// {"id": "ZfDNnkPrFXw7voMwpIYY", "imageData": Opensea.src, "accentColor": "2081E2"},
+// {"id": "gZCT37XxMiBwXBukMRPU", "imageData": Airbnb.src, "accentColor": "FF5A5F"},
+// {"id": "ZfDNnkPrFaw7voMwpIYi", "imageData": Warby.src, "accentColor": "DFDFDF"},
+// {"id": "eG44NvYvCP145Q831O2Pd", "imageData": Casper.src, "accentColor": "0053A6"},
+// {"id": "ZfDNnkPrFXw7vovwpIYY", "imageData": Opensea.src, "accentColor": "2081E2"},
+// {"id": "gZCT37XxMiBwXBukqweRPU", "imageData": Airbnb.src, "accentColor": "FF5A5F"},
+// {"id": "ZfDNnkPrFXw7voMw124xIYi", "imageData": Warby.src, "accentColor": "DFDFDF"}
+);
 
 export default function Startups() {
   const router = useRouter();
@@ -60,16 +74,19 @@ export default function Startups() {
     
   });
   return (
-    <div className="holder">
+    <div className="flex flex-col items-center">
       <h1>Our Companies</h1>
+      <div className="m-4">
       <SearchBar/>
+      </div>
+      
       {/* <div className="dropdown">
          <Dropdown placeholder={"Industry"}/>
          <Dropdown placeholder={"Funding Stage"}/>
          <a href="#application"><p className="px-56 py-2 cursor-pointer"><b>Add your startup</b> <span
              className="text-red-800">&#8594;</span></p></a>
       </div> */}
-      <div className="grid">
+      <div className="flex md:flex-wrap md:flex-row flex-col w-5/6 items-center md:pl-20 lg:pl-10 xl:pl-20">
         {startups.map((startup: any) => (
           <div key={startup.id}>
           {/* <button
@@ -80,10 +97,9 @@ export default function Startups() {
             className="card block"
             onClick={() => setOpenedModal(startup.id)}
           >
-
             <img
               src={startup.imageData}
-              className="left-0 right-0 object-contain"
+              className="left-0 right-0 lg:object-contain"
             />
           </button>
 

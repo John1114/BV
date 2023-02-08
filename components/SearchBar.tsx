@@ -3,7 +3,7 @@ import Search from "../assets/search.png"
 
 const SearchBar = () => {
   return (
-    <div className="flex items-center justify-center w-screen h-screen">
+    <div className="flex items-center justify-center w-screen">
     <div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
         <div className="border-2 border-black rounded-full bg-white shadow flex w-full">
           <img src={Search.src} className="w-12 h-12 px-4 py-4"/>

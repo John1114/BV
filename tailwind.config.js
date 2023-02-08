@@ -23,10 +23,10 @@ module.exports = {
         //     white: colors.white,
         //     red: colors.red
         // },
-        screens: {
-            'sm': '300px',
-            'lg': '700px'
-        },
+        // screens: {
+        //     'sm': '300px',
+        //     'lg': '700px'
+        // },
         extend: {
             fontFamily: {
                 sans: ['Poppins', ...defaultTheme.fontFamily.sans],
