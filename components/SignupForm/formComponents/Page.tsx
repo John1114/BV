@@ -1,6 +1,4 @@
 import React from "react";
-import { Founders } from "./Founders";
-import StyledInput from "./StyledInput";
 import { FieldValues, UseFormRegister } from "react-hook-form";
 
 export interface FormItem {

@@ -6,13 +6,14 @@ import SecondPage from "./StartupFormPages/SecondPage";
 import ThirdPage from "./StartupFormPages/ThirdPage";
 import FourthPage from "./StartupFormPages/FourthPage";
 import { useForm } from "react-hook-form";
-import {Dispatch} from 'react';
+import { Dispatch } from "react";
+import { NextRouter, useRouter } from 'next/router';
 
-export interface MainFormProps{
-  setAccent: Dispatch<SetStateAction<string>>
+export interface MainFormProps {
+  setAccent: Dispatch<SetStateAction<string>>;
 }
 
-function StartupForm({setAccent}: MainFormProps) {
+function StartupForm({ setAccent }: MainFormProps) {
   const {
     register,
     handleSubmit,
@@ -28,6 +29,8 @@ function StartupForm({setAccent}: MainFormProps) {
     setPageNumber((prev) => Math.max(prev - 1, 0));
   };
 
+  const router = useRouter();
+
   const onSubmit = async (data: any) => console.log(data);
 
   const pages: PageProps[] = [
@@ -37,18 +40,18 @@ function StartupForm({setAccent}: MainFormProps) {
       changePage: [incrementPage, decrementPage],
     },
     {
-      rows: SecondPage({ register}),
+      rows: SecondPage({ register }),
       title: "Tell us about your Startup...",
       changePage: [incrementPage, decrementPage],
     },
     {
-      rows: ThirdPage({setAccent}),
+      rows: ThirdPage({ setAccent }),
       title: "How do you want to look?",
       changePage: [incrementPage, decrementPage],
     },
     {
-      rows: FourthPage({ register}),
-      title: "How do you want to look?",
+      rows: FourthPage({ register }),
+      title: "Where can we find you?",
       changePage: [incrementPage, decrementPage],
     },
   ];
@@ -72,5 +75,60 @@ function StartupForm({setAccent}: MainFormProps) {
     </div>
   );
 }
+
+const submitDataAndRouter = (data: any, router: NextRouter) => {
+  if (logoImage !== null && logoImage.file !== undefined) {
+    // Add skills to form obj
+    data["skills"] = selectedSkills.join(",");
+
+    // Check if there is image uploaded, if there is, get and upload file
+    // https://firebase.google.com/docs/storage/web/upload-files#upload_from_a_blob_or_file
+
+    var datetime = new Date();
+
+    // Generate a unique image path by taking the millisecond timestamp of the image being uploaded
+    // Maybe TODO: if user must be registered to use this form,
+    // use user id in conjunction with timestamp to create unique image path
+    const imageStorageUri = `images/${datetime.getTime().toString()}.jpg`;
+    const imageRef = ref(storage, imageStorageUri);
+    const imageRes = await uploadImageWithRef(imageRef, logoImage.file);
+
+    if (imageRes) {
+      data["imageRef"] = imageStorageUri;
+
+      console.log(data);
+
+      // upload data with API
+      const res = await addStartupFromForm(data);
+
+      console.log(res);
+
+      router.push(
+        {
+          pathname: "/",
+          query: {
+            useFlash: true,
+            message: "Successfully created startup!",
+            backgroundColor: "bg-green-300",
+            textColor: "text-emerald-800",
+          },
+        },
+        "/"
+      );
+    }
+  }
+  router.push(
+    {
+      pathname: "/",
+      query: {
+        useFlash: true,
+        message: "Successfully created startup!",
+        backgroundColor: "bg-green-300",
+        textColor: "text-emerald-800",
+      },
+    },
+    "/"
+  );
+};
 
 export default StartupForm;

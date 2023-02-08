@@ -4,17 +4,19 @@ import StyledInput from "../formComponents/StyledInput";
 import { UseFormRegister, FieldValues } from 'react-hook-form';
 import { FormRow } from "../formComponents/Page";
 
+//
+
 export interface TemplateProps {
   register: UseFormRegister<FieldValues>;
 }
 
-export default function FirstPage({register}: TemplateProps): FormRow[] {
+export default function FirstPage({ register }: TemplateProps): FormRow[] {
   return [
     {
       items: [
         {
           name: "Name",
-          element: <StyledInput name="Name" register={register}/>,
+          element: <StyledInput name="Name" register={register} />,
         },
       ],
     },
