@@ -16,7 +16,7 @@ const Navbar = () => {
     signInWithGoogle().then((user) => {
       checkIfRegistered(user.email).then((isRegistered) => {
         if (isRegistered) {
-          router.push("/dashboard");
+          router.push("/main_interface");
         } else {
           router.push("/landing");
           //toastify that you need to create an account
