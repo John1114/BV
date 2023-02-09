@@ -76,59 +76,59 @@ function StartupForm({ setAccent }: MainFormProps) {
   );
 }
 
-const submitDataAndRouter = (data: any, router: NextRouter) => {
-  if (logoImage !== null && logoImage.file !== undefined) {
-    // Add skills to form obj
-    data["skills"] = selectedSkills.join(",");
+// const submitDataAndRouter = (data: any, router: NextRouter) => {
+//   if (logoImage !== null && logoImage.file !== undefined) {
+//     // Add skills to form obj
+//     data["skills"] = selectedSkills.join(",");
 
-    // Check if there is image uploaded, if there is, get and upload file
-    // https://firebase.google.com/docs/storage/web/upload-files#upload_from_a_blob_or_file
+//     // Check if there is image uploaded, if there is, get and upload file
+//     // https://firebase.google.com/docs/storage/web/upload-files#upload_from_a_blob_or_file
 
-    var datetime = new Date();
+//     var datetime = new Date();
 
-    // Generate a unique image path by taking the millisecond timestamp of the image being uploaded
-    // Maybe TODO: if user must be registered to use this form,
-    // use user id in conjunction with timestamp to create unique image path
-    const imageStorageUri = `images/${datetime.getTime().toString()}.jpg`;
-    const imageRef = ref(storage, imageStorageUri);
-    const imageRes = await uploadImageWithRef(imageRef, logoImage.file);
+//     // Generate a unique image path by taking the millisecond timestamp of the image being uploaded
+//     // Maybe TODO: if user must be registered to use this form,
+//     // use user id in conjunction with timestamp to create unique image path
+//     const imageStorageUri = `images/${datetime.getTime().toString()}.jpg`;
+//     const imageRef = ref(storage, imageStorageUri);
+//     const imageRes = await uploadImageWithRef(imageRef, logoImage.file);
 
-    if (imageRes) {
-      data["imageRef"] = imageStorageUri;
+//     if (imageRes) {
+//       data["imageRef"] = imageStorageUri;
 
-      console.log(data);
+//       console.log(data);
 
-      // upload data with API
-      const res = await addStartupFromForm(data);
+//       // upload data with API
+//       const res = await addStartupFromForm(data);
 
-      console.log(res);
+//       console.log(res);
 
-      router.push(
-        {
-          pathname: "/",
-          query: {
-            useFlash: true,
-            message: "Successfully created startup!",
-            backgroundColor: "bg-green-300",
-            textColor: "text-emerald-800",
-          },
-        },
-        "/"
-      );
-    }
-  }
-  router.push(
-    {
-      pathname: "/",
-      query: {
-        useFlash: true,
-        message: "Successfully created startup!",
-        backgroundColor: "bg-green-300",
-        textColor: "text-emerald-800",
-      },
-    },
-    "/"
-  );
-};
+//       router.push(
+//         {
+//           pathname: "/",
+//           query: {
+//             useFlash: true,
+//             message: "Successfully created startup!",
+//             backgroundColor: "bg-green-300",
+//             textColor: "text-emerald-800",
+//           },
+//         },
+//         "/"
+//       );
+//     }
+//   }
+//   router.push(
+//     {
+//       pathname: "/",
+//       query: {
+//         useFlash: true,
+//         message: "Successfully created startup!",
+//         backgroundColor: "bg-green-300",
+//         textColor: "text-emerald-800",
+//       },
+//     },
+//     "/"
+//   );
+// };
 
 export default StartupForm;
