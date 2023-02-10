@@ -1,5 +1,6 @@
 import { Header } from "./main_interface";
 import bear from '../assets/thanks-bear.png';
+import loadImage from '../assets/profpicLoad.png';
 import { useForm } from "react-hook-form";
 import updateUserProfile, { checkIfRegistered, deleteFileWithRef, uploadFileWithRef } from "../util/userProfileUpdateApi";
 import { AuthState, useAuth, FirebaseAuthContext } from "../util/firebaseFunctions";
@@ -13,9 +14,9 @@ import { storage } from "../util/firebaseConfig";
 import { Dialog, Transition } from "@headlessui/react";
 import React from "react";
 import Message from "../components/FlashMessage";
-import { time } from "console";
 import MinimizableElement from "../components/MinimizableElement";
-import getFromFileStorage from "../util/getFirebaseApi";
+import { firebaseStorageUrl } from "../util/constants";
+
 
 /*
 TODO:
@@ -45,18 +46,18 @@ interface Field {
 interface Resume {
   time: string,
   uri: string,
-  rawTime: string
+  rawTime: string,
+  url: string
 }
 
-export class PictureUploader extends React.Component<{uploadFunction: any, stateUpdateFunction: any},
-{picture: any, src: any, uploadFunction: any, stateUpdateFunction: any}> {
+export class PictureUploader extends React.Component<{src: string | boolean, uploadFunction: (value: any) => void, stateUpdateFunction: (value: any) => void},
+{picture: any, src: string, uploadFunction: (value: any) => void, stateUpdateFunction: (value: any) => void}> {
   /* Modified after: https://www.pluralsight.com/guides/using-react.js-and-jquery-to-update-a-profile-picture-with-a-preview#module-overallcode */
   constructor(props: any) {
     super(props);
-
     this.state = {
       picture: false,
-      src: false,
+      src: props.src,
       uploadFunction: props.uploadFunction,
       stateUpdateFunction: props.stateUpdateFunction
     }
@@ -81,47 +82,44 @@ export class PictureUploader extends React.Component<{uploadFunction: any, state
   renderPreview() {
     if(this.state.src) {
       return (
-        <img src={this.state.src}
-        className="rounded-full mb-3 mt-4"
-          width={160}
-          height={160}/>
+        <a href="#"
+        onClick={() => {
+          var picInput = document.getElementById("profilePicture");
+          if (picInput !== null){
+            picInput.click();
+          }
+        }}>
+          <img src={this.state.src}
+          className="rounded-full w-32 h-32"/>
+        </a>
       );
     } else {
       return (
+        <a href="#"
+        onClick={() => {
+          var picInput = document.getElementById("profilePicture");
+          if (picInput !== null){
+            picInput.click();
+          }
+        }}>
         <img src={bear.src}
-        className="rounded-full mb-3 mt-4"
-          width={160}
-          height={160}/>
+        className="rounded-full w-32 h-32"/>
+        </a>
       );
     }
   }
 
   render() {
     return (
-      <div className="flex-auto p-6 text-center shadow">
+      <div className="flex flex-col items-center p-2">
         {this.renderPreview()}
-        <div className="mb-3">
-        <button
-          className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
-          type="button"
-          onClick={() => {
-            var picInput = document.getElementById("profilePicture");
-            if (picInput !== null){
-              picInput.click();
-            }
-          }}
-          style={{ background: "#FF5A5F" }}
-        >
-          Change Photo
-        </button>
-          <input
+        <input
           type="file"
           id="profilePicture"
           accept="image/*"
           onChange={this.handlePictureSelected.bind(this)}
           style={{ display: "none" }}
         />
-        </div>
       </div>
     );
   }
@@ -153,8 +151,8 @@ export default function editProfile() {
   const [flashState, setFlashState] = useState<{
     useFlash: boolean, message: string, backgroundColor: string, textColor: string
   }>({useFlash: false, message: "", backgroundColor: "", textColor: ""});
-  const [baseImage, setBaseImage] = useState<ImageData | undefined>(undefined);
   const [loaded, setLoaded] = useState<boolean>(false);
+  const [pictureUploader, setPictureUploader] = useState<JSX.Element | null>(null);
 
   const optionLists: any = {
     aff: affiliations,
@@ -229,11 +227,14 @@ export default function editProfile() {
     processPrevProfilePic(data["profilePicRef"]);
   }
 
-  const processPrevProfilePic = (picUri: string | undefined) => {
-    if (picUri) {
-      getFromFileStorage(picUri);
-      //TODO: Set base image and pass to PictureUploader
-    }
+  const processPrevProfilePic = (profPicUri: string | undefined) => {
+    if (profPicUri != undefined) {
+      setPictureUploader(<PictureUploader
+        uploadFunction={onProfilePicSubmit} stateUpdateFunction={setProfilePicState}
+        src={`${firebaseStorageUrl}${encodeURIComponent(profPicUri)}?alt=media`}
+      />);
+      
+    } 
   }
 
   const processPrevResume = (resumeUri: string | undefined) => {
@@ -243,11 +244,10 @@ export default function editProfile() {
       setLastResume({
         time: new Date(parseInt(rawT)).toLocaleString(),
         uri: resumeUri,
-        rawTime: rawT
+        rawTime: rawT,
+        url: `${firebaseStorageUrl}${encodeURIComponent(resumeUri)}?alt=media`
       })
     }
-
-    
   }
 
   const findOptionInOpts = (label: string, options: Option[], useLabel: boolean = false) => {
@@ -331,7 +331,6 @@ export default function editProfile() {
     const userSnapshot = await checkUserValidity();
     console.log(userSnapshot);
     if ((userSnapshot !== null) && (profilePicState.picture !== false)){
-      console.log("hello");
       var datetime = new Date();
       const imgStorageUri = `images/${userSnapshot.id}-${datetime.getTime().toString()}.jpg`;
       const picRef = ref(storage, imgStorageUri);
@@ -492,57 +491,12 @@ export default function editProfile() {
 			<Header />
     <div id="content" className="pb-20">
       <div className="mx-auto sm:px-4 max-w-full">
-        <h3 className="text-gray-900 m-4 text-4xl">Profile</h3>
+        <div className="m-4 flex">
+        <a href="#" className="rounded-full bg-gray-200 text-2xl pl-4 pr-4 pt-1 pb-1 hover:bg-gray-100" onClick={() => {router.back()}}>&#8249;</a>
+      </div>
+        {/* <h3 className="text-gray-900 m-4 text-4xl">Profile</h3> */}
         <div className="flex flex-wrap">
           <div className="w-full lg:w-1/3 pr-4 pl-4">
-            <MinimizableElement child={
-              <>
-              <PictureUploader uploadFunction={() => {onProfilePicSubmit()}} stateUpdateFunction={setProfilePicState}/>
-              <button
-              className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
-              type="button"
-              onClick={onProfilePicSubmit}
-              style={{ background: "#FF5A5F" }}
-            >
-              Save
-            </button>
-            </>
-            } name={"Profile Picture"}
-            backgroundColor={"#FF5A5F"}
-            extraClasses={"relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4"}
-            />
-         
-          {/* Save for DEBUG purposes */}
-          {/* <button
-            className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
-            type="button"
-            onClick={() => {console.log(flashState)}}
-            style={{ background: "#FF5A5F" }}
-          >
-            log FlashState (debug)
-          </button> */}
-          {/* <div>
-          <details className="lg:hidden peer flex items-center justify-between p-3 text-white bg-[#FF5A5F] border-2 border-gray-200 rounded-lg mb-4">                           
-            <summary className="w-full text-lg font-semibold">
-                Profile Picture
-            </summary>
-        </details>
-          <div className="
-          hidden peer-open:flex peer-open:transition-none peer-open:opacity-100 peer-open:visible
-          lg:flex lg:transition-none lg:opacity-100 lg:visible
-          relative flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300 mb-4">
-            <PictureUploader uploadFunction={() => {onProfilePicSubmit()}} stateUpdateFunction={setProfilePicState}/>
-            <button
-            className="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs"
-            type="button"
-            onClick={onProfilePicSubmit}
-            style={{ background: "#FF5A5F" }}
-          >
-            Save
-          </button>
-
-          </div>
-          </div> */}
             <MinimizableElement child={
               <>
               <div className="py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900">
@@ -557,8 +511,16 @@ export default function editProfile() {
                 <div className="flex flex-wrap ">
                   <div className="relative flex-grow max-w-full px-3">
                 <div className="mb-3 overflow-hidden">
-                  <input type="file" accept="application/pdf" {...hookForms["resumeForm"].registerFunc("resume")}/>
-                  {lastSubmittedResume? (<p>Last Submitted: {lastSubmittedResume.time}</p>): (<p>No Previous Submission</p>)}
+                  <input type="file" accept="application/pdf" {...hookForms["resumeForm"].registerFunc("resume")}
+                  className="block w-full text-sm text-slate-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-[#ffd6d7] file:text-red-500
+                  hover:file:bg-[#ffe8e8] mb-4"/>
+                  {lastSubmittedResume? (<a href={lastSubmittedResume.url} target="_blank"
+                  className="underline underline-offset-2 hover:text-[#ff5a5e]"
+                  >Last Submitted: {lastSubmittedResume.time}</a>): (<p>No Previous Submission</p>)}
                 </div>
                 <div className="mb-3">
                     <button
@@ -714,6 +676,12 @@ export default function editProfile() {
                     </p>
                   </div>
                   <div className="flex-auto p-6">
+                  {pictureUploader? pictureUploader: (
+                    <div className="flex flex-col items-center p-2">
+                      <img src={loadImage.src}
+                      className="rounded-full w-32 h-32"/>
+                    </div>
+                  )}
                     <form
                     id="userForm"
                     onSubmit={hookForms["userForm"].handleFunc(noSelectSubmit)}>
@@ -782,6 +750,7 @@ export default function editProfile() {
                         <button
                           className="inline-block ml-4 align-middle text-center select-none border font-normal whitespace-no-wrap rounded  no-underline bg-blue-600 text-white hover:bg-blue-600 py-1 px-2 leading-tight text-xs "
                           type="submit"
+                          onClick={onProfilePicSubmit}
                           style={{ background: "#FF5A5F" }}
                         >
                           Save Settings
