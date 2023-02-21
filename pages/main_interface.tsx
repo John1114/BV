@@ -10,6 +10,11 @@ import { fakeCompany1, fakeCompany2 } from '../src/mockData';
 import { height, minHeight } from "@mui/system";
 import Select from "react-select";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import getStartupDocs from "../util/startupAllDocs";
+import { json } from "stream/consumers";
+import { useEffect } from 'react';
+import { Info } from "@mui/icons-material";
+import useWindowSize from '../util/getWindowHook';
 
 
 /*
@@ -72,7 +77,7 @@ export function Header() {
     return (
         <div style={{
             backgroundColor: interfaceBackgroundColor,
-        }} className="items-center align-middle flex w-screen h-14 px-4 sm:px-6">
+        }} className="fixed items-center align-middle flex w-screen h-14 px-4 sm:px-6">
             <div className="items-center align-middle flex w-screen h-14 px-4 sm:px-6">
                 <Logo logo={logo}/>
                 <SearchComponent/>
@@ -109,7 +114,7 @@ export function SearchOptions({ setShowUsers } : { setShowUsers : any} ) {
     // EVENTUAL TODO, little artifact when it pops out, it takes a second to load in
     // also, resizing isn't picking up for this top part? maybe just restart
     return (
-        <div className="hidden md:flex md:visible md:opacity-100 md:transition-none sm:h-full" style={{
+        <div className="hidden md:static md:block md:visible md:opacity-100 md:transition-none sm:h-full" style={{
             backgroundColor: interfaceBackgroundColor,
         }} >
             
@@ -220,76 +225,235 @@ export function UserCardList() {
 }
 
 export function CompanyCardList() {
+
+    //useEffect(() => {
+        
+    var docs = getStartupDocs().
+    then(r => {
+        
+        console.log(r.name);
+        //console.log(r);
+        /*const listItems = r.map((doc) =>
+            <CompanyCard data={doc}></CompanyCard>
+        );*/
+    }).catch(r => {
+        console.log("caught, error: " + r);
+    });
+        
+        
+    //)
+
+    
+
+    
+    
+
     return (
-        <div className="h-screen flex flex-col items-center align-middle pt-12 justify-start gap-y-12">
+        <div className="h-screen flex flex-col items-center align-middle pt-24 justify-start gap-y-12">
             <CompanyCard data={fakeCompany1}/>
             <CompanyCard data={fakeCompany2}/>
         </div>
     );
 }
 
+
+
+
 export function CompanyCard({data} : {data : CompanyData}) {
+
+    const [showDescription, setShowDescription] = useState(false);
+
+    
+    const { width } = useWindowSize();
+
+
+
     return (
-        <div style={{
-            backgroundColor: data.accentColor,
-
-                    }} 
-
-        className="w-9/12 rounded-md border-box shadow-lg">
-            {/* Top */}
-            <div className="flex justify-center">
-                <div className="my-2 mx-4 h-1/2 max-h-fit w-11/12">
-                    <div className="flex justify-content items-center align-middle">
-                        <img src={data.imageData} className="left-0 inset-y-0 w-24 h-24"/>
-                        {/* Information */}
-                        <div className="mx-4 w-full">
-                            <div className="justify-content items-center">
-                                <h2 className="w-full my-2 text-2xl flex-wrap mx-1 overflow-wrap">
-                                    {data.name}
-                                </h2>
-                            </div>
-                            {/* Bottom part of upper area */}
-                            <div className="grid-cols-3 gap-4 justify-content items-center flex flex-wrap content-between overflow-wrap">
-                                <div>
-                                    <b>Industry</b>
-                                    <p>{data.industry}</p>
-                                </div>
-                                <div >
-                                    <b>Founders</b>
-                                    <p className="w-full flex-wrap mx-1">{data.founders}</p>
-                                </div>
-                                <div>
-                                    <b>Contact</b>
-                                    <p>{data.email}</p>
-                                </div>
-                                <div>
-                                    <b>Website</b>
-                                    <p>{data.website}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div style={{backgroundColor: data.accentColor,
+        // 
+    }} className="w-11/12 rounded-xl">
+            {/* Header */}
+            <div className="flex flex-col justify-between items-center">
+                <img src={data.imageData} className="w-12 h-12 md:w-24 md:h-24"/>
+                
+                <h2 className="my-2 text-lg  md:text-center md:text3xl flex-wrap">{data.name}</h2>
             </div>
-
-            {/* Bottom */}
-            <div className="hidden xl:flex justify-center w-full h-full pb-10">
-                <div className="h-44 w-11/12 bg-white rounded-md">
-                    {/* Text area */}
-                    <p> 
-                        <b>
-                            Description:
-                        </b>
-                        {data.mission}
-                    </p>
-
-                </div>
-            </div>
+            {/* Middle */}
             
+            <CompanyCardInformation data={data}></CompanyCardInformation>
+            {/* Bottom */}
+            <div>
+                {/* Description */}
+                <div className="flex justify-center align-middle md:py-10">
+                    <>
+                        {
+                            (showDescription || width >= 768) ? (
+                            
+                            <div className="h-44 w-11/12 bg-white rounded-md">
+                                {/* Text area */}
+                                <p> 
+                                    <b>
+                                        Description:
+                                    </b>
+                                    {data.mission}
+                                </p>
+                            </div>) : (<div></div>)
+                        }
+                    </>
+                </div>
+                {/* More information */}
+                <div className="flex md:hidden  justify-center pt-3">
+                    <MoreInformationButton setShowInfo={setShowDescription}></MoreInformationButton>
+                </div>
+            </div>
             
         </div>
+        
+
+
+    )
+
+}
+
+function CompanyCardInformation({data} : {data : CompanyData}) {
+
+    // h-screen flex flex-col items-center align-middle pt-24 justify-start gap-y-12
+    return (
+        <div>
+            {/* For smaller screens */}
+            <div className="md:hidden flex text-base justify-center gap-x-14">
+                
+                <div>
+                    <a href={data.email}>Contact</a>
+                </div>
+                <div>
+                    <a href={data.website}>Website</a>
+                </div>
+            </div>
+
+            {/* For larger screens */}
+            <div className="hidden md:block md:visible md:opacity-100 md:transition-none">
+                <div className="flex md:flex-col lg:flex-row justify-between align-middle">
+                {/* <div className="grid grid-rows-2 justify-between align-middle"> */}
+                    <InfoBlock title="Contact"  pText={data.email}></InfoBlock>
+                    <InfoBlock title="Industry"  pText={data.industry}></InfoBlock>
+                    <InfoBlock title="Founders"  pText={data.founders}></InfoBlock>
+                    <InfoBlock title="Website"  pText={data.website}></InfoBlock>
+                </div>
+            </div>
+        </div>
+
+        
+
+    )
+}
+function InfoBlock({ title, pText } : {title : string, pText : string}) {
+    return (
+        <div>
+            <b>{title}</b>
+            <p className=" truncate text-clip">{pText}</p>
+        </div>
+
     );
 }
+
+
+function MoreInformationButton({ setShowInfo } : {setShowInfo : any}) {
+
+    var displaying = false; 
+    return (
+        <button className="border-4 m-2 text-lg rounded-full outline-1 outline-black"
+         onMouseDown={() => { displaying = !displaying; setShowInfo(displaying); }}>
+            <div className="m-2 mx-4">
+                Learn More 
+            </div>
+                       
+        </button>
+
+    )
+}
+
+
+
+
+// export function CompanyCard({data} : {data : CompanyData}) {
+//     return (
+//         <div style={{
+//             backgroundColor: data.accentColor,
+
+//                     }} 
+
+//         className="w-9/12 rounded-md border-box shadow-lg">
+//             {/* Top */}
+//             <div className="flex justify-center">
+//                 <div className="my-2 mx-4 h-1/2 max-h-fit w-11/12">
+//                     <div className="flex justify-content xl:items-center xl:align-middle">
+//                         <img src={data.imageData} className="left-0 inset-y-0 w-12 h-12 md:w-24 md:h-24"/>
+//                         {/* Information */}
+//                         <div className="mx-4 w-full">
+//                             {/* <div className="lg:justify-content lg:items-center"> */}
+//                                 <h2 className="w-full my-2 text-2xl flex-wrap mx-1 overflow-wrap">
+//                                     {data.name}
+//                                 </h2>
+//                             {/* </div> */}
+//                             {/* Bottom part of upper area */}
+//                             {/* <div className="grid-cols-4 gap-4 justify-content items-center flex flex-wrap content-between overflow-wrap"> */}
+//                             <div className="grid-cols-4 flex justify-around overflow-wrap flex-wrap items-center">
+//                                 <div className="basis-1/4">
+//                                     <div className="hidden lg:block lg:visible lg:opacity-100 lg:transition-none">
+//                                         <b>Industry</b>
+//                                         <p>{data.industry}</p>
+//                                     </div>
+//                                 </div>
+//                                 <div className="basis-1/4">
+//                                     <div className="hidden lg:block lg:visible lg:opacity-100 lg:transition-none">
+//                                         <b>Founders</b>
+//                                         <p>{data.founders}</p>
+//                                     </div>
+//                                     {/* <p className="w-full flex-wrap mx-1">{data.founders}</p> */}
+//                                 </div>
+//                                 <div className="basis-1/4">
+//                                     <div className="lg:hidden">
+//                                         <a href={data.email}>Contact</a>
+//                                     </div>
+//                                     <div className="hidden lg:block lg:visible lg:opacity-100 lg:transition-none">
+//                                         <b>Contact</b>
+//                                         <p>{data.email}</p>
+//                                     </div>
+//                                 </div>
+//                                 <div className="basis-1/4">
+//                                     <div className="lg:hidden">
+//                                         <a href={data.website}>Website</a>
+//                                     </div>
+//                                     <div className="hidden lg:block lg:visible lg:opacity-100 lg:transition-none">
+//                                         <b>Website</b>
+//                                         <p>{data.website}</p>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </div>
+
+//             {/* Bottom */}
+//             <div className="hidden lg:flex justify-center w-full h-full pb-10">
+//                 <div className="h-44 w-11/12 bg-white rounded-md">
+//                     {/* Text area */}
+//                     <p> 
+//                         <b>
+//                             Description:
+//                         </b>
+//                         {data.mission}
+//                     </p>
+
+//                 </div>
+//             </div>
+            
+            
+//         </div>
+//     );
+// }
 
 
 export function UserCard({data} : {data : CompanyData}) {
@@ -299,7 +463,7 @@ export function UserCard({data} : {data : CompanyData}) {
 
                     }} 
 
-        className="w-9/12 rounded-md border-box shadow-lg">
+        className=" rounded-md border-box shadow-lg">
             {/* Top */}
             <div className="flex justify-center">
                 <div className="my-2 mx-4 h-1/2 max-h-fit w-11/12">
