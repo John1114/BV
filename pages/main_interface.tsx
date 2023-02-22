@@ -230,18 +230,13 @@ export function CompanyCardList() {
         
     var docs = getStartupDocs().
     then(r => {
-        
-        console.log(r.name);
-        //console.log(r);
-        /*const listItems = r.map((doc) =>
-            <CompanyCard data={doc}></CompanyCard>
-        );*/
+        console.log(r);
     }).catch(r => {
         console.log("caught, error: " + r);
     });
         
         
-    //)
+    
 
     
 

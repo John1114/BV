@@ -9,5 +9,5 @@ export default async function getStartupDocs(){
 		allDocs[doc.id] = doc.data();
 		//console.log(doc.data());
 	});
-	return collection;
+	return allDocs;
 }
