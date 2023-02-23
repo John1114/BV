@@ -45,7 +45,7 @@ function StartupForm({ setAccent }: MainFormProps) {
       changePage: [incrementPage, decrementPage],
     },
     {
-      rows: ThirdPage({ setAccent }),
+      rows: ThirdPage({ setAccent, register }),
       title: "How do you want to look?",
       changePage: [incrementPage, decrementPage],
     },
