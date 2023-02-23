@@ -5,7 +5,7 @@ import {
   onAuthStateChanged,
   signInWithPopup,
   User as FirebaseUser,
-  signOut as signOutFirebase
+  signOut as signOutFirebase,
 } from "firebase/auth"
 import { createContext, useContext, useEffect, useState } from "react";
 import { query, collection, where, getDocs } from "firebase/firestore";
@@ -46,7 +46,7 @@ async function signInWithGoogle(): Promise<User> {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({'hd': 'brown.edu'});
 
-    const result = await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider); // TODO: Need to deal with cancelled requlests
     console.log(result)
     const user = result.user;
     const name = result.user.displayName;
@@ -94,7 +94,7 @@ export function useAuth() {
 
 export function isLoggedIn() {
     if (auth.currentUser?.email != null && auth.currentUser?.displayName != null) {
-        checkIfRegistered(auth.currentUser?.email).then(r => {
+        return checkIfRegistered(auth.currentUser?.email).then(r => {
             if (r) {return true} else {return false}
         }).catch(e => {
             return false
