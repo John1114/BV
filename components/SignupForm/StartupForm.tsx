@@ -8,12 +8,15 @@ import FourthPage from "./StartupFormPages/FourthPage";
 import { useForm } from "react-hook-form";
 import { Dispatch } from "react";
 import { NextRouter, useRouter } from 'next/router';
+import { Startup } from "../../util/types";
+import addStartupFromForm from "../../util/startupSignupApi";
 
 export interface MainFormProps {
+  accent: string;
   setAccent: Dispatch<SetStateAction<string>>;
 }
 
-function StartupForm({ setAccent }: MainFormProps) {
+function StartupForm({ accent, setAccent }: MainFormProps) {
   const {
     register,
     handleSubmit,
@@ -31,7 +34,32 @@ function StartupForm({ setAccent }: MainFormProps) {
 
   const router = useRouter();
 
-  const onSubmit = async (data: any) => console.log(data);
+  const onSubmit = async (data: any) => {
+    // console.log(data)
+    let startupData: Startup = {
+      name: data["Name"],
+      yearFounded: data["Year Founded"],
+      industry: data["Industry"],
+      founders: data["founders"],
+      currentStage: data["Current Stage"],
+      size: data["Size (number of employees)"],
+      location: data["Location"],
+      description: data["Description"],
+      missionStatement: data["Mission Statement"],
+      logo: URL.createObjectURL(data["Upload Logo"][0]),
+      additionalMedia: Array.from(data["Upload Media"]).map((x: any) => URL.createObjectURL(x)),
+      accentColor: accent,
+      website: data["Website"],
+      twitter: data["Twitter"],
+      linkedin: data["LinkedIn"],
+      facebook: data["Facebook"],
+      instagram: data["Instagram"],
+
+    }
+    console.log(data)
+    console.log(startupData)
+    addStartupFromForm(startupData);
+  };
 
   const pages: PageProps[] = [
     {
