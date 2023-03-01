@@ -7,12 +7,18 @@ import { query } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 const Navbar = () => {
-  // const [isSignedin, setIsSignedIn] = useState<boolean>(isLoggedIn())
+  const [isSignedin, setIsSignedIn] = useState<boolean>(false)
 
   /* Working authentication code from Bruno Ventures (Commented out until setup of firebase) */
   const { signInWithGoogle, signOut } = useAuth();
   const router = useRouter();
   const authState = useFirebaseAuth();
+
+  useEffect(() => {
+    (async () => {
+    setIsSignedIn(await isLoggedIn());
+    })()
+  }, [])
 
   function handleSignIn() {
     signInWithGoogle().then((user) => {
@@ -87,7 +93,7 @@ const Navbar = () => {
           {/* Desktop Nav */}
 
           <div className="flex justify-evenly w-1/3 mr-12 lg:visible sm:invisible">
-            { isLoggedIn() ? 
+            { isSignedin ? 
               <>
                 <a href="#about" className="text-lg font-light text-white transition-all hover:text-red-500">Dashboard</a>
                 <a href="#about" className="text-lg font-light text-white transition-all hover:text-red-500">About Us</a>

@@ -79,8 +79,15 @@ export function useFirebaseAuth() {
         // create authentication state listener
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in.
-                setAuthState(createAuthState(true, false, firebaseUserToUser(user)));
+                if (user.email != null) {
+                    checkIfRegistered(user.email).then((isRegistered) => {
+                        if (isRegistered) {
+                            // User is signed in and authenticated
+                            setAuthState(createAuthState(true, false, firebaseUserToUser(user)));
+                          }
+                    })
+                }
+                setAuthState(createAuthState(false, false));
             } else {
                 // User is signed out.
                 setAuthState(createAuthState(false, false));
