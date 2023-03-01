@@ -16,6 +16,7 @@ const Navbar = () => {
 
   function handleSignIn() {
     signInWithGoogle().then((user) => {
+      if (user != null) {
       checkIfRegistered(user.email).then((isRegistered) => {
         if (isRegistered) {
           router.push("/main_interface");
@@ -35,32 +36,17 @@ const Navbar = () => {
           //toastify that you need to create an account
         }
       })
+    }
     })
   }
 
   function handleSignup() {
     signInWithGoogle().then((user) => {
-      checkIfRegistered(user.email).then((isRegistered) => {
-        if (isRegistered) {
-          router.push("/dashboard");
-          toast.info("Account exists! Logging you in!",
-          {
-            position: "top-left",
-            autoClose: 1500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            });
-          //toastify that account already exists and we logged you in
-        } else {
-          if (authState.user?.email.includes("@brown.edu")) {
-            router.push("/signup_form")
-          } else {
-            router.push("/landing");
-            toast.error("Please sign in with a Brown email!",
+      if (user != null) {
+        checkIfRegistered(user.email).then((isRegistered) => {
+          if (isRegistered) {
+            router.push("/dashboard");
+            toast.info("Account exists! Logging you in!",
             {
               position: "top-left",
               autoClose: 1500,
@@ -71,10 +57,28 @@ const Navbar = () => {
               progress: undefined,
               theme: "colored",
               });
-            //toastify that invalid email address
+            //toastify that account already exists and we logged you in
+          } else {
+            if (authState.user?.email.includes("@brown.edu")) {
+              router.push("/signup_form")
+            } else {
+              router.push("/landing");
+              toast.error("Please sign in with a Brown email!",
+              {
+                position: "top-left",
+                autoClose: 1500,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                });
+              //toastify that invalid email address
+            }
           }
-        }
-      })
+        })
+      }
     })
   }
   return (

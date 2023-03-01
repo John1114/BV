@@ -42,18 +42,22 @@ function signOut() {
 }
 
 /** Opens a Google sign-in popup and authenticates the user. */
-async function signInWithGoogle(): Promise<User> {
+async function signInWithGoogle(): Promise<User | null> {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({'hd': 'brown.edu'});
-
-    const result = await signInWithPopup(auth, provider); // TODO: Need to deal with cancelled requlests
-    console.log(result)
-    const user = result.user;
-    const name = result.user.displayName;
-    const email = result.user.email;
-    const profilePic = result.user.photoURL;
-
-    return firebaseUserToUser(user);
+    try {
+        const result = await signInWithPopup(auth, provider);
+        console.log(result)
+        const user = result.user;
+        const name = result.user.displayName;
+        const email = result.user.email;
+        const profilePic = result.user.photoURL;
+    
+        return firebaseUserToUser(user);
+    } catch (e) {
+        return null;
+    }
+    // TODO: Need to deal with cancelled requlests
 }
 
 /** Creates an auth state object */
