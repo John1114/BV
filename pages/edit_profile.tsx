@@ -16,6 +16,7 @@ import React from "react";
 import Message from "../components/FlashMessage";
 import MinimizableElement from "../components/MinimizableElement";
 import { firebaseStorageUrl } from "../util/constants";
+import { ToastContainer, toast } from 'react-toastify';
 
 
 /*
@@ -147,10 +148,9 @@ export default function editProfile() {
   const [educationList, setEducationList] = useState<any[]>([]);
   const [lastSubmittedResume, setLastResume] = useState<Resume | undefined>(undefined);
   const [profilePicState, setProfilePicState] = useState<{picture: any, src: any}>({picture: false, src: false});
-  const [flashTimeout, setFlashTimeout] = useState<number>(1500);
-  const [flashState, setFlashState] = useState<{
-    useFlash: boolean, message: string, backgroundColor: string, textColor: string
-  }>({useFlash: false, message: "", backgroundColor: "", textColor: ""});
+  // const [flashState, setFlashState] = useState<{
+  //   useFlash: boolean, message: string, backgroundColor: string, textColor: string
+  // }>({useFlash: false, message: "", backgroundColor: "", textColor: ""});
   const [loaded, setLoaded] = useState<boolean>(false);
   const [pictureUploader, setPictureUploader] = useState<JSX.Element | null>(null);
 
@@ -159,6 +159,8 @@ export default function editProfile() {
     ind: industryList,
     roles: roles
   }
+
+  const toastTimeout = 1500;
 
   const specialFields = [
     {name: "affiliation", multi: false, setFunc: setAffiliation, optList: "aff"},
@@ -257,15 +259,6 @@ export default function editProfile() {
     return options.find(opt => opt.value == label);
   }
 
-  const hideFlash = () => {
-    setFlashState({useFlash: false, message: "", backgroundColor: "", textColor: ""});
-  }
-
-  const showFlash = (newState: any) => {
-    setFlashState(newState);
-    window.setTimeout(hideFlash, flashTimeout);
-  }
-
   function removeEmptyFields(data: any) {
     Object.keys(data).forEach(key => {
       if (data[key] === '' || data[key] == null || data[key] == undefined || ((data[key].length? true: false) && (data[key].length == 0))) {
@@ -295,20 +288,33 @@ export default function editProfile() {
 
   const checkUserValidity = async () => {
     if (user === undefined){
-      showFlash({
-        useFlash: true,
-        message: "You have not logged in with a valid email yet",
-        backgroundColor: "bg-red-600",
-        textColor: "text-[#750404]"
-      });
+      toast.error("You have not logged in with a valid email yet",
+      {
+        position: "top-left",
+        autoClose: toastTimeout,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        });
       return null;
     }
     const userSnapshot: QueryDocumentSnapshot<DocumentData> | null = await checkIfRegistered(user);
     if (userSnapshot === null){
-      showFlash({
-        useFlash: true,
-        message: "You have not logged in with a valid email yet", backgroundColor: "bg-red-600", textColor: "text-[#750404]"
-      });
+
+      toast.error("You have not logged in with a valid email yet",
+      {
+        position: "top-left",
+        autoClose: toastTimeout,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        });
       return null;
     }else{
       return userSnapshot
@@ -337,11 +343,17 @@ export default function editProfile() {
       const picResult = await uploadFileWithRef(picRef, profilePicState.picture);
       if (picResult){
         await updateUserProfile(userSnapshot, {profilePicRef: imgStorageUri});
-        showFlash({
-          useFlash: true,
-          message: "Update successful!",
-          backgroundColor: "bg-green-300",
-          textColor: "text-emerald-800"});
+        toast.success("Update successful!",
+        {
+          position: "top-left",
+          autoClose: toastTimeout,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          });
       }
     }
   }
@@ -362,11 +374,17 @@ export default function editProfile() {
             // const oldResumeRef = ref(storage, lastSubmittedResume.uri);
             // await deleteFileWithRef(oldResumeRef);
           }
-          showFlash({
-            useFlash: true,
-            message: "Update successful!",
-            backgroundColor: "bg-green-300",
-            textColor: "text-emerald-800"})
+          toast.success("Update successful!",
+          {
+            position: "top-left",
+            autoClose: toastTimeout,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            });
         }
       }
     }
@@ -384,11 +402,17 @@ export default function editProfile() {
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
-        showFlash({
-          useFlash: true,
-          message: "Update successful!",
-          backgroundColor: "bg-green-300",
-          textColor: "text-emerald-800"});
+        toast.success("Update successful!",
+        {
+          position: "top-left",
+          autoClose: toastTimeout,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          });
       }
     }
   }
@@ -408,11 +432,17 @@ export default function editProfile() {
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
-        showFlash({
-          useFlash: true,
-          message: "Update successful!",
-          backgroundColor: "bg-green-300",
-          textColor: "text-emerald-800"});
+        toast.success("Update successful!",
+        {
+          position: "top-left",
+          autoClose: toastTimeout,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          });
       }
     }
   }
@@ -426,11 +456,17 @@ export default function editProfile() {
       // check there is data
       if (!isEmpty(cleanedData)){
         await updateUserProfile(userSnapshot, data);
-        showFlash({
-          useFlash: true,
-          message: "Update successful!",
-          backgroundColor: "bg-green-300",
-          textColor: "text-emerald-800"});
+        toast.success("Update successful!",
+        {
+          position: "top-left",
+          autoClose: toastTimeout,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          });
       }
     }
   }
@@ -445,11 +481,17 @@ export default function editProfile() {
         // update user with API
         // TODO: Test API
         await updateUserProfile(userSnapshot, data);
-        showFlash({
-          useFlash: true,
-          message: "Update successful!",
-          backgroundColor: "bg-green-300",
-          textColor: "text-emerald-800"});
+        toast.success("Update successful!",
+        {
+          position: "top-left",
+          autoClose: toastTimeout,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          });
       }
     }
   }
@@ -481,17 +523,11 @@ export default function editProfile() {
   }
 
 	return (
-		<div id="wrapper" className="h-screen">
-            {flashState.useFlash &&
-            (<Message
-              message={flashState.message}
-              backgroundColor={flashState.backgroundColor}
-              textColor={flashState.textColor}
-              duration={1500}/>)}
-			<Header />
-    <div id="content" className="pb-20">
+		<div className="h-screen">
+      <Header />
+      <div className="pb-20">
       <div className="mx-auto sm:px-4 max-w-full">
-        <div className="m-4 flex">
+      <div className="p-4 pt-16 flex">
         <a href="#" className="rounded-full bg-gray-200 text-2xl pl-4 pr-4 pt-1 pb-1 hover:bg-gray-100" onClick={() => {router.back()}}>&#8249;</a>
       </div>
         {/* <h3 className="text-gray-900 m-4 text-4xl">Profile</h3> */}
@@ -1091,6 +1127,5 @@ export default function editProfile() {
 
           {/* MODAL END */}
 </div>
-
 	)
 }

@@ -15,17 +15,16 @@ import Landing from "./landing";
 export default function Home() {
   const [loading, setLoading] = useState<boolean>(true);
   const [fading, setFading] = useState<boolean>(false);
-  const [flashState, setFlashState] = useState<any>({useFlash: false});
-  const router = useRouter();
+  // const router = useRouter();
   // Waits until the session is loaded before loading the page
   // if (firebaseAuthState.isLoading) return null
 
   useEffect(() => {
-    if (router.pathname !== undefined){
-      if ((router.query.useFlash !== undefined) && router.query.useFlash){
-        setFlashState(router.query);
-      }
-    }
+    // if (router.pathname !== undefined){
+    //   if ((router.query.useFlash !== undefined) && router.query.useFlash){
+    //     setFlashState(router.query);
+    //   }
+    // }
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0;
     loading
@@ -43,10 +42,6 @@ export default function Home() {
   return (
     <div>
       {loading && <SplashScreen fading={fading} />}
-      {flashState.useFlash?
-            (<Message message={flashState.message}
-            backgroundColor={flashState.backgroundColor}
-            textColor={flashState.textColor} width="w-1/2"/>):null}
       
       <div className="box-border">
       <Landing />
