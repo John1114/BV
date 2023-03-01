@@ -6,15 +6,16 @@ import { FormRow } from '../formComponents/Page';
 
 export interface MediaProps{
     setAccent: Dispatch<SetStateAction<string>>;
+    register: any;
 }
 
-export default function ThirdPage({setAccent}: MediaProps): FormRow[] {
+export default function ThirdPage({setAccent, register}: MediaProps): FormRow[] {
   return [
     {
       items: [
         {
           name: "Upload Logo",
-          element: <Uploader name="Upload Logo" />,
+          element: <Uploader name="Upload Logo" register={register}/>,
         },
       
         {
@@ -24,7 +25,7 @@ export default function ThirdPage({setAccent}: MediaProps): FormRow[] {
      
         {
           name: "Upload Media",
-          element: <Uploader name="Upload Media" />,
+          element: <Uploader name="Upload Media" register={register} />,
         },
       ],
     },
