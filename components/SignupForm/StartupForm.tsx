@@ -9,7 +9,9 @@ import { useForm } from "react-hook-form";
 import { Dispatch } from "react";
 import { NextRouter, useRouter } from 'next/router';
 import { Startup } from "../../util/types";
-import addStartupFromForm from "../../util/startupSignupApi";
+import addStartupFromForm, { uploadImageWithRef } from "../../util/startupSignupApi";
+import { storage } from "../../util/firebaseConfig";
+import { ref } from "firebase/storage";
 
 export interface MainFormProps {
   accent: string;
@@ -36,6 +38,24 @@ function StartupForm({ accent, setAccent }: MainFormProps) {
 
   const onSubmit = async (data: any) => {
     // console.log(data)
+    var date = new Date();
+    // console.log(data["Upload Logo"][0])
+    const imageURI = `images/${date.getTime().toString()}.jpg`;
+    const imageRef = ref(storage, imageURI);
+    const imageRes = await uploadImageWithRef(imageRef, data["Upload Logo"][0]);
+    if (imageRes) {
+      data["Upload Logo"] = imageURI;
+    } else {
+      data["Upload Logo"] = "";
+    }
+    let img_lst = [data["Upload Media"]].map(function(x: any, index) {
+      const imageURI = `images/${date.getTime().toString() + index}.jpg`;
+      const imageRef = ref(storage, imageURI);
+      uploadImageWithRef(imageRef, x[0] as File);
+      return imageURI;
+
+    })
+
     let startupData: Startup = {
       name: data["Name"],
       yearFounded: data["Year Founded"],
@@ -46,8 +66,8 @@ function StartupForm({ accent, setAccent }: MainFormProps) {
       location: data["Location"],
       description: data["Description"],
       missionStatement: data["Mission Statement"],
-      logo: URL.createObjectURL(data["Upload Logo"][0]),
-      additionalMedia: Array.from(data["Upload Media"]).map((x: any) => URL.createObjectURL(x)),
+      logo: data["Upload Logo"],
+      additionalMedia: img_lst,
       accentColor: accent,
       website: data["Website"],
       twitter: data["Twitter"],
@@ -90,7 +110,8 @@ function StartupForm({ accent, setAccent }: MainFormProps) {
         {pages.map((page, index) => {
           if (index !== pageNumber) return null;
           return (
-            <div key={index} className="flex flex-col w-full h-full">
+            <div
+              key={index} className="flex flex-col w-full h-full">
               <Page
                 title={page.title}
                 rows={page.rows}

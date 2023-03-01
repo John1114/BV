@@ -5,7 +5,7 @@ export interface UploaderProps {
   register: any;
 }
 
-export default function Uploader({ name, register }: UploaderProps) {
+export default function Uploader({ name, register }: UploaderProps, required = true) {
   //return input type file with a styled div
   const [image, setImage] = useState();
   const onImageChange = (data: any) => {
@@ -20,7 +20,9 @@ export default function Uploader({ name, register }: UploaderProps) {
   };
   return (
     <div className="w-full h-full flex flex-col justify-center">
-      <input type="file" {...register(name)} onChange={onImageChange} />
+      <input type="file" {...register(name, {
+        required: required
+      })} onChange={onImageChange} />
 
       {
         image != null && <> <img src={image} />
