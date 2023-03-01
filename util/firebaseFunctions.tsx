@@ -22,7 +22,7 @@ export interface AuthState {
     /** Signs the current user out, if logged in. */
     signOut: () => void;
     /** Signs a user in with Google. */
-    signInWithGoogle: () => Promise<User>;
+    signInWithGoogle: () => Promise<User | null>;
 }
 
 const auth = getAuth(app);
@@ -44,7 +44,7 @@ function signOut() {
 /** Opens a Google sign-in popup and authenticates the user. */
 async function signInWithGoogle(): Promise<User | null> {
     const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({'hd': 'brown.edu'});
+    // provider.setCustomParameters({'hd': 'brown.edu'});
     try {
         const result = await signInWithPopup(auth, provider);
         console.log(result)
@@ -79,8 +79,15 @@ export function useFirebaseAuth() {
         // create authentication state listener
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in.
-                setAuthState(createAuthState(true, false, firebaseUserToUser(user)));
+                if (user.email != null) {
+                    checkIfRegistered(user.email).then((isRegistered) => {
+                        if (isRegistered) {
+                            // User is signed in and authenticated
+                            setAuthState(createAuthState(true, false, firebaseUserToUser(user)));
+                          }
+                    })
+                }
+                setAuthState(createAuthState(false, false));
             } else {
                 // User is signed out.
                 setAuthState(createAuthState(false, false));
