@@ -26,6 +26,17 @@ const Navbar = () => {
       checkIfRegistered(user.email).then((isRegistered) => {
         if (isRegistered) {
           router.push("/main_interface");
+          toast.success("Welcome to Bruno Ventures!",
+          {
+            position: "top-left",
+            autoClose: 1500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            });
         } else {
           router.push("/landing");
           toast.error("Please sign up first!",
