@@ -5,7 +5,7 @@ export interface FoundersProps {
   register: UseFormRegister<FieldValues>;
 }
 
-export function Founders({ register }: FoundersProps) {
+export function Founders({ register }: FoundersProps, required = true) {
   const [founders, setFounders] = useState([{ firstname: "", lastname: "" }]);
 
   const handleFirstName = (index: number, e: FormEvent<HTMLInputElement>) => {
@@ -42,7 +42,7 @@ export function Founders({ register }: FoundersProps) {
       >
         Founder(s)
       </label>
-      {founders.map(function (input, index) {
+      {founders.map(function(input, index) {
         return (
           <div key={index} className="flex mb-3 space-x-2">
             <div className="flex-col w-1/2 text-center">
@@ -52,7 +52,9 @@ export function Founders({ register }: FoundersProps) {
                 id="first"
                 type="text"
                 placeholder="First Name"
-                {...register(`founders[${index}].firstname`)}
+                {...register(`founders[${index}].firstname`, {
+                  required: required
+                })}
               />
             </div>
             <div className="flex-col w-1/2 text-center">
@@ -62,7 +64,7 @@ export function Founders({ register }: FoundersProps) {
                 id="founders"
                 type="text"
                 placeholder="Last Name"
-                {...register(`founders[${index}].lastname`)}
+                {...register(`founders[${index}].lastname`, { required: required })}
               />
             </div>
           </div>

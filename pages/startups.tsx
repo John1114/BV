@@ -132,7 +132,7 @@ export default function Startups() {
           >
             <div className="relative w-10/12 h-5/6 my-6 mx-auto">
             <Dialog.Panel>
-              <div className="border-0 rounded-lg overflow-hidden flex shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+              <div className="border-0 rounded-lg overflow-hidden flex shadow-lg relative flex-col w-full bg-white outline-none focus:outline-none">
                 {/* STARTUP INFO */}
                 <Startup startupId={startup.id}/>
               </div>

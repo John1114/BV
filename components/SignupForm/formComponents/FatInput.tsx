@@ -7,7 +7,7 @@ export interface FatInputProps {
   register: UseFormRegister<FieldValues>;
 }
 
-export default function FatInput({ name, description, register }: FatInputProps) {
+export default function FatInput({ name, description, register }: FatInputProps, required = true) {
   return (
     <div className="w-full mb-2 lg:mb-0">
       <label
@@ -17,7 +17,7 @@ export default function FatInput({ name, description, register }: FatInputProps)
         {name}
       </label>
       <label>{description}</label>
-      <textarea className="form-primary h-[200px] lg:h-[150px]" {...register(name)} />
+      <textarea className="form-primary h-[200px] lg:h-[150px]" {...register(name, { required: required })} />
     </div>
   );
 }

@@ -6,7 +6,7 @@ export interface InputProps {
   register: UseFormRegister<FieldValues>;
 }
 
-export default function StyledInput({ name, register }: InputProps) {
+export default function StyledInput({ name, register }: InputProps, required = true) {
   return (
     <div className="w-full mb-2 lg:mb-0">
       <label
@@ -15,7 +15,9 @@ export default function StyledInput({ name, register }: InputProps) {
       >
         {name}
       </label>
-      <input type="text" placeholder={name} {...register(name)}className="form-primary"  />
+      <input type="text" placeholder={name} {...register(name, {
+        required: true
+      })} className="form-primary" />
     </div>
   );
 }
