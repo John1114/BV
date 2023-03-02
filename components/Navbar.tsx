@@ -22,7 +22,7 @@ const Navbar = () => {
 
   function handleSignIn() {
     signInWithGoogle().then((user) => {
-      if (user != null) {
+      if (user != null && user.email != null) {
       checkIfRegistered(user.email).then((isRegistered) => {
         if (isRegistered) {
           router.push("/main_interface");
@@ -59,10 +59,10 @@ const Navbar = () => {
 
   function handleSignup() {
     signInWithGoogle().then((user) => {
-      if (user != null) {
+      if (user != null && user.email != null) {
         checkIfRegistered(user.email).then((isRegistered) => {
           if (isRegistered) {
-            router.push("/dashboard");
+            router.push("/main_interface");
             toast.info("Account exists! Logging you in!",
             {
               position: "top-left",
@@ -76,7 +76,8 @@ const Navbar = () => {
               });
             //toastify that account already exists and we logged you in
           } else {
-            if (authState.user?.email.includes("@brown.edu")) {
+
+            if (authState.user?.email?.includes("@brown.edu")) {
               router.push("/signup_form")
             } else {
               router.push("/landing");
